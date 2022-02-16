@@ -1,12 +1,14 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@stripe/stripe-js': ^1.23.0
   rollup: ^2.58.0
   rollup-preset-solid: ^1.0.1
   solid-js: ^1.1.7
   typescript: ^4.4.4
 
 dependencies:
+  '@stripe/stripe-js': 1.23.0
   solid-js: 1.1.7
 
 devDependencies:
@@ -349,6 +351,10 @@ packages:
       picomatch: 2.3.0
       rollup: 2.58.0
     dev: true
+
+  /@stripe/stripe-js/1.23.0:
+    resolution: {integrity: sha512-+7w4rVs71Fk8/8uzyzQB5GotHSH9mjOjxM3EYDq/3MR3I2ewELHtvWVMOqfS/9WSKCaKv7h7eFLsMZGpK5jApQ==}
+    dev: false
 
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
