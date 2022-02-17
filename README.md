@@ -38,7 +38,7 @@ const App = () => {
   const [stripe, setStripe] = createSignal<Stripe | null>(null);
 
   onMount(async () => {
-    const result = await loadStripe('pk_test_5NTx3icIuJNpqxmUgRQNS3oQ');
+    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
     setStripe(result);
   });
 
@@ -56,18 +56,22 @@ const App = () => {
 
 Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents. This must happen server-side to avoid anyone tampering with the amount.
 
-Let's add a `src/lib/create-payment-intent.js` to create a payment intent:
+Let's add a `src/lib/create-payment-intent.js` to our solid-start project to create a payment intent:
 
 ```ts
 import Stripe from 'stripe';
 
 const stripe = new Stripe(import.meta.VITE_STRIPE_SECRET_KEY);
 
-export default function createPaymentIntent(body) {
+export default function createPaymentIntent() {
   return stripe.paymentIntents.create({
-    amount: body.amount,
-    currency: body.currency,
+    amount: 1069,
+    currency: 'eur',
     automatic_payment_methods: { enabled: true },
   });
 }
 ```
+
+### Accepting payments
+
+There are several types of payment you can accept:
