@@ -54,7 +54,7 @@ const App = () => {
 
 ### Creating a payment intent
 
-Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents. This must happen server-side to avoid anyone tampering with the amount.
+Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). This must happen server-side to avoid anyone tampering with the amount.
 
 Let's add a `src/lib/create-payment-intent.js` to our solid-start project to create a payment intent:
 
