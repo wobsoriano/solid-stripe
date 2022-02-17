@@ -61,7 +61,7 @@ Let's add a `src/lib/create-payment-intent.js` to our solid-start project to cre
 ```ts
 import Stripe from 'stripe';
 
-const stripe = new Stripe(import.meta.VITE_STRIPE_SECRET_KEY);
+const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY);
 
 export default function createPaymentIntent() {
   return stripe.paymentIntents.create({
