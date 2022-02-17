@@ -1,4 +1,4 @@
-## Payment Element
+## Credit cards
 
 Use `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 
