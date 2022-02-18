@@ -18,13 +18,18 @@ export const routeData = () => {
 
 const Payment = () => {
   const paymentIntent = useData();
+  const [elements, setElements] = createSignal(null);
 
   const submit = () => {};
 
   return (
     <Show when={!!paymentIntent()}>
       <form onSubmit={submit}>
-        <PaymentElement clientSecret={paymentIntent().client_secret} />
+        <PaymentElement
+          elements={elements()}
+          setElements={setElements}
+          clientSecret={paymentIntent().client_secret}
+        />
         <button>Pay</button>
       </form>
     </Show>
@@ -45,13 +50,13 @@ stripe.paymentIntents.create({
 Then when the form is submitted, call `stripe.confirmPayment()`
 
 ```ts
-import { useStripe } from 'solid-start';
+import { useStripe, useElements } from 'solid-start';
 
 const stripe = useStripe();
 
 const submit = async () => {
   const result = await stripe.confirmPayment({
-    elements,
+    elements: elements(),
     // specify redirect: 'if_required' or a `return_url`
     redirect: 'if_required',
   });

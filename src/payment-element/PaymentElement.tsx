@@ -1,10 +1,12 @@
-import { Appearance, StripeElement } from '@stripe/stripe-js';
+import { Appearance, StripeElement, StripeElements } from '@stripe/stripe-js';
 import { Component, mergeProps, onCleanup, onMount } from 'solid-js';
 import { useStripe } from '../StripeProvider';
 import { StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 interface Props {
+  elements: StripeElements | null;
+  setElements: (elements: StripeElements) => void;
   clientSecret: string;
   theme?: Appearance['theme'];
   variables?: Appearance['variables'];
@@ -41,6 +43,7 @@ export const PaymentElement: Component<Props & StripeElementEventHandler<'paymen
       labels: merged.labels,
     },
   });
+  props.setElements(elements);
 
   onMount(() => {
     element = createAndMountStripeElement(wrapper, 'payment', elements, props, props.options);

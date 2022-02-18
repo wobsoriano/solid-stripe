@@ -15,11 +15,12 @@ export const routeData = () => {
 };
 
 const Payment = () => {
+  const [element, setElement] = createSignal(null);
   const submit = () => {};
 
   return (
     <form onSubmit={submit}>
-      <CardNumber />
+      <CardNumber element={element} setElement={setElement} />
       <CardExpiry />
       <CardCvc />
       <button>Pay</button>
@@ -38,7 +39,7 @@ const stripe = useStripe();
 const submit = async () => {
   const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
     payment_method: {
-      card: theElementHere,
+      card: element(),
       billing_details: {...},
     },
   });
