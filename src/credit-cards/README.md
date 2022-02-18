@@ -7,7 +7,7 @@ import { createResource, Show } from 'solid-js';
 import server from 'solid-start/server';
 import { useRouteData } from 'solid-app-router';
 import createPaymentIntent from '~/lib/create-payment-intent';
-import { CardNumber, CardExpiry, CardCvc } from 'solid-stripe';
+import { CardNumber, CardExpiry, CardCvc, useStripe } from 'solid-stripe';
 
 export const routeData = () => {
   const [paymentIntent] = createResource(server(createPaymentIntent));
@@ -16,8 +16,18 @@ export const routeData = () => {
 
 const Payment = () => {
   const paymentIntent = useRouteData();
+  const stripe = useStripe();
   const [element, setElement] = createSignal(null);
-  const submit = () => {};
+
+  const submit = async () => {
+    // Pass the element to stripe.confirmCardPayment()
+    const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
+      payment_method: {
+        card: element(),
+        billing_details: {...},
+      },
+    });
+  };
 
   return (
     <Show when={paymentIntent()}>
@@ -29,22 +39,5 @@ const Payment = () => {
       </form>
     </Show>
   );
-};
-```
-
-When the form submits, pass the element to `stripe.confirmCardPayment()`:
-
-```ts
-import { useStripe } from 'solid-start';
-
-const stripe = useStripe();
-
-const submit = async () => {
-  const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
-    payment_method: {
-      card: element(),
-      billing_details: {...},
-    },
-  });
 };
 ```
