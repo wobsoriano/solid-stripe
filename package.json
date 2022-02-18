@@ -29,7 +29,7 @@
     "solid",
     "typescript"
   ],
-  "author": "Robert Soriano",
+  "author": "Robert Soriano <sorianorobertc@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
   "dependencies": {
