@@ -9,7 +9,7 @@ import { createResource, Show } from 'solid-js';
 import server from 'solid-start/server';
 import { useRouteData } from 'solid-app-router';
 import createPaymentIntent from '~/lib/create-payment-intent';
-import { PaymentElement } from 'solid-stripe';
+import { PaymentElement, useStripe } from 'solid-stripe';
 
 export const routeData = () => {
   const [paymentIntent] = createResource(server(createPaymentIntent));
@@ -18,9 +18,17 @@ export const routeData = () => {
 
 const Payment = () => {
   const paymentIntent = useRouteData();
+  const stripe = useStripe();
   const [elements, setElements] = createSignal(null);
 
-  const submit = () => {};
+  const submit = async () => {
+    // Pass the elements instance to `stripe.confirmPayment()`
+    const result = await stripe.confirmPayment({
+      elements: elements(),
+      // specify redirect: 'if_required' or a `return_url`
+      redirect: 'if_required',
+    });
+  };
 
   return (
     <Show when={paymentIntent()}>
@@ -47,18 +55,4 @@ stripe.paymentIntents.create({
 });
 ```
 
-Then when the form is submitted, call `stripe.confirmPayment()`
-
-```ts
-import { useStripe, useElements } from 'solid-start';
-
-const stripe = useStripe();
-
-const submit = async () => {
-  const result = await stripe.confirmPayment({
-    elements: elements(),
-    // specify redirect: 'if_required' or a `return_url`
-    redirect: 'if_required',
-  });
-};
-```
+More info https://stripe.com/docs/payments/payment-element
