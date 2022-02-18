@@ -23,7 +23,12 @@
     "type": "git",
     "url": "git+https://github.com/wobsoriano/solid-stripe.git"
   },
-  "keywords": [],
+  "keywords": [
+    "stripe",
+    "elements",
+    "solid",
+    "typescript"
+  ],
   "author": "Robert Soriano",
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
