@@ -15,6 +15,7 @@ export const routeData = () => {
 };
 
 const Payment = () => {
+  const paymentIntent = useRouteData();
   const [element, setElement] = createSignal(null);
   const submit = () => {};
 
