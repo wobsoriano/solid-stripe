@@ -5,6 +5,8 @@ import { StripeElementEventHandler, AnyObj } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 interface Props {
+  element: StripeElement | null;
+  setElement: (element: StripeElement) => void;
   classes?: AnyObj;
   style?: AnyObj;
   placeholder?: string;
@@ -15,7 +17,6 @@ interface Props {
 
 export const CardNumber: Component<Props & StripeElementEventHandler<'cardNumber'>> = (props) => {
   let wrapper: HTMLDivElement;
-  let element: StripeElement;
 
   const merged = mergeProps(
     {
@@ -44,11 +45,12 @@ export const CardNumber: Component<Props & StripeElementEventHandler<'cardNumber
       showIcon: merged.showIcon,
       iconStyle: merged.iconStyle,
     };
-    element = createAndMountStripeElement(wrapper, 'cardNumber', elements, props, options);
+    const element = createAndMountStripeElement(wrapper, 'cardNumber', elements, props, options);
+    props.setElement(element);
   });
 
   onCleanup(() => {
-    element.unmount();
+    props.element?.unmount();
   });
 
   // @ts-ignore
