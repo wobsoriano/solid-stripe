@@ -3,9 +3,9 @@
 Use `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 
 ```tsx
-import { createResource } from 'solid-js';
+import { createResource, Show } from 'solid-js';
 import server from 'solid-start/server';
-import { useData } from 'solid-app-router';
+import { useRouteData } from 'solid-app-router';
 import createPaymentIntent from '~/lib/create-payment-intent';
 import { CardNumber, CardExpiry, CardCvc } from 'solid-stripe';
 
@@ -19,12 +19,14 @@ const Payment = () => {
   const submit = () => {};
 
   return (
-    <form onSubmit={submit}>
-      <CardNumber element={element} setElement={setElement} />
-      <CardExpiry />
-      <CardCvc />
-      <button>Pay</button>
-    </form>
+    <Show when={paymentIntent()}>
+      <form onSubmit={submit}>
+        <CardNumber element={element} setElement={setElement} />
+        <CardExpiry />
+        <CardCvc />
+        <button>Pay</button>
+      </form>
+    </Show>
   );
 };
 ```

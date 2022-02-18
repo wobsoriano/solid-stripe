@@ -5,9 +5,9 @@ The latest component from Stripe lets you accept up to [18+ payment methods](htt
 To use it, use the `<PaymentElement>` component:
 
 ```tsx
-import { createResource } from 'solid-js';
+import { createResource, Show } from 'solid-js';
 import server from 'solid-start/server';
-import { useData } from 'solid-app-router';
+import { useRouteData } from 'solid-app-router';
 import createPaymentIntent from '~/lib/create-payment-intent';
 import { PaymentElement } from 'solid-stripe';
 
@@ -17,13 +17,13 @@ export const routeData = () => {
 };
 
 const Payment = () => {
-  const paymentIntent = useData();
+  const paymentIntent = useRouteData();
   const [elements, setElements] = createSignal(null);
 
   const submit = () => {};
 
   return (
-    <Show when={!!paymentIntent()}>
+    <Show when={paymentIntent()}>
       <form onSubmit={submit}>
         <PaymentElement
           elements={elements()}
