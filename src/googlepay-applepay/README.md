@@ -27,11 +27,11 @@ const Payment = () => {
       // Report to the browser that the payment failed, prompting it to
       // re-show the payment interface, or show an error message and close
       // the payment interface.
-      e.complete('fail');
+      ev.complete('fail');
     } else {
       // Report to the browser that the confirmation was successful, prompting
       // it to close the browser payment method collection interface.
-      e.complete('success');
+      ev.complete('success');
     }
   };
 
