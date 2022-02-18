@@ -76,5 +76,5 @@ export default function createPaymentIntent() {
 
 There are several types of payment you can accept:
 
-- [PaymentElement](https://github.com/wobsoriano/solid-stripe/tree/master/src/payment-element)
+- [Payment Element](https://github.com/wobsoriano/solid-stripe/tree/master/src/payment-element)
 - [Credit cards](https://github.com/wobsoriano/solid-stripe/tree/master/src/credit-cards)
