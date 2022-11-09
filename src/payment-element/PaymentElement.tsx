@@ -12,7 +12,7 @@ interface Props {
   variables?: Appearance['variables'];
   rules?: Appearance['rules'];
   options?: Record<string, any>;
-  labels?: string;
+  labels?: Appearance['labels'];
 }
 
 export const PaymentElement: Component<Props & StripeElementEventHandler<'payment'>> = (props) => {
@@ -36,11 +36,10 @@ export const PaymentElement: Component<Props & StripeElementEventHandler<'paymen
   const elements = stripe.elements({
     clientSecret: props.clientSecret,
     appearance: {
-      theme: merged.theme,
+      theme: merged.theme as Appearance['theme'],
       variables: merged.variables,
       rules: merged.rules,
-      // @ts-ignore
-      labels: merged.labels,
+      labels: merged.labels as Appearance['labels'],
     },
   });
   props.setElements(elements);
