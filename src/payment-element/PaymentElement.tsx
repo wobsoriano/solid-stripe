@@ -1,22 +1,19 @@
-import type { Component } from 'solid-js';
-import { onCleanup, onMount } from 'solid-js';
-import { useStripeElements } from '../StripeProvider';
-import type { StripeElementEventHandler } from '../types';
-import { createAndMountStripeElement } from '../utils';
+import type { Component } from 'solid-js'
+import { createStripeElement } from 'src/primitives/createStripeElement'
+import type { StripeElementEventHandler } from '../types'
 
 type Props = StripeElementEventHandler<'payment'>
 
 export const PaymentElement: Component<Props> = (props) => {
-  let wrapper: HTMLDivElement;
-  const elements = useStripeElements()
+  let wrapper!: HTMLDivElement
 
-  onMount(() => {
-    const element = createAndMountStripeElement(wrapper, 'payment', elements!, props);
+  createStripeElement(
+    wrapper,
+    'payment',
+    {},
+    () => {},
+    (type, event) => props[type]?.(event),
+  )
 
-    onCleanup(() => {
-      element.unmount();
-    });
-  });
-
-  return <div ref={wrapper!} />;
-};
+  return <div ref={wrapper!} />
+}

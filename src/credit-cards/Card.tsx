@@ -1,8 +1,8 @@
-import type { StripeCardElementOptions } from '@stripe/stripe-js';
-import { Component, splitProps } from 'solid-js';
-import { mergeProps } from 'solid-js';
-import { createStripeElement } from 'src/primitives/createStripeElement';
-import type { BaseCardProps, StripeElementEventHandler } from '../types';
+import type { StripeCardElementOptions } from '@stripe/stripe-js'
+import type { Component } from 'solid-js'
+import { mergeProps, splitProps } from 'solid-js'
+import { createStripeElement } from 'src/primitives/createStripeElement'
+import type { BaseCardProps, StripeElementEventHandler } from '../types'
 
 type Props = {
   value?: StripeCardElementOptions['value']
@@ -13,8 +13,8 @@ type Props = {
 } & Omit<BaseCardProps, 'placeholder'> & StripeElementEventHandler<'card'>
 
 export const Card: Component<Props> = (props) => {
-  let wrapper!: HTMLDivElement;
-  
+  let wrapper!: HTMLDivElement
+
   const defaultValues = {
     classes: {},
     style: {},
@@ -23,7 +23,7 @@ export const Card: Component<Props> = (props) => {
     disabled: false,
     iconStyle: 'default',
   }
-  const merged = mergeProps(defaultValues, props);
+  const merged = mergeProps(defaultValues, props)
 
   const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
 
@@ -32,8 +32,8 @@ export const Card: Component<Props> = (props) => {
     'card',
     options,
     props.onCreateElement,
-    (type, event) => props[type]?.(event)
-  );
+    (type, event) => props[type]?.(event),
+  )
 
-  return <div ref={wrapper} />;
-};
+  return <div ref={wrapper} />
+}

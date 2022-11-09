@@ -46,6 +46,7 @@
     "solid-js": ">=1.5.0"
   },
   "devDependencies": {
+    "@antfu/eslint-config-ts": "^0.29.4",
     "@stripe/stripe-js": "^1.42.1",
     "bumpp": "^8.2.1",
     "eslint": "^8.26.0",

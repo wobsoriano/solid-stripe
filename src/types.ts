@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
-import type { StripeElementBase, StripeElementChangeEvent } from '@stripe/stripe-js';
-import type { StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
-import { Setter } from 'solid-js';
+import type { StripeElementBase, StripeElementChangeEvent, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js'
 
 export interface StripeElementEventHandler<T> {
   onChange?: (e: StripeElementChangeEvent) => void
@@ -11,10 +8,10 @@ export interface StripeElementEventHandler<T> {
   onEscape?: (e: { elementType: T }) => void
 }
 
-export type AnyObj = Record<any, any>;
+export type AnyObj = Record<any, any>
 
-export type BaseCardProps = {
-  onCreateElement?: Setter<StripeElementBase | null>,
+export interface BaseCardProps {
+  onCreateElement?: (element: StripeElementBase) => void
   classes?: StripeElementClasses
   style?: StripeElementStyle
   placeholder?: string
