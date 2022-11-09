@@ -1,17 +1,17 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
-  '@stripe/stripe-js': ^1.23.0
+  '@stripe/stripe-js': ^1.42.1
   rollup: ^2.58.0
   rollup-preset-solid: ^1.0.1
   solid-js: ^1.1.7
   typescript: ^4.4.4
 
 dependencies:
-  '@stripe/stripe-js': 1.23.0
   solid-js: 1.1.7
 
 devDependencies:
+  '@stripe/stripe-js': 1.42.1
   rollup: 2.58.0
   rollup-preset-solid: 1.0.1
   typescript: 4.4.4
@@ -224,6 +224,8 @@ packages:
     resolution: {integrity: sha512-BRYa3wcQnjS/nqI8Ac94pYYpJfojHVvVXJ97+IDCImX4Jc8W8Xv1+47enbruk+q1etOpsQNwnfFcNGw+gtPGxA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.15.6
     dev: true
 
   /@babel/plugin-syntax-jsx/7.14.5_@babel+core@7.15.8:
@@ -308,7 +310,7 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@rollup/plugin-babel/5.3.0_@babel+core@7.15.8+rollup@2.58.0:
+  /@rollup/plugin-babel/5.3.0_orvpyu4spw2evuo5zm2bjor3bm:
     resolution: {integrity: sha512-9uIC8HZOnVLrLHxayq/PTzw+uS25E14KPUBh5ktF+18Mjo5yK0ToMMx6epY0uEgkjwJw0aBW4x2horYXh8juWw==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -352,9 +354,9 @@ packages:
       rollup: 2.58.0
     dev: true
 
-  /@stripe/stripe-js/1.23.0:
-    resolution: {integrity: sha512-+7w4rVs71Fk8/8uzyzQB5GotHSH9mjOjxM3EYDq/3MR3I2ewELHtvWVMOqfS/9WSKCaKv7h7eFLsMZGpK5jApQ==}
-    dev: false
+  /@stripe/stripe-js/1.42.1:
+    resolution: {integrity: sha512-5H7P7rVNDMdiJCUKsKXRUyr6IjZ4/9f8FB62NCa5O4rDftRfs4u2dPjjHs/tIs4OLeBB6oSzJIkE7cPr4ykPHg==}
+    dev: true
 
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
@@ -368,6 +370,12 @@ packages:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
       '@types/node': 16.11.4
+    dev: true
+
+  /acorn/8.8.1:
+    resolution: {integrity: sha512-7zFpHzhnqYKrkYdUjF1HI1bzd0VygEGX8lFk4k5zVMqHEoES+P+7TKI+EvLO9WVMJ8eekdO0aDEK044xTXwPPA==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
     dev: true
 
   /ansi-styles/3.2.1:
@@ -645,7 +653,7 @@ packages:
     dependencies:
       '@babel/core': 7.15.8
       '@babel/preset-typescript': 7.15.0_@babel+core@7.15.8
-      '@rollup/plugin-babel': 5.3.0_@babel+core@7.15.8+rollup@2.58.0
+      '@rollup/plugin-babel': 5.3.0_orvpyu4spw2evuo5zm2bjor3bm
       '@rollup/plugin-node-resolve': 13.0.6_rollup@2.58.0
       babel-preset-solid: 1.1.7_@babel+core@7.15.8
       colorette: 1.4.0
@@ -731,6 +739,7 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
+      acorn: 8.8.1
       commander: 2.20.3
       source-map: 0.7.3
       source-map-support: 0.5.20
