@@ -1,17 +1,17 @@
-import type { StripeElement } from '@stripe/stripe-js';
+import type { StripeCardElementOptions, StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements } from '../StripeProvider';
-import type { AnyObj, StripeElementEventHandler } from '../types';
+import type { StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 type Props = {
-  element: StripeElement | null
+  element: StripeElementBase
   // eslint-disable-next-line no-unused-vars
   setElement: (element: StripeElement) => void
-  classes?: AnyObj
-  style?: AnyObj
-  value?: AnyObj
+  classes?: StripeElementClasses
+  style?: StripeElementStyle
+  value?: StripeCardElementOptions['value']
   hidePostalCode?: boolean
   hideIcon?: boolean
   iconStyle?: string
@@ -26,6 +26,7 @@ export const Card: Component<Props> = (props) => {
       classes: {},
       style: {},
       hidePostalCode: false,
+      hideIcon: false,
       iconStyle: 'default',
       disabled: false,
     },

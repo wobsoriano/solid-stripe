@@ -1,15 +1,10 @@
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements } from '../StripeProvider';
-import type { AnyObj, StripeElementEventHandler } from '../types';
+import type { BaseCardProps, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
-type Props = {
-  classes?: AnyObj
-  style?: AnyObj
-  placeholder?: string
-  disabled?: boolean
-} & StripeElementEventHandler<'cardExpiry'>
+type Props = BaseCardProps & StripeElementEventHandler<'cardExpiry'>
 
 export const CardExpiry: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;

@@ -2,20 +2,16 @@ import type { StripeElement } from '@stripe/stripe-js';
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements } from '../StripeProvider';
-import type { AnyObj, StripeElementEventHandler } from '../types';
+import type { BaseCardProps, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 type Props = {
   element: StripeElement | null
   // eslint-disable-next-line no-unused-vars
   setElement: (element: StripeElement) => void
-  classes?: AnyObj
-  style?: AnyObj
-  placeholder?: string
-  disabled?: boolean
   showIcon?: boolean
   iconStyle?: string
-} & StripeElementEventHandler<'cardNumber'>
+} & BaseCardProps & StripeElementEventHandler<'cardNumber'>
 
 export const CardNumber: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;

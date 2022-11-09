@@ -2,18 +2,21 @@ import type {
   PaymentRequestOptions,
   PaymentRequestPaymentMethodEvent,
   StripeElement,
+  StripeElementBase,
+  StripeElementClasses,
+  StripePaymentRequestButtonElementOptions,
 } from '@stripe/stripe-js';
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements, useStripe } from '../StripeProvider';
-import type { AnyObj } from '../types';
 
 interface Props {
-  element?: StripeElement | null
+  element?: StripeElementBase | null
+  canMakePayment?: boolean
   // eslint-disable-next-line no-unused-vars
   setElement?: (element: StripeElement) => void
-  classes?: AnyObj
-  style?: AnyObj
+  classes?: StripeElementClasses
+  style?: NonNullable<StripePaymentRequestButtonElementOptions['style']>['paymentRequestButton']
   paymentRequest: PaymentRequestOptions
   // eslint-disable-next-line no-unused-vars
   onPaymentMethod: (payload: PaymentRequestPaymentMethodEvent) => void
@@ -39,10 +42,11 @@ export const PaymentRequestButton: Component<Props> = (props) => {
 
     const paymentRequestObject = stripe.paymentRequest(props.paymentRequest);
 
-    const element = elements.create('paymentRequestButton' as any, {
-      // @ts-expect-error: TODO: FixMe
+    const element = elements.create('paymentRequestButton', {
       classes: merged.classes,
-      style: merged.style,
+      style: {
+        paymentRequestButton: merged.style as any,
+      },
       paymentRequest: paymentRequestObject,
     });
     props.setElement?.(element);
@@ -50,18 +54,19 @@ export const PaymentRequestButton: Component<Props> = (props) => {
     const result = await paymentRequestObject.canMakePayment();
 
     if (result) {
+      props.canMakePayment = true
       props.element?.mount(wrapper);
       paymentRequestObject.on('paymentmethod', (e) => {
         props.onPaymentMethod(e);
       });
     }
     else {
+      props.canMakePayment = false
       wrapper.style.display = 'none';
     }
 
     onCleanup(() => {
       element.unmount();
-      paymentRequestObject.off('paymentmethod');
     });
   });
 

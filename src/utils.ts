@@ -1,4 +1,4 @@
-import type { StripeElementType, StripeElements } from '@stripe/stripe-js';
+import type { StripeElementType, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
 import type { AnyObj, StripeElementEventHandler } from './types';
 
 export function createAndMountStripeElement(
@@ -6,9 +6,9 @@ export function createAndMountStripeElement(
   type: StripeElementType,
   elements: StripeElements,
   props: StripeElementEventHandler<any> & AnyObj,
-  options = {},
+  options: StripeElementsOptions & Record<string, any> = {},
 ) {
-  const element = elements.create(type as any, options);
+  const element = elements.create(type as any, options as any);
 
   element.mount(node);
   element.on('change', e => props.onChange?.(e));
