@@ -33,12 +33,11 @@
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
   "peerDependencies": {
-    "@stripe/stripe-js": "*"
-  },
-  "dependencies": {
-    "solid-js": "^1.1.7"
+    "@stripe/stripe-js": "*",
+    "solid-js": ">=1.5.0"
   },
   "devDependencies": {
+    "solid-js": ">=1.6.1",
     "@stripe/stripe-js": "^1.42.1",
     "rollup": "^2.58.0",
     "rollup-preset-solid": "^1.0.1",
