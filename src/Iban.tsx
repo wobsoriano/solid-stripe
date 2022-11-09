@@ -1,9 +1,9 @@
-import type { StripeCardElementOptions, StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
+import type { StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
 import { Component, onMount } from 'solid-js';
 import { mergeProps, onCleanup } from 'solid-js';
-import { useStripeElements } from '../StripeProvider';
-import type { StripeElementEventHandler } from '../types';
-import { createAndMountStripeElement } from '../utils';
+import { useStripeElements } from './StripeProvider';
+import type { StripeElementEventHandler } from './types';
+import { createAndMountStripeElement } from './utils';
 
 type Props = {
   element?: StripeElementBase
@@ -11,22 +11,22 @@ type Props = {
   setElement: (element: StripeElement) => void
   classes?: StripeElementClasses
   style?: StripeElementStyle
-  value?: StripeCardElementOptions['value']
-  hidePostalCode?: boolean
+  supportedCountries?: string[]
+  placeholderCountry?: string[]
   hideIcon?: boolean
-  iconStyle?: 'default' | 'solid'
   disabled?: boolean
+  iconStyle?: 'default' | 'solid'
 } & StripeElementEventHandler<'card'>
 
-export const Card: Component<Props> = (props) => {
+export const Iban: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
   
   const merged = mergeProps(
     {
       classes: {},
       style: {},
-      hidePostalCode: false,
-      hideIcon: false,
+      supportedCountries: [],
+      placeholderCountry: '',
       disabled: false,
       iconStyle: 'default',
     },
@@ -41,14 +41,14 @@ export const Card: Component<Props> = (props) => {
     const options = {
       classes: merged.classes,
       style: merged.style,
-      value: merged.value,
-      hidePostalCode: merged.hidePostalCode,
+      supportedCountries: merged.supportedCountries,
+      placeholderCountry: merged.placeholderCountry,
       hideIcon: merged.hideIcon,
       disabled: merged.disabled,
       iconStyle: merged.iconStyle,
     };
 
-    const element = createAndMountStripeElement(wrapper, 'card', elements, props, options);
+    const element = createAndMountStripeElement(wrapper, 'iban', elements, props, options);
     
     props.setElement(element);
   });

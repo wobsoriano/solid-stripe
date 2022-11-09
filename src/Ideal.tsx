@@ -1,9 +1,9 @@
-import type { StripeCardElementOptions, StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
+import type { StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
 import { Component, onMount } from 'solid-js';
 import { mergeProps, onCleanup } from 'solid-js';
-import { useStripeElements } from '../StripeProvider';
-import type { StripeElementEventHandler } from '../types';
-import { createAndMountStripeElement } from '../utils';
+import { useStripeElements } from './StripeProvider';
+import type { StripeElementEventHandler } from './types';
+import { createAndMountStripeElement } from './utils';
 
 type Props = {
   element?: StripeElementBase
@@ -11,24 +11,21 @@ type Props = {
   setElement: (element: StripeElement) => void
   classes?: StripeElementClasses
   style?: StripeElementStyle
-  value?: StripeCardElementOptions['value']
-  hidePostalCode?: boolean
+  value?: string
   hideIcon?: boolean
-  iconStyle?: 'default' | 'solid'
   disabled?: boolean
 } & StripeElementEventHandler<'card'>
 
-export const Card: Component<Props> = (props) => {
+export const Ideal: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
   
   const merged = mergeProps(
     {
       classes: {},
       style: {},
-      hidePostalCode: false,
-      hideIcon: false,
+      value: '',
       disabled: false,
-      iconStyle: 'default',
+      hideIcon: true
     },
     props,
   );
@@ -42,13 +39,11 @@ export const Card: Component<Props> = (props) => {
       classes: merged.classes,
       style: merged.style,
       value: merged.value,
-      hidePostalCode: merged.hidePostalCode,
       hideIcon: merged.hideIcon,
       disabled: merged.disabled,
-      iconStyle: merged.iconStyle,
     };
 
-    const element = createAndMountStripeElement(wrapper, 'card', elements, props, options);
+    const element = createAndMountStripeElement(wrapper, 'idealBank', elements, props, options);
     
     props.setElement(element);
   });
