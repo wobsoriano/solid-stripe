@@ -14,8 +14,7 @@ export interface StripeElementEventHandler<T> {
 export type AnyObj = Record<any, any>;
 
 export type BaseCardProps = {
-  element?: StripeElementBase
-  setElement?: Setter<StripeElementBase | null>,
+  onCreateElement?: Setter<StripeElementBase | null>,
   classes?: StripeElementClasses
   style?: StripeElementStyle
   placeholder?: string

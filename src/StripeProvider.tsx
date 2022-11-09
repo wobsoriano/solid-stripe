@@ -13,10 +13,11 @@ interface Props {
 }
 
 export const StripeProvider: Component<Props> = (props) => {
-  return <StripeContext.Provider value={{
+  const value = () => ({
     stripe: props.stripe,
     elements: props.stripe?.elements(),
-  }}>{props.children}</StripeContext.Provider>;
+  })
+  return <StripeContext.Provider value={value()}>{props.children}</StripeContext.Provider>;
 };
 
 export const useStripe = () => {

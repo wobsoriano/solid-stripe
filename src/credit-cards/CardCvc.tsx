@@ -21,7 +21,7 @@ export const CardCvc: Component<Props> = (props) => {
     wrapper,
     'cardCvc',
     options,
-    props.setElement,
+    props.onCreateElement,
     (type, event) => props[type]?.(event)
   );
 

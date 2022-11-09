@@ -31,7 +31,7 @@ export const Card: Component<Props> = (props) => {
     wrapper,
     'card',
     options,
-    props.setElement,
+    props.onCreateElement,
     (type, event) => props[type]?.(event)
   );
 

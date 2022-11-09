@@ -26,7 +26,7 @@ export const CardNumber: Component<Props> = (props) => {
     wrapper,
     'cardNumber',
     options,
-    props.setElement,
+    props.onCreateElement,
     (type, event) => props[type]?.(event)
   );
 
