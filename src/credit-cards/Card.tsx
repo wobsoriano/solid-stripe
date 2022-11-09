@@ -5,8 +5,9 @@ import { useElements } from '../StripeProvider';
 import type { AnyObj, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
-interface Props {
+type Props = {
   element: StripeElement | null
+  // eslint-disable-next-line no-unused-vars
   setElement: (element: StripeElement) => void
   classes?: AnyObj
   style?: AnyObj
@@ -15,11 +16,12 @@ interface Props {
   hideIcon?: boolean
   iconStyle?: string
   disabled?: boolean
-}
+} & StripeElementEventHandler<'card'>
 
-export const Card: Component<Props & StripeElementEventHandler<'card'>> = (props) => {
+export const Card: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
-  const merged = mergeProps(
+  
+  const merged: Props = mergeProps(
     {
       classes: {},
       style: {},

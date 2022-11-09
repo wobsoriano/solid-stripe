@@ -10,10 +10,12 @@ import type { AnyObj } from '../types';
 
 interface Props {
   element?: StripeElement | null
+  // eslint-disable-next-line no-unused-vars
   setElement?: (element: StripeElement) => void
   classes?: AnyObj
   style?: AnyObj
   paymentRequest: PaymentRequestOptions
+  // eslint-disable-next-line no-unused-vars
   onPaymentMethod: (payload: PaymentRequestPaymentMethodEvent) => void
 }
 
@@ -23,7 +25,7 @@ export const PaymentRequestButton: Component<Props> = (props) => {
   const stripe = useStripe();
   const elements = useElements();
 
-  const merged = mergeProps(
+  const merged: Props = mergeProps(
     {
       classes: {},
       style: {},

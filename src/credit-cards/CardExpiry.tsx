@@ -4,16 +4,17 @@ import { useElements } from '../StripeProvider';
 import type { AnyObj, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
-interface Props {
+type Props = {
   classes?: AnyObj
   style?: AnyObj
   placeholder?: string
   disabled?: boolean
-}
+} & StripeElementEventHandler<'cardExpiry'>
 
-export const CardExpiry: Component<Props & StripeElementEventHandler<'cardExpiry'>> = (props) => {
+export const CardExpiry: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
-  const merged = mergeProps(
+
+  const merged: Props = mergeProps(
     {
       classes: {},
       style: {},

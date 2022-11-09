@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import type { StripeElementChangeEvent } from '@stripe/stripe-js';
 
 export interface StripeElementEventHandler<T> {

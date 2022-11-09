@@ -5,8 +5,9 @@ import { useStripe } from '../StripeProvider';
 import type { StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
-interface Props {
+type Props = {
   elements: StripeElements | null
+  // eslint-disable-next-line no-unused-vars
   setElements: (elements: StripeElements) => void
   clientSecret: string
   theme?: Appearance['theme']
@@ -14,11 +15,12 @@ interface Props {
   rules?: Appearance['rules']
   options?: Record<string, any>
   labels?: Appearance['labels']
-}
+} & StripeElementEventHandler<'payment'>
 
-export const PaymentElement: Component<Props & StripeElementEventHandler<'payment'>> = (props) => {
+export const PaymentElement: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
   const stripe = useStripe();
+  
   const merged = mergeProps(
     {
       theme: 'stripe',

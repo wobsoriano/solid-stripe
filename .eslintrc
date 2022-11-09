@@ -1,8 +1,5 @@
 {
+  "parser": "@typescript-eslint/parser",
   "plugins": ["solid"],
-  "extends": ["plugin:solid/typescript", "@antfu/eslint-config-ts"],
-  "rules": {
-    "semi": [2, "always"],
-    "@typescript-eslint/semi": [2, "always"]
-  }
+  "extends": ["eslint:recommended", "plugin:solid/typescript"]
 }
