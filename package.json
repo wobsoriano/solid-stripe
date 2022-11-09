@@ -23,7 +23,10 @@
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "release": "bumpp --commit --push --tag && pnpm publish",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -43,6 +46,10 @@
     "solid-js": ">=1.5.0"
   },
   "devDependencies": {
+    "@antfu/eslint-config-ts": "^0.27.0",
+    "eslint": "^8.26.0",
+    "eslint-plugin-solid": "^0.7.4",
+    "bumpp": "^8.2.1",
     "solid-js": ">=1.6.1",
     "@stripe/stripe-js": "^1.42.1",
     "rollup": "^2.77.2",

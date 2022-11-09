@@ -1,23 +1,23 @@
-import { Appearance, StripeElement, StripeElements } from '@stripe/stripe-js';
-import { Component, mergeProps, onCleanup, onMount } from 'solid-js';
+import type { Appearance, StripeElements } from '@stripe/stripe-js';
+import type { Component } from 'solid-js';
+import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useStripe } from '../StripeProvider';
-import { StripeElementEventHandler } from '../types';
+import type { StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 interface Props {
-  elements: StripeElements | null;
-  setElements: (elements: StripeElements) => void;
-  clientSecret: string;
-  theme?: Appearance['theme'];
-  variables?: Appearance['variables'];
-  rules?: Appearance['rules'];
-  options?: Record<string, any>;
-  labels?: Appearance['labels'];
+  elements: StripeElements | null
+  setElements: (elements: StripeElements) => void
+  clientSecret: string
+  theme?: Appearance['theme']
+  variables?: Appearance['variables']
+  rules?: Appearance['rules']
+  options?: Record<string, any>
+  labels?: Appearance['labels']
 }
 
 export const PaymentElement: Component<Props & StripeElementEventHandler<'payment'>> = (props) => {
   let wrapper: HTMLDivElement;
-  let element: StripeElement;
   const stripe = useStripe();
   const merged = mergeProps(
     {
@@ -29,29 +29,27 @@ export const PaymentElement: Component<Props & StripeElementEventHandler<'paymen
     props,
   );
 
-  if (!stripe) {
+  if (!stripe)
     throw new Error('Stripe.js has not yet loaded.');
-  }
-
-  const elements = stripe.elements({
-    clientSecret: props.clientSecret,
-    appearance: {
-      theme: merged.theme as Appearance['theme'],
-      variables: merged.variables,
-      rules: merged.rules,
-      labels: merged.labels as Appearance['labels'],
-    },
-  });
-  props.setElements(elements);
 
   onMount(() => {
-    element = createAndMountStripeElement(wrapper, 'payment', elements, props, props.options);
+    const elements = stripe.elements({
+      clientSecret: props.clientSecret,
+      appearance: {
+        theme: merged.theme as Appearance['theme'],
+        variables: merged.variables,
+        rules: merged.rules,
+        labels: merged.labels as Appearance['labels'],
+      },
+    });
+    props.setElements(elements);
+
+    const element = createAndMountStripeElement(wrapper, 'payment', elements, props, props.options);
+
+    onCleanup(() => {
+      element.unmount();
+    });
   });
 
-  onCleanup(() => {
-    element.unmount();
-  });
-
-  // @ts-ignore
-  return <div ref={wrapper} />;
+  return <div ref={wrapper!} />;
 };

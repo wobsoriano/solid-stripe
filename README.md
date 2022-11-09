@@ -32,7 +32,7 @@ VITE_STRIPE_SECRET_KEY=sk_test_...
 In your payment page, initialize Stripe and add a `<StripeProvider>` component:
 
 ```tsx
-import { createSignal, onMount, Show } from 'solid-js';
+import { Show, createSignal, onMount } from 'solid-js';
 
 const App = () => {
   const [stripe, setStripe] = createSignal<Stripe | null>(null);

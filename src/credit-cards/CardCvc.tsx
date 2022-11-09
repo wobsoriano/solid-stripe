@@ -1,19 +1,18 @@
-import { StripeElement } from '@stripe/stripe-js';
-import { Component, mergeProps, onCleanup, onMount } from 'solid-js';
+import type { Component } from 'solid-js';
+import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements } from '../StripeProvider';
-import { AnyObj, StripeElementEventHandler } from '../types';
+import type { AnyObj, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 interface Props {
-  classes?: AnyObj;
-  style?: AnyObj;
-  placeholder?: string;
-  disabled?: boolean;
+  classes?: AnyObj
+  style?: AnyObj
+  placeholder?: string
+  disabled?: boolean
 }
 
 export const CardCvc: Component<Props & StripeElementEventHandler<'cardCvc'>> = (props) => {
   let wrapper: HTMLDivElement;
-  let element: StripeElement;
   const merged = mergeProps(
     {
       classes: {},
@@ -26,9 +25,8 @@ export const CardCvc: Component<Props & StripeElementEventHandler<'cardCvc'>> = 
 
   const elements = useElements();
 
-  if (!elements) {
+  if (!elements)
     throw new Error('Stripe.js has not yet loaded.');
-  }
 
   onMount(() => {
     const options = {
@@ -37,13 +35,13 @@ export const CardCvc: Component<Props & StripeElementEventHandler<'cardCvc'>> = 
       placeholder: merged.placeholder,
       disabled: merged.disabled,
     };
-    element = createAndMountStripeElement(wrapper, 'cardCvc', elements, props, options);
+
+    const element = createAndMountStripeElement(wrapper, 'cardCvc', elements, props, options);
+
+    onCleanup(() => {
+      element.unmount();
+    });
   });
 
-  onCleanup(() => {
-    element.unmount();
-  });
-
-  // @ts-ignore
-  return <div ref={wrapper} />;
+  return <div ref={wrapper!} />;
 };

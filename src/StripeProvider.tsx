@@ -1,22 +1,22 @@
-import { Stripe, StripeElements } from '@stripe/stripe-js';
-import { Component, createContext, useContext } from 'solid-js';
+import type { Stripe, StripeElements } from '@stripe/stripe-js';
+import type { Component, JSX } from 'solid-js';
+import { createContext, useContext } from 'solid-js';
 
 export const StripeContext = createContext<{
-  stripe: Stripe | null;
-  elements: StripeElements | undefined;
+  stripe: Stripe | null
+  elements: StripeElements | undefined
 }>();
 
 interface Props {
-  stripe: Stripe | null;
+  stripe: Stripe | null
+  children?: JSX.Element
 }
 
 export const StripeProvider: Component<Props> = (props) => {
-  const value = {
+  return <StripeContext.Provider value={{
     stripe: props.stripe,
     elements: props.stripe?.elements(),
-  };
-
-  return <StripeContext.Provider value={value}>{props.children}</StripeContext.Provider>;
+  }}>{props.children}</StripeContext.Provider>;
 };
 
 export const useStripe = () => {

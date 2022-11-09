@@ -3,11 +3,11 @@
 Display a Google Pay or Apple Pay button using the `<PaymentRequestButton />` component.
 
 ```tsx
-import { createResource, Show } from 'solid-js';
+import { Show, createResource } from 'solid-js';
 import server from 'solid-start/server';
 import { useRouteData } from 'solid-app-router';
-import createPaymentIntent from '~/lib/create-payment-intent';
 import { PaymentRequestButton } from 'solid-stripe';
+import createPaymentIntent from '~/lib/create-payment-intent';
 
 export const routeData = () => {
   const [paymentIntent] = createResource(server(createPaymentIntent));
@@ -28,7 +28,8 @@ const Payment = () => {
       // re-show the payment interface, or show an error message and close
       // the payment interface.
       ev.complete('fail');
-    } else {
+    }
+    else {
       // Report to the browser that the confirmation was successful, prompting
       // it to close the browser payment method collection interface.
       ev.complete('success');

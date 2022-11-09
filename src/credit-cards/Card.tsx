@@ -1,19 +1,20 @@
-import { StripeElement } from '@stripe/stripe-js';
-import { Component, mergeProps, onCleanup, onMount } from 'solid-js';
+import type { StripeElement } from '@stripe/stripe-js';
+import type { Component } from 'solid-js';
+import { mergeProps, onCleanup, onMount } from 'solid-js';
 import { useElements } from '../StripeProvider';
-import { AnyObj, StripeElementEventHandler } from '../types';
+import type { AnyObj, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
 interface Props {
-  element: StripeElement | null;
-  setElement: (element: StripeElement) => void;
-  classes?: AnyObj;
-  style?: AnyObj;
-  value?: AnyObj;
-  hidePostalCode?: boolean;
-  hideIcon?: boolean;
-  iconStyle?: string;
-  disabled?: boolean;
+  element: StripeElement | null
+  setElement: (element: StripeElement) => void
+  classes?: AnyObj
+  style?: AnyObj
+  value?: AnyObj
+  hidePostalCode?: boolean
+  hideIcon?: boolean
+  iconStyle?: string
+  disabled?: boolean
 }
 
 export const Card: Component<Props & StripeElementEventHandler<'card'>> = (props) => {
@@ -31,9 +32,8 @@ export const Card: Component<Props & StripeElementEventHandler<'card'>> = (props
 
   const elements = useElements();
 
-  if (!elements) {
+  if (!elements)
     throw new Error('Stripe.js has not yet loaded.');
-  }
 
   onMount(() => {
     const options = {
@@ -53,6 +53,5 @@ export const Card: Component<Props & StripeElementEventHandler<'card'>> = (props
     props.element?.unmount();
   });
 
-  // @ts-ignore
-  return <div ref={wrapper} />;
+  return <div ref={wrapper!} />;
 };

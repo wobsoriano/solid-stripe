@@ -1,5 +1,5 @@
-import { StripeElements, StripeElementType } from '@stripe/stripe-js';
-import { AnyObj, StripeElementEventHandler } from './types';
+import type { StripeElementType, StripeElements } from '@stripe/stripe-js';
+import type { AnyObj, StripeElementEventHandler } from './types';
 
 export function createAndMountStripeElement(
   node: HTMLElement,
@@ -11,11 +11,11 @@ export function createAndMountStripeElement(
   const element = elements.create(type as any, options);
 
   element.mount(node);
-  element.on('change', (e) => props.onChange?.(e));
-  element.on('ready', (e) => props.onReady?.(e));
-  element.on('focus', (e) => props.onFocus?.(e));
-  element.on('blur', (e) => props.onBlur?.(e));
-  element.on('escape', (e) => props.onEscape?.(e));
+  element.on('change', e => props.onChange?.(e));
+  element.on('ready', e => props.onReady?.(e));
+  element.on('focus', e => props.onFocus?.(e));
+  element.on('blur', e => props.onBlur?.(e));
+  element.on('escape', e => props.onEscape?.(e));
 
   return element;
 }
