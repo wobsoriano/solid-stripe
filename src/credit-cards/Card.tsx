@@ -1,7 +1,7 @@
 import type { StripeCardElementOptions, StripeElement, StripeElementBase, StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
-import type { Component } from 'solid-js';
-import { mergeProps, onCleanup, onMount } from 'solid-js';
-import { useElements } from '../StripeProvider';
+import { Component, onMount } from 'solid-js';
+import { mergeProps, onCleanup } from 'solid-js';
+import { useStripeElements } from '../StripeProvider';
 import type { StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
@@ -14,31 +14,30 @@ type Props = {
   value?: StripeCardElementOptions['value']
   hidePostalCode?: boolean
   hideIcon?: boolean
-  iconStyle?: string
+  iconStyle?: 'default' | 'solid'
   disabled?: boolean
 } & StripeElementEventHandler<'card'>
 
 export const Card: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
   
-  const merged: Props = mergeProps(
+  const merged = mergeProps(
     {
       classes: {},
       style: {},
       hidePostalCode: false,
       hideIcon: false,
-      iconStyle: 'default',
       disabled: false,
+      iconStyle: 'default',
     },
     props,
   );
 
-  const elements = useElements();
-
-  if (!elements)
-    throw new Error('Stripe.js has not yet loaded.');
+  const elements = useStripeElements();
 
   onMount(() => {
+    if (!elements) return
+    
     const options = {
       classes: merged.classes,
       style: merged.style,
@@ -48,7 +47,9 @@ export const Card: Component<Props> = (props) => {
       disabled: merged.disabled,
       iconStyle: merged.iconStyle,
     };
+
     const element = createAndMountStripeElement(wrapper, 'card', elements, props, options);
+    
     props.setElement(element);
   });
 

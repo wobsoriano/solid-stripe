@@ -8,11 +8,12 @@ import type {
 } from '@stripe/stripe-js';
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
-import { useElements, useStripe } from '../StripeProvider';
+import { useStripeElements, useStripe } from '../StripeProvider';
 
 interface Props {
   element?: StripeElementBase | null
-  canMakePayment?: boolean
+  // eslint-disable-next-line no-unused-vars
+  setCanMakePayment?: (canMakePayment: boolean) => void
   // eslint-disable-next-line no-unused-vars
   setElement?: (element: StripeElement) => void
   classes?: StripeElementClasses
@@ -26,7 +27,7 @@ export const PaymentRequestButton: Component<Props> = (props) => {
   let wrapper: HTMLDivElement;
 
   const stripe = useStripe();
-  const elements = useElements();
+  const elements = useStripeElements();
 
   const merged: Props = mergeProps(
     {
@@ -37,8 +38,7 @@ export const PaymentRequestButton: Component<Props> = (props) => {
   );
 
   onMount(async () => {
-    if (!stripe || !elements)
-      return;
+    if (!stripe || !elements) return;
 
     const paymentRequestObject = stripe.paymentRequest(props.paymentRequest);
 
@@ -54,14 +54,13 @@ export const PaymentRequestButton: Component<Props> = (props) => {
     const result = await paymentRequestObject.canMakePayment();
 
     if (result) {
-      props.canMakePayment = true
+      props.setCanMakePayment?.(true)
       props.element?.mount(wrapper);
       paymentRequestObject.on('paymentmethod', (e) => {
         props.onPaymentMethod(e);
       });
-    }
-    else {
-      props.canMakePayment = false
+    } else {
+      props.setCanMakePayment?.(false)
       wrapper.style.display = 'none';
     }
 

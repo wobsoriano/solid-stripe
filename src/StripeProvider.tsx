@@ -21,10 +21,20 @@ export const StripeProvider: Component<Props> = (props) => {
 
 export const useStripe = () => {
   const ctx = useContext(StripeContext);
-  return ctx?.stripe;
+
+  if (!ctx) {
+    throw new Error('Stripe.js has not yet loaded.');
+  }
+
+  return ctx.stripe;
 };
 
-export const useElements = () => {
+export const useStripeElements = () => {
   const ctx = useContext(StripeContext);
-  return ctx?.elements;
+
+  if (!ctx) {
+    throw new Error('Stripe.js has not yet loaded.');
+  }
+
+  return ctx.elements;
 };

@@ -1,7 +1,7 @@
 import type { StripeElement } from '@stripe/stripe-js';
 import type { Component } from 'solid-js';
 import { mergeProps, onCleanup, onMount } from 'solid-js';
-import { useElements } from '../StripeProvider';
+import { useStripeElements } from '../StripeProvider';
 import type { BaseCardProps, StripeElementEventHandler } from '../types';
 import { createAndMountStripeElement } from '../utils';
 
@@ -28,12 +28,11 @@ export const CardNumber: Component<Props> = (props) => {
     props,
   );
 
-  const elements = useElements();
-
-  if (!elements)
-    throw new Error('Stripe.js has not yet loaded.');
+  const elements = useStripeElements();
 
   onMount(() => {
+    if (!elements) return;
+
     const options = {
       classes: merged.classes,
       style: merged.style,
