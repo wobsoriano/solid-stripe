@@ -16,7 +16,7 @@ In your server-side app, add the official server-side/node version of Stripe too
 pnpm add stripe
 ```
 
-We will use [solid-start](https://github.com/solidjs/solid-start) in all of the examples.
+We'll use [solid-start](https://github.com/solidjs/solid-start) in all of the examples.
 
 ## Docs
 
@@ -29,18 +29,18 @@ VITE_STRIPE_PUBLIC_KEY=pk_test_...
 VITE_STRIPE_SECRET_KEY=sk_test_...
 ```
 
-In your payment page, initialize Stripe and add a `<StripeProvider>` component:
+In your payment page, initialize Stripe and add a `<StripeProvider />` component:
 
 ```tsx
-import { Show, createSignal, onMount } from 'solid-js';
+import { Show, createSignal, onMount } from 'solid-js'
 
 const App = () => {
-  const [stripe, setStripe] = createSignal<Stripe | null>(null);
+  const [stripe, setStripe] = createSignal<Stripe | null>(null)
 
   onMount(async () => {
-    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-    setStripe(result);
-  });
+    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+    setStripe(result)
+  })
 
   return (
     <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
@@ -48,8 +48,8 @@ const App = () => {
         {/* this is where your Stripe components go */}
       </StripeProvider>
     </Show>
-  );
-};
+  )
+}
 ```
 
 ### Creating a payment intent
@@ -59,16 +59,16 @@ Before making a charge, Stripe should be notified by creating a [payment intent]
 Let's add a `src/lib/create-payment-intent.js` to our solid-start project to create a payment intent:
 
 ```ts
-import Stripe from 'stripe';
+import Stripe from 'stripe'
 
-const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY);
+const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY)
 
 export default function createPaymentIntent() {
   return stripe.paymentIntents.create({
     amount: 1069,
     currency: 'eur',
     automatic_payment_methods: { enabled: true },
-  });
+  })
 }
 ```
 

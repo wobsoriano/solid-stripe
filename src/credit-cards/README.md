@@ -3,41 +3,38 @@
 Use `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 
 ```tsx
-import { createResource, Show } from 'solid-js';
-import server from 'solid-start/server';
-import { useRouteData } from 'solid-app-router';
-import createPaymentIntent from '~/lib/create-payment-intent';
-import { CardNumber, CardExpiry, CardCvc, useStripe } from 'solid-stripe';
+import { Show, createResource } from 'solid-js'
+import { createServerData } from 'solid-start/server'
+import { useRouteData } from 'solid-start'
+import { CardCvc, CardExpiry, CardNumber, useStripe } from 'solid-stripe'
+import createPaymentIntent from '~/lib/create-payment-intent'
 
-export const routeData = () => {
-  const [paymentIntent] = createResource(server(createPaymentIntent));
-  return paymentIntent;
-};
+export function routeData() {
+  return createServerData$(() => createPaymentIntent())
+}
 
 const Payment = () => {
-  const paymentIntent = useRouteData();
-  const stripe = useStripe();
-  const [element, setElement] = createSignal(null);
+  const paymentIntent = useRouteData<typeof routeData>()
+  const [element, setElement] = createSignal(null)
 
-  const submit = async () => {
-    // Pass the element to stripe.confirmCardPayment()
+  const stripe = useStripe()
+
+  const [_, { Form }] = createRouteAction(async () => {
     const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
       payment_method: {
         card: element(),
-        billing_details: {...},
+        billing_details: {},
       },
-    });
-  };
+    })
+  })
 
   return (
-    <Show when={paymentIntent()}>
-      <form onSubmit={submit}>
-        <CardNumber element={element} setElement={setElement} />
-        <CardExpiry />
-        <CardCvc />
-        <button>Pay</button>
-      </form>
-    </Show>
-  );
-};
+    <Form>
+      <CardNumber onCreateElement={setElement} />
+      <CardExpiry />
+      <CardCvc />
+      <button>Pay</button>
+    </Form>
+  )
+}
 ```
