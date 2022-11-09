@@ -1,11 +1,8 @@
-import type { Stripe, StripeElements } from '@stripe/stripe-js'
+import type { Stripe } from '@stripe/stripe-js'
 import type { Component, JSX } from 'solid-js'
 import { createContext, useContext } from 'solid-js'
 
-export const StripeContext = createContext<{
-  stripe: Stripe | null
-  elements: StripeElements | undefined
-}>()
+export const StripeContext = createContext<Stripe | null>(null)
 
 interface Props {
   stripe: Stripe | null
@@ -13,27 +10,15 @@ interface Props {
 }
 
 export const StripeProvider: Component<Props> = (props) => {
-  const value = () => ({
-    stripe: props.stripe,
-    elements: props.stripe?.elements(),
-  })
-  return <StripeContext.Provider value={value()}>{props.children}</StripeContext.Provider>
+  const stripe = () => props.stripe
+  return <StripeContext.Provider value={stripe()}>{props.children}</StripeContext.Provider>
 }
 
 export const useStripe = () => {
-  const ctx = useContext(StripeContext)
+  const stripe = useContext(StripeContext)
 
-  if (!ctx)
+  if (!stripe)
     throw new Error('Stripe.js has not yet loaded.')
 
-  return ctx.stripe as Stripe
-}
-
-export const useStripeElements = () => {
-  const ctx = useContext(StripeContext)
-
-  if (!ctx)
-    throw new Error('Stripe.js has not yet loaded.')
-
-  return ctx.elements as StripeElements
+  return stripe as Stripe
 }

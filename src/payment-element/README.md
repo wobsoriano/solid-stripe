@@ -2,7 +2,44 @@
 
 The latest component from Stripe lets you accept up to [18+ payment methods](https://stripe.com/docs/payments/payment-methods/integration-options) with a single integration.
 
-To use it, use the `<PaymentElement>` component:
+To use it, drop a `<PaymentElement>` component in your form:
+
+```tsx
+import { Show, createResource } from 'solid-js'
+import { createServerData } from 'solid-start/server'
+import { useRouteData } from 'solid-start'
+import { Element, PaymentElement, useStripe } from 'solid-stripe'
+import createPaymentIntent from '~/lib/create-payment-intent'
+
+export function routeData() {
+  return createServerData$(() => createPaymentIntent())
+}
+
+const Payment = () => {
+  const paymentIntent = useRouteData<typeof routeData>()
+  const [element, setElement] = createSignal(null)
+
+  const stripe = useStripe()
+
+  const [_, { Form }] = createRouteAction(async () => {
+    const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
+      payment_method: {
+        card: element(),
+        billing_details: {},
+      },
+    })
+  })
+
+  return (
+    <Form>
+      <Elements clientSecret="" onCreateElement={setElement}>
+        <PaymentElement />
+      </Elements>
+      <button>Pay</button>
+    </Form>
+  )
+}
+```
 
 ```tsx
 import { Show, createResource } from 'solid-js'

@@ -1,31 +1,24 @@
 import type { StripeLinkAuthenticationElementOptions } from '@stripe/stripe-js'
 import type { Component } from 'solid-js'
-import { onCleanup, onMount } from 'solid-js'
-import { useStripeElements } from '../StripeProvider'
+import { createStripeElement } from 'src/primitives/createStripeElement'
 import type { StripeElementEventHandler } from '../types'
-import { createAndMountStripeElement } from '../utils'
 
 type Props = {
   defaultValues?: StripeLinkAuthenticationElementOptions['defaultValues']
 } & StripeElementEventHandler<'linkAuthentication'>
 
 export const LinkAuthenticationElement: Component<Props> = (props) => {
-  let wrapper: HTMLDivElement
+  let wrapper!: HTMLDivElement
 
-  const elements = useStripeElements()
+  const options = () => props.defaultValues ? { defaultValues: props.defaultValues } : {}
 
-  onMount(() => {
-    if (!elements)
-      return
-
-    const options = props.defaultValues ? { defaultValues: props.defaultValues } : {}
-
-    const element = createAndMountStripeElement(wrapper, 'linkAuthentication', elements, props, options)
-
-    onCleanup(() => {
-      element.unmount()
-    })
-  })
+  createStripeElement(
+    wrapper,
+    'linkAuthentication',
+    options(),
+    () => {},
+    (type, event) => props[type]?.(event),
+  )
 
   return <div ref={wrapper!} />
 }
