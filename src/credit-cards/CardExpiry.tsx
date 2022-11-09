@@ -1,42 +1,29 @@
-import { Component, onMount } from 'solid-js';
-import { mergeProps, onCleanup } from 'solid-js';
-import { useStripeElements } from '../StripeProvider';
+import { Component, splitProps } from 'solid-js';
+import { mergeProps } from 'solid-js';
+import { createStripeElement } from 'src/primitives/createStripeElement';
 import type { BaseCardProps, StripeElementEventHandler } from '../types';
-import { createAndMountStripeElement } from '../utils';
 
 type Props = BaseCardProps & StripeElementEventHandler<'cardExpiry'>
 
 export const CardExpiry: Component<Props> = (props) => {
-  let wrapper: HTMLDivElement;
+  let wrapper!: HTMLDivElement;
 
-  const merged: Props = mergeProps(
-    {
-      classes: {},
-      style: {},
-      placeholder: 'MM / YY',
-      disabled: false,
-    },
-    props,
+  const defaultValues = {
+    classes: {},
+    style: {},
+    placeholder: 'MM / YY',
+    disabled: false,
+  }
+  const merged = mergeProps(defaultValues, props);
+  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+
+  createStripeElement(
+    wrapper,
+    'cardCvc',
+    options,
+    props.setElement,
+    (type, event) => props[type]?.(event)
   );
-
-  const elements = useStripeElements();
-
-  onMount(() => {
-    if (!elements) return
-
-    const options = {
-      classes: merged.classes,
-      style: merged.style,
-      placeholder: merged.placeholder,
-      disabled: merged.disabled,
-    };
-
-    const element = createAndMountStripeElement(wrapper, 'cardExpiry', elements, props, options);
-
-    onCleanup(() => {
-      element.unmount();
-    });
-  });
 
   return <div ref={wrapper!} />;
 };

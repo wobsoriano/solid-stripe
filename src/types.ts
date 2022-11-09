@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
-import type { StripeElementChangeEvent } from '@stripe/stripe-js';
+import type { StripeElementBase, StripeElementChangeEvent } from '@stripe/stripe-js';
 import type { StripeElementClasses, StripeElementStyle } from '@stripe/stripe-js';
+import { Setter } from 'solid-js';
 
 export interface StripeElementEventHandler<T> {
   onChange?: (e: StripeElementChangeEvent) => void
@@ -13,6 +14,8 @@ export interface StripeElementEventHandler<T> {
 export type AnyObj = Record<any, any>;
 
 export type BaseCardProps = {
+  element?: StripeElementBase
+  setElement?: Setter<StripeElementBase | null>,
   classes?: StripeElementClasses
   style?: StripeElementStyle
   placeholder?: string

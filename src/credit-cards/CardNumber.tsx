@@ -1,54 +1,34 @@
-import type { StripeElement } from '@stripe/stripe-js';
-import type { Component } from 'solid-js';
-import { mergeProps, onCleanup, onMount } from 'solid-js';
-import { useStripeElements } from '../StripeProvider';
+import { Component, splitProps } from 'solid-js';
+import { mergeProps } from 'solid-js';
+import { createStripeElement } from 'src/primitives/createStripeElement';
 import type { BaseCardProps, StripeElementEventHandler } from '../types';
-import { createAndMountStripeElement } from '../utils';
 
 type Props = {
-  element: StripeElement | null
-  // eslint-disable-next-line no-unused-vars
-  setElement: (element: StripeElement) => void
   showIcon?: boolean
   iconStyle?: string
 } & BaseCardProps & StripeElementEventHandler<'cardNumber'>
 
 export const CardNumber: Component<Props> = (props) => {
-  let wrapper: HTMLDivElement;
+  let wrapper!: HTMLDivElement;
 
-  const merged: Props = mergeProps(
-    {
-      classes: {},
-      style: {},
-      placeholder: 'Card number',
-      disabled: false,
-      showIcon: true,
-      iconStyle: 'default',
-    },
-    props,
+  const defaultValues = {
+    classes: {},
+    style: {},
+    placeholder: 'Card number',
+    disabled: false,
+    showIcon: true,
+    iconStyle: 'default',
+  }
+  const merged = mergeProps(defaultValues, props);
+  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+
+  createStripeElement(
+    wrapper,
+    'cardNumber',
+    options,
+    props.setElement,
+    (type, event) => props[type]?.(event)
   );
-
-  const elements = useStripeElements();
-
-  onMount(() => {
-    if (!elements) return;
-
-    const options = {
-      classes: merged.classes,
-      style: merged.style,
-      placeholder: merged.placeholder,
-      disabled: merged.disabled,
-      showIcon: merged.showIcon,
-      iconStyle: merged.iconStyle,
-    };
-    
-    const element = createAndMountStripeElement(wrapper, 'cardNumber', elements, props, options);
-    props.setElement(element);
-  });
-
-  onCleanup(() => {
-    props.element?.unmount();
-  });
 
   return <div ref={wrapper!} />;
 };
