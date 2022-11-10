@@ -25,7 +25,7 @@ export default function Page() {
   return (
     <Show when={stripe() && clientSecret()}>
       <Elements stripe={stripe()} clientSecret={clientSecret()}>
-        <CheckoutForm clientSecret={clientSecret()} />
+        <CheckoutForm />
       </Elements>
     </Show>
   )
