@@ -5,21 +5,22 @@ The latest component from Stripe lets you accept up to [18+ payment methods](htt
 To use it, drop a `<PaymentElement>` component in your form:
 
 ```tsx
-import { Show, createResource } from 'solid-js'
-import { createServerData } from 'solid-start/server'
-import { useRouteData } from 'solid-start'
-import { Element, PaymentElement, useStripe } from 'solid-stripe'
-import createPaymentIntent from '~/lib/create-payment-intent'
+import { loadStripe } from '@stripe/stripe-js'
+import { Show, createSignal, onMount } from 'solid-js'
+import { Elements, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+import { createRouteAction } from 'solid-start/data'
 
-export function routeData() {
-  return createServerData$(() => createPaymentIntent())
-}
+export default function Page() {
+  const [stripe, setStripe] = createSignal(null)
+  const [clientSecret, setClientSecret] = createSignal('')
 
-const Payment = () => {
-  const paymentIntent = useRouteData<typeof routeData>()
-  const [element, setElement] = createSignal(null)
+  onMount(async () => {
+    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+    setStripe(result)
 
-  const stripe = useStripe()
+    // Also set the value of clientSecret by calling /api/create-payment-intent
+    setClientSecret('YOUR_CLIENT_SECRET')
+  })
 
   const [_, { Form }] = createRouteAction(async () => {
     const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
@@ -31,53 +32,37 @@ const Payment = () => {
   })
 
   return (
-    <Form>
-      <Elements clientSecret="" onCreateElement={setElement}>
-        <PaymentElement />
+    <Show when={stripe() && clientSecret()}>
+      <Elements stripe={stripe()} clientSecret={clientSecret()}>
+        <CheckoutForm clientSecret={clientSecret()} />
       </Elements>
-      <button>Pay</button>
-    </Form>
+    </Show>
   )
 }
-```
 
-```tsx
-import { Show, createResource } from 'solid-js'
-import server from 'solid-start/server'
-import { useRouteData } from 'solid-app-router'
-import { PaymentElement, useStripe } from 'solid-stripe'
-import createPaymentIntent from '~/lib/create-payment-intent'
-
-export const routeData = () => {
-  const [paymentIntent] = createResource(server(createPaymentIntent))
-  return paymentIntent
-}
-
-const Payment = () => {
-  const paymentIntent = useRouteData()
+function CheckoutForm(props) {
   const stripe = useStripe()
-  const [elements, setElements] = createSignal(null)
+  const elements = useStripeElements()
 
-  const submit = async () => {
-    // Pass the elements instance to `stripe.confirmPayment()`
-    const result = await stripe.confirmPayment({
+  const [, { Form }] = createRouteAction(async () => {
+    const result = await stripe().confirmPayment({
       elements: elements(),
-      // specify redirect: 'if_required' or a `return_url`
       redirect: 'if_required',
     })
-  }
+
+    if (result.error) {
+      // payment failed, notify user
+    }
+    else {
+      // payment succeeded
+    }
+  })
 
   return (
-    <Show when={paymentIntent()}>
-      <form onSubmit={submit}>
-        <PaymentElement
-          elements={elements()}
-          setElements={setElements}
-          clientSecret={paymentIntent().client_secret}
-        />
-        <button>Pay</button>
-      </form>
-    </Show>
+    <Form>
+      <PaymentElement />
+      <button>Pay</button>
+    </Form>
   )
 }
 ```

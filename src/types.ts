@@ -10,20 +10,6 @@ import type { LinkAuthenticationElementProps } from './link-authentication/LinkA
 import type { PaymentElementProps } from './payment-element/PaymentElement'
 import type { IbanElementProps } from './sepa/Iban'
 
-export interface BaseProps {
-  classes?: stripeJs.StripeElementClasses
-  style?: stripeJs.StripeElementStyle
-  placeholder?: string
-  disabled?: boolean
-}
-
-export interface BaseOptionProps<T = unknown> {
-  classes?: T extends undefined ? stripeJs.StripeElementClasses : T
-  style?: T extends undefined ? stripeJs.StripeElementStyle : T
-  placeholder?: string
-  disabled?: boolean
-}
-
 export interface ElementProps<
   T extends stripeJs.StripeElementType,
   E extends stripeJs.StripeElementChangeEvent = stripeJs.StripeElementChangeEvent & Record<string, (e: any) => any>,
@@ -35,11 +21,8 @@ export interface ElementProps<
   onEscape?: (e: { elementType: T }) => void
 }
 
-export type AddressElementProps = ElementProps<'address'>
-
 declare module '@stripe/stripe-js' {
   interface StripeElements {
-    getElement(elementType: Component<AddressElementProps>): stripeJs.StripeAddressElement | null
     getElement(elementType: Component<PaymentElementProps>): stripeJs.StripePaymentElement | null
     getElement(elementType: Component<CardElementProps>): stripeJs.StripeCardElement | null
     getElement(elementType: Component<CardNumberElementProps>): stripeJs.StripeCardNumberElement | null

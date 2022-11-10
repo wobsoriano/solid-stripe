@@ -57,18 +57,23 @@ export function MyPaymentComponent() {
 
 Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). This must happen server-side to avoid anyone tampering with the amount.
 
-Let's add a `src/lib/create-payment-intent.js` to our solid-start project to create a payment intent:
+Let's add an endpoint `src/routes/api/create-payment-intent.tsx` to create a payment intent:
 
 ```ts
+import { json } from 'solid-start'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY)
 
-export default function createPaymentIntent() {
-  return stripe.paymentIntents.create({
+export async function POST() {
+  const paymentIntent = await stripe.paymentIntents.create({
     amount: 1069,
-    currency: 'eur',
+    currency: 'usd',
     automatic_payment_methods: { enabled: true },
+  })
+
+  return json({
+    clientSecret: paymentIntent.client_secret
   })
 }
 ```

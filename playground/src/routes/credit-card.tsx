@@ -5,9 +5,6 @@ import { CardCvc, CardExpiry, CardNumber, Elements, useStripe, useStripeElements
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
-export function routeData() {
-}
-
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
   const [clientSecret, setClientSecret] = createSignal('')
@@ -35,19 +32,22 @@ function CheckoutForm(props: CheckoutFormProps) {
   const elements = useStripeElements()
 
   const [, { Form }] = createRouteAction(async () => {
-    try {
-      const result = await stripe().confirmCardPayment(props.clientSecret, {
-        payment_method: {
-          card: elements().getElement(CardNumber),
-          billing_details: {
-            name: 'Robert Soriano',
-          },
+    const result = await stripe().confirmCardPayment(props.clientSecret, {
+      payment_method: {
+        card: elements().getElement(CardNumber),
+        billing_details: {
+          name: 'Robert Soriano',
         },
-      })
-      console.log(result)
+      },
+    })
+
+    console.log({ result })
+
+    if (result.error) {
+      // payment failed
     }
-    catch (err) {
-      console.log(err)
+    else {
+      // payment succeeded
     }
   })
 
