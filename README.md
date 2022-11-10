@@ -85,5 +85,6 @@ export async function POST() {
 There are several types of payment you can accept:
 
 - [Payment Element](https://github.com/wobsoriano/solid-stripe/tree/master/src/payment-element)
+- [Link Authentication](https://github.com/wobsoriano/solid-stripe/tree/master/src/link-authentication)
 - [Credit Cards](https://github.com/wobsoriano/solid-stripe/tree/master/src/credit-cards)
 - [Google Pay and Apple Pay](https://github.com/wobsoriano/solid-stripe/tree/master/src/googlepay-applepay)
