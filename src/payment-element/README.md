@@ -11,8 +11,8 @@ import { Elements, PaymentElement, useStripe, useStripeElements } from 'solid-st
 import { createRouteAction } from 'solid-start/data'
 
 export default function Page() {
-  const [stripe, setStripe] = createSignal(null)
-  const [clientSecret, setClientSecret] = createSignal('')
+  const [stripe, setStripe] = createSignal()
+  const [clientSecret, setClientSecret] = createSignal()
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
