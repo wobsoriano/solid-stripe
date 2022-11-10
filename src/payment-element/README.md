@@ -34,9 +34,13 @@ export default function Page() {
 export function CheckoutForm() {
   const stripe = useStripe()
   const elements = useStripeElements()
+  // If you don't like signals, you can use the stripe proxy primitive
+  // const state = useStripeProxy()
 
   const [, { Form }] = createRouteAction(async () => {
+    // state.stripe.confirmPayment if using proxy primitive
     const result = await stripe().confirmPayment({
+      // state.elements if using proxy primitive
       elements: elements(),
       redirect: 'if_required',
     })
