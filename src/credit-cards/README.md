@@ -6,7 +6,8 @@ Use `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 import { Show, createResource } from 'solid-js'
 import { createServerData } from 'solid-start/server'
 import { useRouteData } from 'solid-start'
-import { CardCvc, CardExpiry, CardNumber, useStripe } from 'solid-stripe'
+import { CardCvc, CardExpiry, CardNumber, Elements, useStripe } from 'solid-stripe'
+import { StripeLoader } from '~/components/StripeLoader'
 import createPaymentIntent from '~/lib/create-payment-intent'
 
 export function routeData() {

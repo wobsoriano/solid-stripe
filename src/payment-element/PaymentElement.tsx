@@ -1,19 +1,22 @@
 import type { Component } from 'solid-js'
-import { createStripeElement } from 'src/primitives/createStripeElement'
-import type { StripeElementEventHandler } from '../types'
+import type { StripePaymentElementChangeEvent } from '@stripe/stripe-js'
+import type { ElementProps } from '../types'
+import { createWrapper } from '../primitives/createWrapper'
+import { createStripeElement } from '../primitives/createStripeElement'
 
-type Props = StripeElementEventHandler<'payment'>
+export type PaymentElementProps = ElementProps<'payment', StripePaymentElementChangeEvent & { error: undefined }>
 
-export const PaymentElement: Component<Props> = (props) => {
-  let wrapper!: HTMLDivElement
+export const PaymentElement: Component<PaymentElementProps> = (props) => {
+  const [wrapper, setWrapper] = createWrapper()
 
   createStripeElement(
     wrapper,
     'payment',
     {},
-    () => {},
     (type, event) => props[type]?.(event),
-  )
+  );
 
-  return <div ref={wrapper!} />
+  (PaymentElement as any).__elementType = 'payment'
+
+  return <div ref={setWrapper} />
 }

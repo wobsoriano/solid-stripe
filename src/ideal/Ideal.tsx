@@ -1,15 +1,14 @@
 import type { Component } from 'solid-js'
 import { mergeProps, splitProps } from 'solid-js'
-import { createStripeElement } from 'src/primitives/createStripeElement'
-import type { BaseCardProps, StripeElementEventHandler } from '../types'
+import type { StripeIdealBankElementOptions } from '@stripe/stripe-js'
+import { createWrapper } from '../primitives/createWrapper'
+import { createStripeElement } from '../primitives/createStripeElement'
+import type { ElementProps } from '../types'
 
-type Props = {
-  value?: string
-  hideIcon?: boolean
-} & Omit<BaseCardProps, 'placeholder'> & StripeElementEventHandler<'idealBank'>
+export type IdealBankElementProps = ElementProps<'idealBank'> & StripeIdealBankElementOptions
 
-export const Ideal: Component<Props> = (props) => {
-  let wrapper!: HTMLDivElement
+export const Ideal: Component<IdealBankElementProps> = (props) => {
+  const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
     classes: {},
@@ -25,9 +24,10 @@ export const Ideal: Component<Props> = (props) => {
     wrapper,
     'idealBank',
     options,
-    props.onCreateElement,
     (type, event) => props[type]?.(event),
-  )
+  );
 
-  return <div ref={wrapper!} />
+  (Ideal as any).__elementType = 'idealBank'
+
+  return <div ref={setWrapper} />
 }

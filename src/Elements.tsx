@@ -1,10 +1,10 @@
 import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
-import type { Component, JSX } from 'solid-js'
-import { createContext, createEffect, mergeProps, useContext } from 'solid-js'
+import type { Accessor, Component, JSX } from 'solid-js'
+import { createContext, createEffect, createMemo, createSignal, mergeProps, useContext } from 'solid-js'
 
 export const StripeContext = createContext<{
-  stripe?: Stripe | null
-  elements: StripeElements | null
+  stripe: Accessor<Stripe | undefined>
+  elements: Accessor<StripeElements | null>
 }>()
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const Elements: Component<Props> = (props) => {
-  let elements: StripeElements | null = null
+  const [elements, setElements] = createSignal<StripeElements | null>(null)
 
   const merged = mergeProps(
     {
@@ -33,8 +33,8 @@ export const Elements: Component<Props> = (props) => {
   )
 
   createEffect(() => {
-    if (merged.stripe) {
-      elements = merged.stripe.elements?.({
+    if (props.stripe && !elements()) {
+      const instance = props.stripe.elements({
         clientSecret: merged.clientSecret,
         appearance: {
           theme: merged.theme as Appearance['theme'],
@@ -43,22 +43,25 @@ export const Elements: Component<Props> = (props) => {
           labels: merged.labels as Appearance['labels'],
         },
       })
+
+      setElements(instance)
     }
   })
 
-  const value = () => ({
-    stripe: props.stripe,
+  const stripe = createMemo(() => props.stripe)
+  const value = {
+    stripe,
     elements,
-  })
+  }
 
-  return <StripeContext.Provider value={value()}>{props.children}</StripeContext.Provider>
+  return <StripeContext.Provider value={value}>{props.children}</StripeContext.Provider>
 }
 
 export const useStripe = () => {
   const ctx = useContext(StripeContext)
 
-  if (!ctx?.stripe)
-    throw new Error('Stripe.js has not yet loaded.')
+  if (!ctx?.stripe())
+    throw new Error('Stripe not loaded')
 
   return ctx.stripe
 }
@@ -66,8 +69,8 @@ export const useStripe = () => {
 export const useStripeElements = () => {
   const ctx = useContext(StripeContext)
 
-  if (!ctx?.stripe)
-    throw new Error('Stripe.js has not yet loaded.')
+  if (!ctx?.stripe())
+    throw new Error('Stripe not loaded')
 
   return ctx.elements
 }

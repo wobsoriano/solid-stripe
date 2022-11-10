@@ -29,12 +29,13 @@ VITE_STRIPE_PUBLIC_KEY=pk_test_...
 VITE_STRIPE_SECRET_KEY=sk_test_...
 ```
 
-In your payment page, initialize Stripe and add a `<StripeProvider />` component:
+In your payment page, initialize Stripe and add a `<Elements />` component:
 
 ```tsx
 import { Show, createSignal, onMount } from 'solid-js'
+import { Elements } from 'solid-stripe'
 
-const App = () => {
+export function MyPaymentComponent() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
 
   onMount(async () => {
@@ -44,9 +45,9 @@ const App = () => {
 
   return (
     <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-      <StripeProvider stripe={stripe()}>
+      <Elements stripe={stripe()}>
         {/* this is where your Stripe components go */}
-      </StripeProvider>
+      </Elements>
     </Show>
   )
 }

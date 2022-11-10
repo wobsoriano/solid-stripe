@@ -1,12 +1,14 @@
+import type { StripeCardExpiryElementChangeEvent, StripeCardExpiryElementOptions } from '@stripe/stripe-js'
 import type { Component } from 'solid-js'
 import { mergeProps, splitProps } from 'solid-js'
-import { createStripeElement } from 'src/primitives/createStripeElement'
-import type { BaseCardProps, StripeElementEventHandler } from '../types'
+import { createWrapper } from '..//primitives/createWrapper'
+import { createStripeElement } from '../primitives/createStripeElement'
+import type { ElementProps } from '../types'
 
-type Props = BaseCardProps & StripeElementEventHandler<'cardExpiry'>
+export type CardExpiryElementProps = ElementProps<'cardExpiry', StripeCardExpiryElementChangeEvent> & StripeCardExpiryElementOptions
 
-export const CardExpiry: Component<Props> = (props) => {
-  let wrapper!: HTMLDivElement
+export const CardExpiry: Component<CardExpiryElementProps> = (props) => {
+  const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
     classes: {},
@@ -21,9 +23,10 @@ export const CardExpiry: Component<Props> = (props) => {
     wrapper,
     'cardExpiry',
     options,
-    props.onCreateElement,
     (type, event) => props[type]?.(event),
-  )
+  );
 
-  return <div ref={wrapper!} />
+  (CardExpiry as any).__elementType = 'cardExpiry'
+
+  return <div ref={setWrapper} />
 }
