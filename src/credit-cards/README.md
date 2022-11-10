@@ -25,7 +25,7 @@ export default function Page() {
   )
 }
 
-function CheckoutForm(props) {
+function CheckoutForm() {
   const stripe = useStripe()
   const elements = useStripeElements()
 
