@@ -1,5 +1,5 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "name": "solid-stripe",
   "description": "Solid wrapper for Stripe.js",
   "type": "module",
