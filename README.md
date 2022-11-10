@@ -33,6 +33,7 @@ In your payment page, initialize Stripe and add a `<Elements />` component:
 
 ```tsx
 import { Show, createSignal, onMount } from 'solid-js'
+import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from 'solid-stripe'
 
 export function MyPaymentComponent() {
