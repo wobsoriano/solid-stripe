@@ -22,15 +22,6 @@ export default function Page() {
     setClientSecret('YOUR_CLIENT_SECRET')
   })
 
-  const [_, { Form }] = createRouteAction(async () => {
-    const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
-      payment_method: {
-        card: element(),
-        billing_details: {},
-      },
-    })
-  })
-
   return (
     <Show when={stripe() && clientSecret()}>
       <Elements stripe={stripe()} clientSecret={clientSecret()}>
