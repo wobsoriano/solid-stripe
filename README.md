@@ -1,8 +1,6 @@
 # solid-stripe
 
-Solid wrapper for Stripe.js
-
-HIGHLY WIP
+Solid components for [Stripe.js and Elements](https://stripe.com/docs/payments/elements).
 
 ## Installation
 
@@ -39,7 +37,6 @@ import { Elements } from 'solid-stripe'
 
 export function MyPaymentComponent() {
   const [stripe, setStripe] = createSignal(null)
-  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
@@ -47,7 +44,7 @@ export function MyPaymentComponent() {
   })
 
   return (
-    <Show when={stripe()}>
+    <Show when={stripe()} fallback={<div>Loading stripe</div>}>
       <Elements stripe={stripe()}>
         {/* this is where your Stripe components go */}
       </Elements>
@@ -60,7 +57,7 @@ export function MyPaymentComponent() {
 
 Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). This must happen server-side to avoid anyone tampering with the amount.
 
-Let's add an endpoint `src/routes/api/create-payment-intent.tsx` to create a payment intent:
+Add an endpoint `src/routes/api/create-payment-intent.tsx` to create a payment intent:
 
 ```ts
 import { json } from 'solid-start'
