@@ -2,6 +2,8 @@
 
 Solid wrapper for Stripe.js
 
+HIGHLY WIP
+
 ## Installation
 
 To configure your project add these packages:
