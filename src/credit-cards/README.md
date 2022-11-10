@@ -1,37 +1,58 @@
 ## Credit cards
 
-Use `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
+These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 
 ```tsx
-import { Show, createResource } from 'solid-js'
-import { createServerData } from 'solid-start/server'
-import { useRouteData } from 'solid-start'
-import { CardCvc, CardExpiry, CardNumber, Elements, useStripe } from 'solid-stripe'
-import { StripeLoader } from '~/components/StripeLoader'
-import createPaymentIntent from '~/lib/create-payment-intent'
+import { loadStripe } from '@stripe/stripe-js'
+import { Show, createSignal, onMount } from 'solid-js'
+import { CardCvc, CardExpiry, CardNumber, Elements, useStripe, useStripeElements } from 'solid-stripe'
+import { createRouteAction } from 'solid-start/data'
 
-export function routeData() {
-  return createServerData$(() => createPaymentIntent())
+export default function Page() {
+  const [stripe, setStripe] = createSignal<Stripe | null>(null)
+  const [clientSecret, setClientSecret] = createSignal('')
+
+  onMount(async () => {
+    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+    setStripe(result)
+
+    // Also set the value of clientSecret by calling /api/create-payment-intent
+    setClientSecret('YOUR_CLIENT_SECRET')
+  })
+
+  return (
+    <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
+      <Elements stripe={stripe()} clientSecret={clientSecret()}>
+        <CheckoutForm clientSecret={clientSecret()} />
+      </Elements>
+    </Show>
+  )
 }
 
-const Payment = () => {
-  const paymentIntent = useRouteData<typeof routeData>()
-  const [element, setElement] = createSignal(null)
-
+function CheckoutForm(props) {
   const stripe = useStripe()
+  const elements = useStripeElements()
 
-  const [_, { Form }] = createRouteAction(async () => {
-    const result = await stripe.confirmCardPayment(paymentIntent().client_secret, {
+  const [, { Form }] = createRouteAction(async () => {
+    // When the form submits, pass the CardNumber component to stripe().confirmCardPayment()
+    const result = await stripe().confirmCardPayment(props.clientSecret, {
       payment_method: {
-        card: element(),
+        card: elements().getElement(CardNumber),
         billing_details: {},
       },
     })
+
+    if (result.error) {
+      // payment failed
+    }
+    else {
+      // payment succeeded
+    }
   })
 
   return (
     <Form>
-      <CardNumber onCreateElement={setElement} />
+      <CardNumber />
       <CardExpiry />
       <CardCvc />
       <button>Pay</button>

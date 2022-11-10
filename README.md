@@ -46,7 +46,7 @@ export function MyPaymentComponent() {
   })
 
   return (
-    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+    <Show when={stripe()}>
       <Elements stripe={stripe()}>
         {/* this is where your Stripe components go */}
       </Elements>
