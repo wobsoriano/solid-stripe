@@ -7,20 +7,22 @@ import type { Component, Setter } from 'solid-js'
 import { createEffect, mergeProps, onCleanup } from 'solid-js'
 import { createWrapper } from '../primitives/createWrapper'
 import { createStripeElement } from '../primitives/createStripeElement'
-import type { BaseProps, ElementProps } from '../types'
-import { useStripe } from '../Elements'
+import type { ElementProps } from '../types'
+import { useStripe, useStripeElements } from '../Elements'
 
-export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'> & Pick<BaseProps, 'classes'> & {
+export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'>
+& StripePaymentRequestButtonElementOptions['paymentRequest']
+& {
   setCanMakePayment?: Setter<boolean>
-  style?: NonNullable<StripePaymentRequestButtonElementOptions['style']>['paymentRequestButton']
   paymentRequest: PaymentRequestOptions
   onPaymentMethod: (payload: PaymentRequestPaymentMethodEvent) => void
 }
 
 export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props) => {
-  const [wrapper, setWrapper] = createWrapper()
+  let wrapper!: HTMLDivElement
 
   const stripe = useStripe()
+  const elements = useStripeElements()
 
   const merged = mergeProps(
     {
@@ -30,20 +32,8 @@ export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props
     props,
   )
 
-  const options = () => ({
-    classes: merged.classes,
-    style: { paymentRequestButton: merged.style },
-    paymentRequest: props.paymentRequest,
-  })
-
-  const elements = createStripeElement(
-    wrapper,
-    'paymentRequestButton',
-    options,
-  )
-
   createEffect(() => {
-    if (!stripe() || !elements())
+    if (!stripe() && !elements())
       return
 
     const paymentRequestObject = stripe()!.paymentRequest(props.paymentRequest)
@@ -60,14 +50,14 @@ export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props
       .then((result) => {
         if (result) {
           props.setCanMakePayment?.(true)
-          element?.mount(wrapper()!)
+          element?.mount(wrapper)
           paymentRequestObject.on('paymentmethod', (e) => {
             props.onPaymentMethod(e)
           })
         }
         else {
           props.setCanMakePayment?.(false)
-          wrapper()!.style.display = 'none'
+          wrapper.style.display = 'none'
         }
       })
 
@@ -78,5 +68,5 @@ export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props
 
   (PaymentRequestButton as any).__elementType = 'paymentRequestButton'
 
-  return <div ref={setWrapper} />
+  return <div ref={wrapper} />
 }

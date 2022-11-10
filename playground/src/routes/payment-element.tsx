@@ -3,6 +3,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
+import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
 export function routeData() {
 }
@@ -15,15 +16,10 @@ export default function Page() {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
 
-    const resp = await fetch('/api/payment-intent', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({}),
+    const secret = await createPaymentIntent({
+      payment_method_types: ['card'],
     })
-    const data = await resp.json()
-    setClientSecret(data.client_secret)
+    setClientSecret(secret)
   })
 
   return (

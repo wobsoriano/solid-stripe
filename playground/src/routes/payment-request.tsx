@@ -1,14 +1,11 @@
-## Google Pay and Apple Pay
-
-Display a Google Pay or Apple Pay button using the `<PaymentRequestButton />` component.
-
-```tsx
+import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
+import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
 export default function Page() {
-  const [stripe, setStripe] = createSignal(null)
+  const [stripe, setStripe] = createSignal<Stripe | null>(null)
   const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
@@ -19,21 +16,18 @@ export default function Page() {
       payment_method_types: ['card'],
     })
     setClientSecret(secret)
-
-    // Also set the value of clientSecret by calling /api/create-payment-intent
-    setClientSecret('YOUR_CLIENT_SECRET')
   })
 
   return (
     <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
       <Elements stripe={stripe()} clientSecret={clientSecret()}>
-        <CheckoutForm clientSecret={clientSecret()} />
+        <CheckoutForm />
       </Elements>
     </Show>
   )
 }
 
-function CheckoutForm(props) {
+function CheckoutForm() {
   const stripe = useStripe()
 
   const paymentRequest = {
@@ -45,30 +39,26 @@ function CheckoutForm(props) {
   }
 
   async function handlePaymentMethod(e) {
-    const result = await stripe().confirmCardPayment(props.clientSecret, {
+    const secret = await createPaymentIntent({
+      payment_method_types: ['card'],
+    })
+    const result = await stripe().confirmCardPayment(secret, {
       payment_method: e.paymentMethod.id,
     })
 
-    if (result.error) {
-      e.detail.complete('fail')
+    console.log({ result })
 
-      // payment failed, notify user
-      error = result.error
+    if (result.error) {
+      // payment failed
     }
     else {
-      e.detail.complete('success')
-
       // payment succeeded
     }
   }
 
   return (
-    <PaymentRequestButton
-    paymentRequest={paymentRequest}
-    onPaymentMethod={handlePaymentMethod}
-    />
+    <div>
+      <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={handlePaymentMethod} />
+    </div>
   )
 }
-```
-
-More info https://stripe.com/docs/stripe-js/elements/payment-request-button
