@@ -9,31 +9,22 @@ import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal(null)
-  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
-
-    const secret = await createPaymentIntent({
-      payment_method_types: ['card'],
-    })
-    setClientSecret(secret)
-
-    // Also set the value of clientSecret by calling /api/create-payment-intent
-    setClientSecret('YOUR_CLIENT_SECRET')
   })
 
   return (
-    <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
-      <Elements stripe={stripe()} clientSecret={clientSecret()}>
-        <CheckoutForm clientSecret={clientSecret()} />
+    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+      <Elements stripe={stripe()}>
+        <CheckoutForm />
       </Elements>
     </Show>
   )
 }
 
-function CheckoutForm(props) {
+export function CheckoutForm() {
   const stripe = useStripe()
 
   const paymentRequest = {
@@ -45,7 +36,8 @@ function CheckoutForm(props) {
   }
 
   async function handlePaymentMethod(e) {
-    const result = await stripe().confirmCardPayment(props.clientSecret, {
+    const clientSecret = await getClientSecret() // fetch from /api/create-payment-intent
+    const result = await stripe().confirmCardPayment(clientSecret, {
       payment_method: e.paymentMethod.id,
     })
 

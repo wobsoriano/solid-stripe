@@ -5,8 +5,6 @@ import type {
 } from '@stripe/stripe-js'
 import type { Component, Setter } from 'solid-js'
 import { createEffect, mergeProps, onCleanup } from 'solid-js'
-import { createWrapper } from '../primitives/createWrapper'
-import { createStripeElement } from '../primitives/createStripeElement'
 import type { ElementProps } from '../types'
 import { useStripe, useStripeElements } from '../Elements'
 

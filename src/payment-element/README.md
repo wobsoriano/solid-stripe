@@ -18,8 +18,8 @@ export default function Page() {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
 
-    // Also set the value of clientSecret by calling /api/create-payment-intent
-    setClientSecret('YOUR_CLIENT_SECRET')
+    const secret = await getClientSecret() // fetch from /api/create-payment-intent
+    setClientSecret(secret)
   })
 
   return (
@@ -31,7 +31,7 @@ export default function Page() {
   )
 }
 
-function CheckoutForm(props) {
+export function CheckoutForm(props) {
   const stripe = useStripe()
   const elements = useStripeElements()
 

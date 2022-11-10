@@ -10,20 +10,16 @@ import { createRouteAction } from 'solid-start/data'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
-  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
-
-    // Also set the value of clientSecret by calling /api/create-payment-intent
-    setClientSecret('YOUR_CLIENT_SECRET')
   })
 
   return (
-    <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
-      <Elements stripe={stripe()} clientSecret={clientSecret()}>
-        <CheckoutForm clientSecret={clientSecret()} />
+    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+      <Elements stripe={stripe()}>
+        <CheckoutForm />
       </Elements>
     </Show>
   )
@@ -34,8 +30,9 @@ function CheckoutForm(props) {
   const elements = useStripeElements()
 
   const [, { Form }] = createRouteAction(async () => {
+    const clientSecret = await getClientSecret() // fetch from /api/create-payment-intent
     // When the form submits, pass the CardNumber component to stripe().confirmCardPayment()
-    const result = await stripe().confirmCardPayment(props.clientSecret, {
+    const result = await stripe().confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements().getElement(CardNumber),
         billing_details: {},

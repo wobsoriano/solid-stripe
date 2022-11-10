@@ -23,7 +23,7 @@ export const Elements: Component<Props> = (props) => {
 
   const merged = mergeProps(
     {
-      clientSecret: '',
+      clientSecret: undefined,
       theme: 'stripe',
       variables: {},
       rules: {},

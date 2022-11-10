@@ -1,7 +1,7 @@
 import type { StripeCardCvcElementChangeEvent, StripeCardCvcElementOptions } from '@stripe/stripe-js'
 import type { Component } from 'solid-js'
 import { mergeProps, splitProps } from 'solid-js'
-import { createWrapper } from '..//primitives/createWrapper'
+import { createWrapper } from '../primitives/createWrapper'
 import { createStripeElement } from '../primitives/createStripeElement'
 import type { ElementProps } from '../types'
 

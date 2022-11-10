@@ -38,7 +38,8 @@ import { Show, createSignal, onMount } from 'solid-js'
 import { Elements } from 'solid-stripe'
 
 export function MyPaymentComponent() {
-  const [stripe, setStripe] = createSignal<Stripe | null>(null)
+  const [stripe, setStripe] = createSignal(null)
+  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)

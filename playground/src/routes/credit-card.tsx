@@ -7,32 +7,27 @@ import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
-  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
-    const secret = await createPaymentIntent({
-      payment_method_types: ['card'],
-    })
-    setClientSecret(secret)
   })
 
   return (
-    <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
-      <Elements stripe={stripe()} clientSecret={clientSecret()}>
-        <CheckoutForm clientSecret={clientSecret()} />
+    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+      <Elements stripe={stripe()}>
+        <CheckoutForm />
       </Elements>
     </Show>
   )
 }
 
-function CheckoutForm(props: CheckoutFormProps) {
+function CheckoutForm() {
   const stripe = useStripe()
   const elements = useStripeElements()
 
   const [, { Form }] = createRouteAction(async () => {
-    const result = await stripe().confirmCardPayment(props.clientSecret, {
+    const result = await stripe().confirmCardPayment('', {
       payment_method: {
         card: elements().getElement(CardNumber),
         billing_details: {
@@ -61,6 +56,3 @@ function CheckoutForm(props: CheckoutFormProps) {
   )
 }
 
-interface CheckoutFormProps {
-  clientSecret?: string
-}

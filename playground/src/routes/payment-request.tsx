@@ -6,21 +6,15 @@ import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
-  const [clientSecret, setClientSecret] = createSignal('')
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
-
-    const secret = await createPaymentIntent({
-      payment_method_types: ['card'],
-    })
-    setClientSecret(secret)
   })
 
   return (
-    <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
-      <Elements stripe={stripe()} clientSecret={clientSecret()}>
+    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+      <Elements stripe={stripe()}>
         <CheckoutForm />
       </Elements>
     </Show>
