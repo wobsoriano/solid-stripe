@@ -1,5 +1,6 @@
 import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
+import { createMutable } from 'solid-js/store'
 import { createContext, createEffect, createMemo, createSignal, mergeProps, useContext } from 'solid-js'
 
 export const StripeContext = createContext<{
@@ -73,4 +74,28 @@ export const useStripeElements = () => {
     throw new Error('Stripe not loaded')
 
   return ctx.elements
+}
+
+export const useStripeProxy = () => {
+  const ctx = useContext(StripeContext)
+
+  if (!ctx?.stripe())
+    throw new Error('Stripe not loaded')
+
+  const state = createMutable({
+    get stripe() {
+      return ctx?.stripe?.()
+    },
+    get elements() {
+      return ctx?.elements?.()
+    },
+    set stripe(_value) {
+      throw new Error('Cannot do this.')
+    },
+    set elements(_value) {
+      throw new Error('Cannot do this.')
+    },
+  })
+
+  return state
 }

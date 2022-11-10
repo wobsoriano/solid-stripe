@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { CardCvc, CardExpiry, CardNumber, Elements, useStripe, useStripeElements } from 'solid-stripe'
+import { CardCvc, CardExpiry, CardNumber, Elements, useStripeProxy } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
@@ -23,26 +23,35 @@ export default function Page() {
 }
 
 function CheckoutForm() {
-  const stripe = useStripe()
-  const elements = useStripeElements()
+  // const stripe = useStripe()
+  const state = useStripeProxy()
 
   const [, { Form }] = createRouteAction(async () => {
-    const result = await stripe().confirmCardPayment('', {
-      payment_method: {
-        card: elements().getElement(CardNumber),
-        billing_details: {
-          name: 'Robert Soriano',
+    console.log('submitting')
+    try {
+      const clientSecret = await createPaymentIntent({
+        payment_method_types: ['card'],
+      })
+      const result = await state.stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: state.elements.getElement(CardNumber),
+          billing_details: {
+            name: 'Robert Soriano',
+          },
         },
-      },
-    })
+      })
 
-    console.log({ result })
+      console.log({ result })
 
-    if (result.error) {
-      // payment failed
+      if (result.error) {
+        // payment failed
+      }
+      else {
+        // payment succeeded
+      }
     }
-    else {
-      // payment succeeded
+    catch (err) {
+      console.log(err)
     }
   })
 
