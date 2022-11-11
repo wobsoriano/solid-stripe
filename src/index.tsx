@@ -7,4 +7,9 @@ export { PaymentRequestButton } from './googlepay-applepay/PaymentRequestButton'
 export { LinkAuthenticationElement } from './link-authentication/LinkAuthenticationElement'
 export { Ideal } from './ideal/Ideal'
 export { Iban } from './sepa/Iban'
-export * from './Elements'
+export {
+  Elements,
+  useStripe,
+  useStripeElements,
+  useStripeProxy,
+} from './Elements'

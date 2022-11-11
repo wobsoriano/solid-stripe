@@ -3,6 +3,7 @@
   "name": "solid-stripe",
   "description": "Solid wrapper for Stripe.js",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist"
   ],
