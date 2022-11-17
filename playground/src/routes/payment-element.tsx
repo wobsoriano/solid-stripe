@@ -57,6 +57,3 @@ function CheckoutForm() {
     </Form>
   )
 }
-interface CheckoutFormProps {
-  clientSecret?: string
-}
