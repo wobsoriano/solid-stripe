@@ -26,13 +26,13 @@ export default function Page() {
     <Show when={stripe() && clientSecret()} fallback={<div>Loading stripe...</div>}>
       strip laoded
       <Elements stripe={stripe()} clientSecret={clientSecret()} theme="flat" labels="floating" variables={{ colorPrimary: '#7c4dff' }} rules={{ '.Input': { border: 'solid 1px #0002' } }}>
-        <CheckoutForm clientSecret={clientSecret()} />
+        <CheckoutForm />
       </Elements>
     </Show>
   )
 }
 
-function CheckoutForm(props: CheckoutFormProps) {
+function CheckoutForm() {
   const stripe = useStripe()
   const elements = useStripeElements()
 

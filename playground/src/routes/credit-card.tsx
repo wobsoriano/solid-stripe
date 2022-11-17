@@ -27,7 +27,6 @@ function CheckoutForm() {
   const state = useStripeProxy()
 
   const [, { Form }] = createRouteAction(async () => {
-    console.log('submitting')
     try {
       const clientSecret = await createPaymentIntent({
         payment_method_types: ['card'],
