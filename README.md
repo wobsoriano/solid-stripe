@@ -1,3 +1,7 @@
+<p>
+  <img width="100%" src="https://assets.solidjs.com/banner?type=solid-stripe&background=tiles&project=%20" alt="solid-stripe">
+</p>
+
 # solid-stripe
 
 Solid components for [Stripe.js and Elements](https://stripe.com/docs/payments/elements).
