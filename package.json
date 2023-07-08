@@ -7,23 +7,31 @@
   "files": [
     "dist"
   ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
   "exports": {
-    ".": {
-      "solid": "./dist/source/index.jsx",
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
-      "browser": {
-        "require": "./dist/cjs/index.js",
-        "import": "./dist/esm/index.js"
+    "solid": {
+      "development": "./dist/dev.jsx",
+      "import": "./dist/index.jsx"
+    },
+    "development": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/dev.js"
       },
-      "node": "./dist/cjs/index.js"
-    }
+      "require": "./dist/dev.cjs"
+    },
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": "./dist/index.cjs"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
+  "typesVersions": {},
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsup",
     "prepublishOnly": "pnpm build",
     "release": "bumpp --commit --push --tag && pnpm publish",
     "lint": "eslint .",
@@ -52,8 +60,10 @@
     "bumpp": "^9.1.1",
     "eslint": "^8.44.0",
     "eslint-plugin-solid": "^0.12.1",
-    "rollup": "^3.26.2",
-    "rollup-preset-solid": "^2.0.1",
+    "esbuild": "^0.17.4",
+    "esbuild-plugin-solid": "^0.5.0",
+    "tsup": "^6.5.0",
+    "tsup-preset-solid": "^0.1.4",
     "solid-js": ">=1.7.7",
     "typescript": "^5.1.6"
   }
