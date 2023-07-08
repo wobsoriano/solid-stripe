@@ -7,9 +7,9 @@ type FixMe = Record<string, any>
 type NormalFn = () => StripeElementsOptions & FixMe
 
 export function createStripeElement(
-  node: Accessor<HTMLDivElement | null>,
+  node: HTMLDivElement | null,
   elementType: StripeElementType,
-  elementsOptions: Accessor<StripeElementsOptions & FixMe> | (StripeElementsOptions & FixMe) | NormalFn = {},
+  elementsOptions: StripeElementsOptions & FixMe | NormalFn = {},
   cb?: (eventType: 'onChange' | 'onReady' | 'onFocus' | 'onBlur' | 'onEscape', ev: any) => void,
 ) {
   const elements = useStripeElements()
@@ -17,7 +17,7 @@ export function createStripeElement(
   createEffect(() => {
     const newElement = elements()!.create(elementType as any, typeof elementsOptions === 'function' ? elementsOptions() : elementsOptions as any)
 
-    newElement.mount(node()!)
+    newElement.mount(node as HTMLDivElement)
 
     newElement.on('change', e => cb?.('onChange', e))
     newElement.on('ready', e => cb?.('onReady', e))
@@ -25,9 +25,7 @@ export function createStripeElement(
     newElement.on('blur', e => cb?.('onBlur', e))
     newElement.on('escape', e => cb?.('onEscape', e))
 
-    onCleanup(() => {
-      newElement.unmount()
-    })
+    onCleanup(() => newElement.unmount())
   }, { defer: true })
 
   return elements

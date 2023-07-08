@@ -23,7 +23,7 @@ export const Card: Component<CardElementProps> = (props) => {
   const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
 
   createStripeElement(
-    wrapper,
+    wrapper(),
     'card',
     options,
     (type, event) => props[type]?.(event),

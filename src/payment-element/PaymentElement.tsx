@@ -10,7 +10,7 @@ export const PaymentElement: Component<PaymentElementProps> = (props) => {
   const [wrapper, setWrapper] = createWrapper()
 
   createStripeElement(
-    wrapper,
+    wrapper(),
     'payment',
     {},
     (type, event) => props[type]?.(event),
