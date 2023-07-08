@@ -94,4 +94,6 @@ There are several types of payment you can accept:
 
 Inspired by [svelte-stripe](https://www.sveltestripe.com/) and [react-stripe](https://github.com/stripe/react-stripe-js).
 
-## License MIT
+## License
+
+MIT
