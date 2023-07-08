@@ -1,6 +1,6 @@
 import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createContext, createEffect, createMemo, createSignal, mergeProps, useContext } from 'solid-js'
+import { createComputed, createContext, createMemo, createSignal, mergeProps, useContext } from 'solid-js'
 
 export const StripeContext = createContext<{
   stripe: Accessor<Stripe | undefined>
@@ -32,7 +32,7 @@ export const Elements: Component<Props> = (props) => {
     props,
   )
 
-  createEffect(() => {
+  createComputed(() => {
     if (props.stripe && !elements()) {
       const instance = props.stripe.elements({
         clientSecret: merged.clientSecret,
