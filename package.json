@@ -31,6 +31,7 @@
   },
   "typesVersions": {},
   "scripts": {
+    "dev": "tsup --watch --onSuccess=\"pnpm --filter playground dev\"",
     "build": "tsup",
     "prepublishOnly": "pnpm build",
     "release": "bumpp --commit --push --tag && pnpm publish",
