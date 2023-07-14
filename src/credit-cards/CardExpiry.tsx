@@ -20,7 +20,7 @@ export const CardExpiry: Component<CardExpiryElementProps> = (props) => {
   const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
 
   createStripeElement(
-    wrapper(),
+    wrapper,
     'cardExpiry',
     options,
     (type, event) => props[type]?.(event),

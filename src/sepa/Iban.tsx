@@ -22,7 +22,7 @@ export const Iban: Component<IbanElementProps> = (props) => {
   const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
 
   createStripeElement(
-    wrapper(),
+    wrapper,
     'iban',
     options,
     (type, event) => props[type]?.(event),

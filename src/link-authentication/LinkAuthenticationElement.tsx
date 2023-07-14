@@ -14,7 +14,7 @@ export const LinkAuthenticationElement: Component<LinkAuthenticationElementProps
   const options = () => props.defaultValues ? { defaultValues: props.defaultValues } : {}
 
   createStripeElement(
-    wrapper(),
+    wrapper,
     'linkAuthentication',
     options,
     (type, event) => props[type]?.(event),

@@ -6,18 +6,26 @@ import { useStripeElements } from '../Elements'
 type FixMe = Record<string, any>
 type NormalFn = () => StripeElementsOptions & FixMe
 
+type MaybeAccessor<T> = T | Accessor<T>
+type MaybeAccessorValue<T extends MaybeAccessor<any>> = T extends () => any
+  ? ReturnType<T>
+  : T
+function access<T extends MaybeAccessor<any>>(v: T): MaybeAccessorValue<T> {
+  return typeof v === 'function' && !v.length ? v() : v
+}
+
 export function createStripeElement(
-  node: HTMLDivElement | null,
+  node: MaybeAccessor<HTMLDivElement | null>,
   elementType: StripeElementType,
-  elementsOptions: StripeElementsOptions & FixMe | NormalFn = {},
+  elementsOptions: MaybeAccessor<StripeElementsOptions & FixMe> | NormalFn = {},
   cb?: (eventType: 'onChange' | 'onReady' | 'onFocus' | 'onBlur' | 'onEscape', ev: any) => void,
 ) {
   const elements = useStripeElements()
 
   createEffect(() => {
-    const newElement = elements()!.create(elementType as any, typeof elementsOptions === 'function' ? elementsOptions() : elementsOptions as any)
+    const newElement = elements()!.create(elementType as any, access(elementsOptions) as any)
 
-    newElement.mount(node as HTMLDivElement)
+    newElement.mount(access(node) as HTMLDivElement)
 
     newElement.on('change', e => cb?.('onChange', e))
     newElement.on('ready', e => cb?.('onReady', e))
