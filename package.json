@@ -7,7 +7,8 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/index.cjs",
+  "private": false,
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "browser": {},
@@ -20,14 +21,12 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/dev.js"
-      },
-      "require": "./dist/dev.cjs"
+      }
     },
     "import": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "require": "./dist/index.cjs"
+    }
   },
   "typesVersions": {},
   "scripts": {
