@@ -29,6 +29,7 @@ export default function Root() {
                 <A href="/">Index</A>
                 <A href="/payment-element">Payment Element</A>
                 <A href="/credit-card">Credit Card</A>
+                <A href="/payment-request">Payment Request</A>
                 <main>
                   <Routes>
                     <FileRoutes />

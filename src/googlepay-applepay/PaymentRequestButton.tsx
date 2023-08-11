@@ -9,7 +9,7 @@ import type { ElementProps } from '../types'
 import { useStripe, useStripeElements } from '../Elements'
 
 export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'>
-& StripePaymentRequestButtonElementOptions['paymentRequest']
+& Omit<StripePaymentRequestButtonElementOptions, 'paymentRequest'>
 & {
   setCanMakePayment?: Setter<boolean>
   paymentRequest: PaymentRequestOptions

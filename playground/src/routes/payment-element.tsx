@@ -1,6 +1,6 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Component, JSXElement, Show, createSignal, onMount } from 'solid-js'
+import { Show, createSignal, onMount } from 'solid-js'
 import { Address, Elements, LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction, useRouteData } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
