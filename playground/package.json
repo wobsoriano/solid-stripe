@@ -7,19 +7,19 @@
   },
   "type": "module",
   "devDependencies": {
-    "solid-start-node": "^0.2.26",
+    "solid-start-node": "^0.2.32",
     "typescript": "^5.1.6",
-    "vite": "^4.4.2"
+    "vite": "^4.4.9"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.28.5",
-    "@solidjs/router": "^0.8.2",
-    "@stripe/stripe-js": "^1.54.1",
-    "solid-js": "^1.7.7",
-    "solid-start": "^0.2.26",
+    "@solidjs/meta": "^0.28.6",
+    "@solidjs/router": "^0.8.3",
+    "@stripe/stripe-js": "^2.0.0",
+    "solid-js": "^1.7.11",
+    "solid-start": "^0.2.32",
     "solid-stripe": "workspace:*",
-    "stripe": "^12.12.0",
-    "undici": "^5.22.1"
+    "stripe": "^12.18.0",
+    "undici": "^5.23.0"
   },
   "engines": {
     "node": ">=16"

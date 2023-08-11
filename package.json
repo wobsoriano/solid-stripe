@@ -56,16 +56,16 @@
     "solid-js": "^1.6.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config-ts": "^0.39.7",
-    "@stripe/stripe-js": "^1.54.1",
+    "@antfu/eslint-config-ts": "^0.40.2",
+    "@stripe/stripe-js": "^2.0.0",
     "bumpp": "^9.1.1",
-    "eslint": "^8.44.0",
-    "eslint-plugin-solid": "^0.12.1",
-    "esbuild": "^0.17.4",
+    "esbuild": "^0.19.1",
     "esbuild-plugin-solid": "^0.5.0",
-    "tsup": "^6.5.0",
-    "tsup-preset-solid": "^0.1.4",
-    "solid-js": ">=1.7.7",
+    "eslint": "^8.47.0",
+    "eslint-plugin-solid": "^0.12.1",
+    "solid-js": ">=1.7.11",
+    "tsup": "^7.2.0",
+    "tsup-preset-solid": "^2.0.2",
     "typescript": "^5.1.6"
   }
 }
