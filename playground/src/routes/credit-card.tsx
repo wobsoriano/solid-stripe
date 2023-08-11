@@ -1,6 +1,6 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Show, createEffect, createSignal, onMount } from 'solid-js'
+import { Show, createSignal, onMount } from 'solid-js'
 import { CardCvc, CardExpiry, CardNumber, Elements, useStripeProxy } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
@@ -51,10 +51,6 @@ function CheckoutForm() {
       // payment succeeded
       return result.paymentIntent
     }
-  })
-
-  createEffect(() => {
-    console.log('proc', processing)
   })
 
   return (
