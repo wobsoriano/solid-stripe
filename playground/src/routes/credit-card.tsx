@@ -56,7 +56,7 @@ function CheckoutForm() {
   return (
     <>
       <Show when={processing.error}>
-        <div>{processing.error.message}</div>
+        <div class="error">{processing.error.message}</div>
       </Show>
       <Form>
         <input name="name" placeholder="Your name" disabled={processing.pending} />
