@@ -31,10 +31,12 @@ function CheckoutForm() {
   const state = useStripeProxy()
 
   const [processing, { Form }] = createRouteAction(async (form: FormData) => {
-    const clientSecret = await createPaymentIntent({
+    const paymentIntent = await createPaymentIntent({
+      amount: 2000,
+      currency: 'usd',
       payment_method_types: ['card'],
     })
-    const result = await state.stripe.confirmCardPayment(clientSecret, {
+    const result = await state.stripe.confirmCardPayment(paymentIntent.client_secret, {
       payment_method: {
         card: state.elements.getElement(CardNumber),
         billing_details: {

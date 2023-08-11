@@ -27,6 +27,7 @@ export default function Root() {
             <ErrorBoundary>
               <div class="container">
                 <A href="/">Index</A>
+                <A href="/payment-element">Payment Element</A>
                 <A href="/credit-card">Credit Card</A>
                 <main>
                   <Routes>

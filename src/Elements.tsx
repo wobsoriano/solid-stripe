@@ -59,7 +59,6 @@ export const Elements: Component<Props> = (props) => {
 
 export const useStripe = () => {
   const ctx = useContext(StripeContext)
-
   if (!ctx?.stripe())
     throw new Error('Stripe not loaded')
 

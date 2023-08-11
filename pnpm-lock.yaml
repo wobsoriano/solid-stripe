@@ -69,6 +69,9 @@ importers:
         specifier: ^5.23.0
         version: 5.23.0
     devDependencies:
+      '@vitejs/plugin-basic-ssl':
+        specifier: ^1.0.1
+        version: 1.0.1(vite@4.4.9)
       solid-start-node:
         specifier: ^0.2.32
         version: 0.2.32(solid-start@0.2.32)(undici@5.23.0)(vite@4.4.9)
@@ -2276,6 +2279,15 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.3.0
       eslint-visitor-keys: 3.4.3
+    dev: true
+
+  /@vitejs/plugin-basic-ssl@1.0.1(vite@4.4.9):
+    resolution: {integrity: sha512-pcub+YbFtFhaGRTo1832FQHQSHvMrlb43974e2eS8EKleR3p1cDdkJFPci1UhwkEf1J9Bz+wKBSzqpKp7nNj2A==}
+    engines: {node: '>=14.6.0'}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0
+    dependencies:
+      vite: 4.4.9
     dev: true
 
   /accepts@1.3.8:

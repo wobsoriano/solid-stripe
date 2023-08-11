@@ -9,5 +9,5 @@ export async function createPaymentIntent(paymentIntentParams: Record<string, an
     ...paymentIntentParams,
   })
 
-  return result.client_secret
+  return result
 }

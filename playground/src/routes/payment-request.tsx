@@ -33,10 +33,10 @@ function CheckoutForm() {
   }
 
   async function handlePaymentMethod(e) {
-    const secret = await createPaymentIntent({
+    const paymentIntent = await createPaymentIntent({
       payment_method_types: ['card'],
     })
-    const result = await stripe().confirmCardPayment(secret, {
+    const result = await stripe().confirmCardPayment(paymentIntent.client_secret, {
       payment_method: e.paymentMethod.id,
     })
 
