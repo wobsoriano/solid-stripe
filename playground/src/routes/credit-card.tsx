@@ -1,9 +1,10 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Show, createSignal, onMount } from 'solid-js'
+import { Show, createEffect, createSignal, onMount } from 'solid-js'
 import { CardCvc, CardExpiry, CardNumber, Elements, useStripeProxy } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import '~/styles/credit-card.css'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
@@ -14,11 +15,14 @@ export default function Page() {
   })
 
   return (
-    <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-      <Elements stripe={stripe()}>
-        <CheckoutForm />
-      </Elements>
-    </Show>
+    <>
+      <h1>Credit Card Example</h1>
+      <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+        <Elements stripe={stripe()}>
+          <CheckoutForm />
+        </Elements>
+      </Show>
+    </>
   )
 }
 
@@ -26,41 +30,52 @@ function CheckoutForm() {
   // const stripe = useStripe()
   const state = useStripeProxy()
 
-  const [, { Form }] = createRouteAction(async () => {
-    try {
-      const clientSecret = await createPaymentIntent({
-        payment_method_types: ['card'],
-      })
-      const result = await state.stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: state.elements.getElement(CardNumber),
-          billing_details: {
-            name: 'Robert Soriano',
-          },
+  const [processing, { Form }] = createRouteAction(async (form: FormData) => {
+    const clientSecret = await createPaymentIntent({
+      payment_method_types: ['card'],
+    })
+    const result = await state.stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: state.elements.getElement(CardNumber),
+        billing_details: {
+          name: form.get('name') as string,
         },
-      })
+      },
+    })
 
-      console.log({ result })
-
-      if (result.error) {
-        // payment failed
-      }
-      else {
-        // payment succeeded
-      }
+    if (result.error) {
+      // payment failed
+      throw new Error(result.error.message)
     }
-    catch (err) {
-      console.log(err)
+    else {
+      // payment succeeded
+      return result.paymentIntent
     }
   })
 
+  createEffect(() => {
+    console.log('proc', processing)
+  })
+
   return (
-    <Form>
-      <CardNumber />
-      <CardExpiry classes={{ base: 'input' }} />
-      <CardCvc classes={{ base: 'input' }}/>
-      <button>Pay</button>
-    </Form>
+    <>
+      <Show when={processing.error}>
+        <div>{processing.error.message}</div>
+      </Show>
+      <Form>
+        <input name="name" placeholder="Your name" disabled={processing.pending} />
+        <CardNumber classes={{ base: 'input' }} />
+        
+        <div class="row">
+          <CardExpiry classes={{ base: 'input' }} />
+          <CardCvc classes={{ base: 'input' }}/>
+        </div>
+
+        <button disabled={processing.pending}>
+          {processing.pending ? 'Processing...' : 'Pay'}
+        </button>
+      </Form>
+    </>
   )
 }
 

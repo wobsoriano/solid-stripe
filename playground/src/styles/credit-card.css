@@ -1,0 +1,38 @@
+.error {
+  color: tomato;
+  margin: 2rem 0 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 2rem 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+input, .input {
+  border: solid 1px var(--gray-color);
+  padding: 1rem;
+  border-radius: 5px;
+  background: white;
+}
+
+.row .input {
+  width: 20%;
+}
+
+button {
+  padding: 1rem;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  color: white;
+  background: var(--link-color);
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}

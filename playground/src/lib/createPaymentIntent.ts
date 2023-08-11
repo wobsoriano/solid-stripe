@@ -1,11 +1,13 @@
+import Stripe from 'stripe'
+
+const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY, undefined)
+
 export async function createPaymentIntent(paymentIntentParams: Record<string, any>) {
-  const resp = await fetch('/api/payment-intent', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(paymentIntentParams),
+  const result = await stripe.paymentIntents.create({
+    amount: 2000,
+    currency: 'usd',
+    ...paymentIntentParams,
   })
-  const { client_secret } = await resp.json()
-  return client_secret as string
+
+  return result.client_secret
 }
