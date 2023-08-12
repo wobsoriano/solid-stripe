@@ -94,9 +94,9 @@ There are several types of payment you can accept:
 - [Payment Element](https://github.com/wobsoriano/solid-stripe/tree/main/src/payment-element)
 - [Link Authentication](https://github.com/wobsoriano/solid-stripe/tree/main/src/link-authentication)
 - [Credit Cards](https://github.com/wobsoriano/solid-stripe/tree/main/src/credit-cards)
-- [Google Pay and Apple Pay](https://github.com/wobsoriano/solid-stripe/tree/master/src/googlepay-applepay)
-- [SEPA](https://github.com/wobsoriano/solid-stripe/tree/master/src/sepa)
-- [iDEAL](https://github.com/wobsoriano/solid-stripe/tree/master/src/ideal)
+- [Google Pay and Apple Pay](https://github.com/wobsoriano/solid-stripe/tree/main/src/googlepay-applepay)
+- [SEPA](https://github.com/wobsoriano/solid-stripe/tree/main/src/sepa)
+- [iDEAL](https://github.com/wobsoriano/solid-stripe/tree/main/src/ideal)
 
 Inspired by [svelte-stripe](https://www.sveltestripe.com/) and [react-stripe](https://github.com/stripe/react-stripe-js).
 
