@@ -56,6 +56,9 @@ importers:
       solid-js:
         specifier: ^1.7.11
         version: 1.7.11
+      solid-sonner:
+        specifier: ^0.2.0
+        version: 0.2.0(solid-js@1.7.11)
       solid-start:
         specifier: ^0.2.32
         version: 0.2.32(@solidjs/meta@0.28.6)(@solidjs/router@0.8.3)(solid-js@1.7.11)(solid-start-node@0.2.32)(vite@4.4.9)
@@ -5100,6 +5103,14 @@ packages:
       '@babel/helper-module-imports': 7.22.5
       '@babel/types': 7.22.5
       solid-js: 1.7.11
+
+  /solid-sonner@0.2.0(solid-js@1.7.11):
+    resolution: {integrity: sha512-R0A5TSWbPYp4pOj9RY4LXliTJv5RLlmZmKxuIUZA/80eYrk19l8OMlYf3PcOTdEfM7voG0jWeVWv1GT/EObJ2A==}
+    peerDependencies:
+      solid-js: ^1.6.0
+    dependencies:
+      solid-js: 1.7.11
+    dev: false
 
   /solid-start-node@0.2.32(solid-start@0.2.32)(undici@5.23.0)(vite@4.4.9):
     resolution: {integrity: sha512-IG7V5O7rdesVPQQ15eDpdJ9wg1XXFT7zpd+o0M7ShW9TvxPxs0g5RJzZFNjSxwx8nmxVj58mO5lGw2Jr/HgLCQ==}

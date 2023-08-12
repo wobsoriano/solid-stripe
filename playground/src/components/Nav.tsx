@@ -32,6 +32,8 @@ export default function Nav({ children }: { children: JSXElement }) {
           <li><A href="/credit-card">Credit cards</A></li>
           <li><A href="/payment-element">Payment Element</A></li>
           <li><A href="/payment-request">Payment Request</A></li>
+          <li><A href="/sepa">SEPA</A></li>
+          <li><A href="/ideal">iDEAL</A></li>
         </ul>
       </div>
     </div>

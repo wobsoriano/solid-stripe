@@ -24,7 +24,8 @@
     "solid-start": "^0.2.32",
     "solid-stripe": "workspace:*",
     "stripe": "^12.18.0",
-    "undici": "^5.23.0"
+    "undici": "^5.23.0",
+    "solid-sonner": "^0.2.0"
   },
   "engines": {
     "node": ">=18"

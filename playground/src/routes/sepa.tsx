@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { CardCvc, CardExpiry, CardNumber, Elements, useStripeProxy } from 'solid-stripe'
+import { Elements, Iban, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
@@ -16,7 +16,7 @@ export default function Page() {
 
   return (
     <>
-      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Credit Card Example</h1>
+      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">SEPA Example</h1>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
         <Elements stripe={stripe()} options={{ theme: 'stripe' }}>
           <CheckoutForm />
@@ -27,21 +27,23 @@ export default function Page() {
 }
 
 function CheckoutForm() {
-  // const stripe = useStripe()
-  const state = useStripeProxy()
+  const stripe = useStripe()
+  const elements = useStripeElements()
 
   const [processing, { Form }] = createRouteAction(async (form: FormData) => {
     const paymentIntent = await createPaymentIntent({
       amount: 2000,
-      currency: 'usd',
-      payment_method_types: ['card'],
+      currency: 'eur',
+      payment_method_types: ['sepa_debit']
     })
-    const result = await state.stripe.confirmCardPayment(paymentIntent.client_secret, {
+
+    const result = await stripe().confirmSepaDebitPayment(paymentIntent.client_secret, {
       payment_method: {
-        card: state.elements.getElement(CardNumber),
+        sepa_debit: elements().getElement(Iban),
         billing_details: {
           name: form.get('name') as string,
-        },
+          email: form.get('email') as string,
+        }
       },
     })
 
@@ -50,7 +52,6 @@ function CheckoutForm() {
       throw new Error(result.error.message)
     }
     else {
-      // payment succeeded
       return result.paymentIntent
     }
   })
@@ -61,14 +62,9 @@ function CheckoutForm() {
         <Alert message={processing.error.message} type="error" />
       </Show>
       <Form class="flex flex-col gap-2.5 my-8">
-        <input name="name" placeholder="Your name" disabled={processing.pending} class="input input-bordered" />
-        <CardNumber classes={{ base: 'stripe-input' }} />
-        
-        <div class="flex gap-2">
-          <CardExpiry classes={{ base: 'stripe-input w-1/4' }} />
-          <CardCvc classes={{ base: 'stripe-input w-1/4' }}/>
-        </div>
-
+        <input placeholder="Name" class="input input-bordered" name="name" disabled={processing.pending} />
+        <input type="email" placeholder="Email" class="input input-bordered" name="email" disabled={processing.pending} />
+        <Iban supportedCountries={['SEPA']} classes={{ base: 'stripe-input' }} />
         <button class="btn btn-primary" disabled={processing.pending}>
           {processing.pending ? 'Processing...' : 'Pay'}
         </button>

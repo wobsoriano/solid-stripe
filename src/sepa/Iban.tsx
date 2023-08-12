@@ -26,7 +26,9 @@ export const Iban: Component<IbanElementProps> = (props) => {
     'iban',
     options,
     (type, event) => props[type]?.(event),
-  )
+  );
+
+  (Iban as any).__elementType = 'iban'
 
   return <div ref={setWrapper} />
 }
