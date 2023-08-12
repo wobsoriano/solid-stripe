@@ -60,9 +60,9 @@ export function MyPaymentComponent() {
 
 ### Creating a payment intent
 
-Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). This must happen server-side to avoid anyone tampering with the amount.
+Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). It’s a way to tell Stripe what amount to capture and to attach any relavent metadata, for example, the products they are buying. This must happen server-side to avoid anyone tampering with the amount.
 
-Add an endpoint `src/routes/api/create-payment-intent.tsx` to create a payment intent:
+Let's add an endpoint `src/routes/api/create-payment-intent.ts` to create the "payment intent":
 
 ```ts
 import { json } from 'solid-start'
@@ -72,11 +72,15 @@ const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY)
 
 export async function POST() {
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1069,
+    amount: 69420,
+    // note, for some EU-only payment methods it must be EUR
     currency: 'usd',
-    automatic_payment_methods: { enabled: true },
+    // specify what payment methods are allowed
+    // can be card, sepa_debit, ideal, etc...
+    payment_method_types: ['card'],
   })
 
+  // return the clientSecret to the client
   return json({
     clientSecret: paymentIntent.client_secret
   })
