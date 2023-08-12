@@ -60,4 +60,4 @@ function CheckoutForm() {
 }
 ```
 
-More info https://stripe.com/docs/payments/ideal
+[Code Demo](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/ideal/index.tsx)

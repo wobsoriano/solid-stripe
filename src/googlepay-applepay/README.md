@@ -66,4 +66,4 @@ function CheckoutForm() {
 }
 ```
 
-More info https://stripe.com/docs/stripe-js/elements/payment-request-button
+[Code Demo](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/payment-request.tsx)

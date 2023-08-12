@@ -54,3 +54,5 @@ function CheckoutForm() {
   )
 }
 ```
+
+[Code Demo](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/credit-card.tsx)

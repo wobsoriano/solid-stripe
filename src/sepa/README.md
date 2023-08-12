@@ -61,4 +61,4 @@ function CheckoutForm() {
 }
 ```
 
-More info https://stripe.com/docs/payments/sepa-debit
+[Code Demo](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/sepa.tsx)

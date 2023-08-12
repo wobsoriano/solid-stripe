@@ -63,4 +63,4 @@ const paymentIntent = stripe.paymentIntents.create({
 })
 ```
 
-More info https://stripe.com/docs/payments/payment-element
+[Code Example](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/payment-element.tsx)

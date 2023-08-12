@@ -20,4 +20,4 @@ function CheckoutForm() {
 }
 ```
 
-More info https://stripe.com/docs/payments/link/accept-a-payment
+[Code Example](https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/payment-element.tsx)
