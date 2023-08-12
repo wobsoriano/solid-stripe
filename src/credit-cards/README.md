@@ -28,7 +28,7 @@ export default function Page() {
 function CheckoutForm() {
   const stripe = useStripe()
 
-  const [, { Form }] = createRouteAction(async () => {
+  const [processing, { Form }] = createRouteAction(async () => {
     // Fetch from /api/create-payment-intent
     const clientSecret = await getClientSecret()
 
@@ -48,7 +48,7 @@ function CheckoutForm() {
       <CardNumber />
       <CardExpiry />
       <CardCvc />
-      <button>Pay</button>
+      <button disabled={processing.pending}>Pay</button>
     </Form>
   )
 }
