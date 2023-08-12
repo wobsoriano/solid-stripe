@@ -7,7 +7,7 @@ To use it, drop a `<PaymentElement>` component in your form:
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+import { Elements, PaymentElement, useStripe } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 
 export default function Page() {
