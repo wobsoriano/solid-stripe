@@ -8,7 +8,7 @@ It works in conjuction with `<PaymentElement>`:
 
 ```tsx
 function CheckoutForm() {
-  // Check the PaymentElement README for the whole implementation sample
+  // Check the PaymentElement README for the complete docs
 
   return (
     <Form>
