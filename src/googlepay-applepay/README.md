@@ -1,6 +1,6 @@
 ## Google Pay and Apple Pay
 
-Display a Google Pay or Apple Pay button using the `<PaymentRequestButton />` component.
+To display a Google Pay or Apple Pay button using the `<PaymentRequestButton />` component.
 
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
@@ -24,40 +24,43 @@ export default function Page() {
   )
 }
 
-export function CheckoutForm() {
+function CheckoutForm() {
   const stripe = useStripe()
 
   const paymentRequest = {
     country: 'US',
     currency: 'usd',
-    total: { label: 'Demo total', amount: 1099 },
+    total: { label: 'Demo total', amount: 69420 },
     requestPayerName: true,
     requestPayerEmail: true,
   }
 
   async function handlePaymentMethod(e) {
-    const clientSecret = await getClientSecret() // fetch from /api/create-payment-intent
+    // Fetch from /api/create-payment-intent
+    const clientSecret = await getClientSecret()
+
     const result = await stripe().confirmCardPayment(clientSecret, {
       payment_method: e.paymentMethod.id,
     })
 
     if (result.error) {
+      // mark failed
       e.detail.complete('fail')
 
       // payment failed, notify user
-      error = result.error
     }
     else {
+      // mark succeeded
       e.detail.complete('success')
 
-      // payment succeeded
+      // payment succeeded, redirect to some page
     }
   }
 
   return (
     <PaymentRequestButton
-    paymentRequest={paymentRequest}
-    onPaymentMethod={handlePaymentMethod}
+      paymentRequest={paymentRequest}
+      onPaymentMethod={handlePaymentMethod}
     />
   )
 }
