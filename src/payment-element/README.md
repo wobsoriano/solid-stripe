@@ -31,42 +31,32 @@ export default function Page() {
   )
 }
 
-export function CheckoutForm() {
+function CheckoutForm() {
   const stripe = useStripe()
-  const elements = useStripeElements()
-  // If you don't like signals, you can use the stripe proxy primitive
-  // const state = useStripeProxy()
 
-  const [, { Form }] = createRouteAction(async () => {
-    // state.stripe.confirmPayment if using proxy primitive
+  const [processing, { Form }] = createRouteAction(async () => {
     const result = await stripe().confirmPayment({
-      // state.elements if using proxy primitive
-      elements: elements(),
+      elements: stripe().elements,
       redirect: 'if_required',
     })
 
-    if (result.error) {
-      // payment failed, notify user
-    }
-    else {
-      // payment succeeded
-    }
+    // Do something with result
   })
 
   return (
     <Form>
       <PaymentElement />
-      <button>Pay</button>
+      <button disabled={processing.pending}>Pay</button>
     </Form>
   )
 }
 ```
 
-When creating the payment intent, enable the automatic_payment_methods: option:
+When creating the payment intent, enable the `automatic_payment_methods:` option:
 
 ```ts
-stripe.paymentIntents.create({
-  amount: 1069,
+const paymentIntent = stripe.paymentIntents.create({
+  amount: 69420,
   currency: 'eur',
   automatic_payment_methods: { enabled: true },
 })
