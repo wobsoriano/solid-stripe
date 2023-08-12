@@ -33,7 +33,7 @@ function CheckoutForm() {
 
     const result = await stripe().confirmIdealPayment(clientSecret, {
       payment_method: {
-        sepa_debit: stripe().elements.getElement(Iban),
+        ideal: stripe().elements.getElement(Iban),
         billing_details: {
           name: form.get('name'),
           email: form.get('email')
