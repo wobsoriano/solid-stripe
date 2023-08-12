@@ -27,7 +27,7 @@ export default function Nav(props: { children: JSXElement }) {
       <div class="drawer-side">
         <label for="my-drawer-3" class="drawer-overlay" />
         <ul class="menu p-4 w-80 h-full bg-base-200">
-          <li><A href="/">Home</A></li>
+          {/* <li><A href="/">Home</A></li> */}
           <li><A href="/credit-card">Credit cards</A></li>
           <li><A href="/payment-element">Payment Element</A></li>
           <li><A href="/payment-request">Payment Request</A></li>
