@@ -6,7 +6,7 @@ import vercel from 'solid-start-vercel'
 export default defineConfig((config) => {
   if (config.command === 'serve') {
     return {
-      plugins: [basicSsl(), solid({ adapter: vercel() })],
+      plugins: [basicSsl(), solid()],
     }
   }
 
