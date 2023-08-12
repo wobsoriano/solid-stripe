@@ -1,11 +1,11 @@
 ## SEPA
 
-To process SEPA debits, use the `<Iban>` component:
+To process iDEAL payments, use the `<Ideal>` component:
 
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, Iban, useStripe } from 'solid-stripe'
+import { Elements, Ideal, useStripe } from 'solid-stripe'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal(null)
@@ -31,7 +31,7 @@ function CheckoutForm() {
     // Fetch from /api/create-payment-intent
     const clientSecret = await getClientSecret()
 
-    const result = await stripe().confirmSepaDebitPayment(clientSecret, {
+    const result = await stripe().confirmIdealPayment(clientSecret, {
       payment_method: {
         sepa_debit: stripe().elements.getElement(Iban),
         billing_details: {
@@ -39,6 +39,8 @@ function CheckoutForm() {
           email: form.get('email')
         },
       },
+      // Make sure the pass a return_url
+      return_url: `${window.location.origin}/return`
     })
 
     // Do something with result
@@ -48,10 +50,7 @@ function CheckoutForm() {
     <Form>
       <input name="name" />
       <input type="email" name="email" />
-
-      {/* Customize the list of countries, or use "SEPA" to allow all supported countries */}
-      <Iban supportedCountries={['SEPA']} classes={{ base: 'stripe-input' }} />
-
+      <Ideal/>
       <button disabled={processing.pending}>
         Pay
       </button>
@@ -60,4 +59,4 @@ function CheckoutForm() {
 }
 ```
 
-More info https://stripe.com/docs/payments/sepa-debit
+More info https://stripe.com/docs/payments/ideal
