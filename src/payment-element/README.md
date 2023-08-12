@@ -7,7 +7,7 @@ To use it, drop a `<PaymentElement>` component in your form:
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, PaymentElement, useStripe } from 'solid-stripe'
+import { Elements, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 
 export default function Page() {
@@ -33,10 +33,11 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
+  const elements = useStripeElements()
 
   const [processing, { Form }] = createRouteAction(async () => {
     const result = await stripe().confirmPayment({
-      elements: stripe().elements,
+      elements: elements(),
       redirect: 'if_required',
     })
 

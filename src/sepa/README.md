@@ -5,7 +5,7 @@ To process SEPA debits, use the `<Iban>` component:
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, Iban, useStripe } from 'solid-stripe'
+import { Elements, Iban, useStripe, useStripeElements } from 'solid-stripe'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal(null)
@@ -26,6 +26,7 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
+  const elements = useStripeElements()
 
   const [processing, { Form }] = createRouteAction(async (form) => {
     // Fetch from /api/create-payment-intent
@@ -33,7 +34,7 @@ function CheckoutForm() {
 
     const result = await stripe().confirmSepaDebitPayment(clientSecret, {
       payment_method: {
-        sepa_debit: stripe().elements.getElement(Iban),
+        sepa_debit: elements().getElement(Iban),
         billing_details: {
           name: form.get('name'),
           email: form.get('email')

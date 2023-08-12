@@ -1,8 +1,9 @@
-import { StripeAddressElementChangeEvent, StripeAddressElementOptions } from "@stripe/stripe-js"
-import { ElementProps } from "./types"
-import { Component, mergeProps, splitProps } from "solid-js"
-import { createWrapper } from "./primitives/createWrapper"
-import { createStripeElement } from "./primitives/createStripeElement"
+import type { StripeAddressElementChangeEvent, StripeAddressElementOptions } from '@stripe/stripe-js'
+import type { Component } from 'solid-js'
+import { mergeProps, splitProps } from 'solid-js'
+import type { ElementProps } from './types'
+import { createWrapper } from './primitives/createWrapper'
+import { createStripeElement } from './primitives/createStripeElement'
 
 export type AddressProps = ElementProps<'address', StripeAddressElementChangeEvent & { error: any }> & StripeAddressElementOptions
 
@@ -14,8 +15,8 @@ export const Address: Component<AddressProps> = (props) => {
     style: {},
     mode: 'billing',
     autocomplete: {
-      mode: 'automatic'
-    }
+      mode: 'automatic',
+    },
   }
 
   const merged = mergeProps(defaultValues, props)

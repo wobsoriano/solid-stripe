@@ -5,7 +5,7 @@ These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 ```tsx
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { CardCvc, CardExpiry, CardNumber, Elements, useStripe } from 'solid-stripe'
+import { CardCvc, CardExpiry, CardNumber, Elements, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 
 export default function Page() {
@@ -27,6 +27,7 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
+  const elements = useStripeElements()
 
   const [processing, { Form }] = createRouteAction(async () => {
     // Fetch from /api/create-payment-intent
@@ -35,7 +36,7 @@ function CheckoutForm() {
     // When the form submits, pass the CardNumber component to stripe().confirmCardPayment()
     const result = await stripe().confirmCardPayment(clientSecret, {
       payment_method: {
-        card: stripe().elements.getElement(CardNumber),
+        card: elements().getElement(CardNumber),
         billing_details: {},
       },
     })
