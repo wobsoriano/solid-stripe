@@ -6,6 +6,7 @@ import { createRouteAction, useRouteData } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import { createServerData$ } from 'solid-start/server'
 import '~/styles/payment-element.css'
+import Alert from '~/components/Alert'
 
 export function routeData() {
   return createServerData$(async () => {
@@ -16,6 +17,8 @@ export function routeData() {
     })
 
     return paymentIntent
+  }, {
+    key: 'payment-element',
   })
 }
 
@@ -30,7 +33,7 @@ export default function Page() {
 
   return (
     <>
-      <h1>Payment Element Example</h1>
+      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Payment Element Example</h1>
       <Show when={stripe() && paymentIntent()} fallback={<div>Loading stripe...</div>}>
         <Elements
           stripe={stripe()}
@@ -70,13 +73,13 @@ function CheckoutForm() {
   return (
     <>
       <Show when={processing.error}>
-        <div class="error">{processing.error.message} Please try again.</div>
+        <Alert type="error" message={`${processing.error.message} Please try again.`} />
       </Show>
       <Form>
         <LinkAuthenticationElement />
         <PaymentElement />
         <Address mode="billing" />
-        <button disabled={processing.pending}>
+        <button class="btn btn-primary" disabled={processing.pending}>
           {processing.pending ? 'Processing...' : 'Pay'}
         </button>
       </Form>

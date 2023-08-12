@@ -7,16 +7,18 @@ import {
   FileRoutes,
   Head,
   Html,
+  Link,
   Meta,
   Routes,
   Scripts,
   Title,
 } from 'solid-start'
 import './root.css'
+import Nav from './components/Nav'
 
 export default function Root() {
   return (
-    <Html lang="en">
+    <Html lang="en" data-theme="light">
       <Head>
         <Title>SolidStart - Bare</Title>
         <Meta charset="utf-8" />
@@ -25,17 +27,13 @@ export default function Root() {
       <Body>
           <Suspense>
             <ErrorBoundary>
-              <div class="container">
-                <A href="/">Index</A>
-                <A href="/payment-element">Payment Element</A>
-                <A href="/credit-card">Credit Card</A>
-                <A href="/payment-request">Payment Request</A>
+                <Nav>
                 <main>
                   <Routes>
                     <FileRoutes />
                   </Routes>
                 </main>
-              </div>
+                </Nav>
             </ErrorBoundary>
           </Suspense>
           <Scripts />

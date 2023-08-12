@@ -6,6 +6,7 @@ import { createRouteAction, useRouteData } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import { createServerData$ } from 'solid-start/server'
 import '~/styles/payment-request.css'
+import Alert from '~/components/Alert'
 
 export function routeData() {
   return createServerData$(async () => {
@@ -83,7 +84,7 @@ function CheckoutForm() {
   return (
     <>
       <Show when={processing.error}>
-        <div class="error">{processing.error.message} Please try again.</div>
+        <Alert type="error" message={`${processing.error.message} Please try again.`} />
       </Show>
       <div class="wrapper">
         <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={pay} />

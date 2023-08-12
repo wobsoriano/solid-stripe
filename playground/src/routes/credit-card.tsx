@@ -5,6 +5,7 @@ import { CardCvc, CardExpiry, CardNumber, Elements, useStripeProxy } from 'solid
 import { createRouteAction } from 'solid-start/data'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import '~/styles/credit-card.css'
+import Alert from '~/components/Alert'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
@@ -16,9 +17,9 @@ export default function Page() {
 
   return (
     <>
-      <h1>Credit Card Example</h1>
+      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Credit Card Example</h1>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()}>
+        <Elements stripe={stripe()} options={{ theme: 'stripe' }}>
           <CheckoutForm />
         </Elements>
       </Show>
@@ -58,18 +59,18 @@ function CheckoutForm() {
   return (
     <>
       <Show when={processing.error}>
-        <div class="error">{processing.error.message}</div>
+        <Alert message={processing.error.message} type="error" />
       </Show>
-      <Form>
-        <input name="name" placeholder="Your name" disabled={processing.pending} />
-        <CardNumber classes={{ base: 'input' }} />
+      <Form class="flex flex-col gap-2.5 my-8">
+        <input name="name" placeholder="Your name" disabled={processing.pending} class="input input-bordered" />
+        <CardNumber classes={{ base: 'stripe-input' }} />
         
-        <div class="row">
-          <CardExpiry classes={{ base: 'input' }} />
-          <CardCvc classes={{ base: 'input' }}/>
+        <div class="flex gap-2">
+          <CardExpiry classes={{ base: 'stripe-input w-1/4' }} />
+          <CardCvc classes={{ base: 'stripe-input w-1/4' }}/>
         </div>
 
-        <button disabled={processing.pending}>
+        <button class="btn btn-primary" disabled={processing.pending}>
           {processing.pending ? 'Processing...' : 'Pay'}
         </button>
       </Form>
