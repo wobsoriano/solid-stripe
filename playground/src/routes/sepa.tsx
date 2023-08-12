@@ -18,7 +18,7 @@ export default function Page() {
     <>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">SEPA Example</h1>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()} options={{ theme: 'stripe' }}>
+        <Elements stripe={stripe()!} options={{ theme: 'stripe' }}>
           <CheckoutForm />
         </Elements>
       </Show>
@@ -34,16 +34,16 @@ function CheckoutForm() {
     const paymentIntent = await createPaymentIntent({
       amount: 2000,
       currency: 'eur',
-      payment_method_types: ['sepa_debit']
+      payment_method_types: ['sepa_debit'],
     })
 
-    const result = await stripe().confirmSepaDebitPayment(paymentIntent.client_secret, {
+    const result = await stripe()!.confirmSepaDebitPayment(paymentIntent.client_secret!, {
       payment_method: {
-        sepa_debit: elements().getElement(Iban),
+        sepa_debit: elements()!.getElement(Iban)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,
-        }
+        },
       },
     })
 
@@ -72,4 +72,3 @@ function CheckoutForm() {
     </>
   )
 }
-

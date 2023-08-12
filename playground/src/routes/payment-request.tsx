@@ -3,8 +3,8 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
 import { createRouteAction, useRouteData } from 'solid-start/data'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import { createServerData$ } from 'solid-start/server'
+import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import '~/styles/payment-request.css'
 import Alert from '~/components/Alert'
 
@@ -13,7 +13,7 @@ export function routeData() {
     const paymentIntent = await createPaymentIntent({
       amount: 2000,
       currency: 'usd',
-      payment_method_types: ['card']
+      payment_method_types: ['card'],
     })
 
     return paymentIntent
@@ -42,7 +42,7 @@ export default function Page() {
           >submitted to Apple</a>.
       </p>
       <Show when={stripe() && paymentIntent()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()}>
+        <Elements stripe={stripe()!}>
           <CheckoutForm />
         </Elements>
       </Show>
@@ -59,14 +59,14 @@ function CheckoutForm() {
     currency: 'usd',
     total: { label: 'Demo total', amount: 1099 },
     requestPayerName: true,
-    requestPayerEmail: true
+    requestPayerEmail: true,
   }
 
   const [processing, pay] = createRouteAction(async (payload: PaymentRequestPaymentMethodEvent) => {
     const paymentIntent = await createPaymentIntent()
 
-    const result = await stripe().confirmCardPayment(paymentIntent.client_secret, {
-      payment_method: payload.paymentMethod.id
+    const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret!, {
+      payment_method: payload.paymentMethod.id,
     })
 
     if (result.error) {
@@ -92,4 +92,3 @@ function CheckoutForm() {
     </>
   )
 }
-
