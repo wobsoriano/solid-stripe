@@ -1,32 +1,30 @@
-import type { Stripe } from '@stripe/stripe-js'
+import type { PaymentIntent, Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Address, Elements, LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
-import { createRouteAction, useRouteData } from 'solid-start/data'
-import { createServerData$ } from 'solid-start/server'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import { createRouteAction } from 'solid-start/data'
+
 import '~/styles/payment-element.css'
+import { redirect } from 'solid-start'
 import Alert from '~/components/Alert'
-
-export function routeData() {
-  return createServerData$(async () => {
-    const paymentIntent = await createPaymentIntent({
-      amount: 2000,
-      currency: 'usd',
-      payment_method_types: ['card'],
-    })
-
-    return paymentIntent
-  })
-}
+import { createPaymentIntent } from '~/lib/createPaymentIntent'
 
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
-  const paymentIntent = useRouteData<typeof routeData>()
+  const [paymentIntent, setPaymentIntent] = createSignal<PaymentIntent | null>(null)
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
     setStripe(result)
+
+    const paymentIntentData = await createPaymentIntent({
+      amount: 2000,
+      currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    })
+    setPaymentIntent(paymentIntentData)
   })
 
   return (
@@ -53,8 +51,8 @@ function CheckoutForm() {
   const elements = useStripeElements()
 
   const [processing, { Form }] = createRouteAction(async () => {
-    const result = await stripe()!.confirmPayment({
-      elements: elements()!,
+    const result = await stripe().confirmPayment({
+      elements: elements(),
       redirect: 'if_required',
     })
 
@@ -64,7 +62,7 @@ function CheckoutForm() {
     }
     else {
       // payment succeeded
-      return result.paymentIntent
+      return redirect('/success')
     }
   })
 

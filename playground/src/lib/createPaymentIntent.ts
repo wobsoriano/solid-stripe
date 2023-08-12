@@ -1,13 +1,17 @@
-import Stripe from 'stripe'
-
-const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY, undefined)
+import type { PaymentIntent } from '@stripe/stripe-js'
 
 export async function createPaymentIntent(paymentIntentParams?: Record<string, any>) {
-  const result = await stripe.paymentIntents.create({
-    amount: 2000,
-    currency: 'usd',
-    ...paymentIntentParams,
+  // eslint-disable-next-line no-console
+  console.log('Creating payment intent:', paymentIntentParams)
+  const resp = await fetch('/api/create-payment-intent', {
+    method: 'POST',
+    body: JSON.stringify({
+      amount: 2000,
+      currency: 'usd',
+      ...paymentIntentParams,
+    }),
   })
+  const result = await resp.json()
 
-  return result
+  return result as PaymentIntent
 }

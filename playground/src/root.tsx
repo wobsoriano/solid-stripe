@@ -1,13 +1,11 @@
 // @refresh reload
 import { Suspense } from 'solid-js'
 import {
-  A,
   Body,
   ErrorBoundary,
   FileRoutes,
   Head,
   Html,
-  Link,
   Meta,
   Routes,
   Scripts,
@@ -25,14 +23,14 @@ export default function Root() {
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Body>
-          <Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             <ErrorBoundary>
                 <Nav>
-                <main>
-                  <Routes>
-                    <FileRoutes />
-                  </Routes>
-                </main>
+                  <main>
+                    <Routes>
+                      <FileRoutes />
+                    </Routes>
+                  </main>
                 </Nav>
             </ErrorBoundary>
           </Suspense>

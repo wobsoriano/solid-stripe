@@ -2,27 +2,14 @@ import type { PaymentRequestPaymentMethodEvent, Stripe } from '@stripe/stripe-js
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
-import { createRouteAction, useRouteData } from 'solid-start/data'
-import { createServerData$ } from 'solid-start/server'
+import { createRouteAction } from 'solid-start/data'
+import { redirect } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import '~/styles/payment-request.css'
 import Alert from '~/components/Alert'
 
-export function routeData() {
-  return createServerData$(async () => {
-    const paymentIntent = await createPaymentIntent({
-      amount: 2000,
-      currency: 'usd',
-      payment_method_types: ['card'],
-    })
-
-    return paymentIntent
-  })
-}
-
 export default function Page() {
   const [stripe, setStripe] = createSignal<Stripe | null>(null)
-  const paymentIntent = useRouteData<typeof routeData>()
 
   onMount(async () => {
     const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
@@ -31,7 +18,7 @@ export default function Page() {
 
   return (
     <>
-      <h1>Payment Request Example</h1>
+      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Payment Request Example</h1>
       <p>
         If you see a blank screen, it's because this demo will only work if the TLD is <code
           >https://localhost</code> or if you're using production keys.
@@ -41,7 +28,7 @@ export default function Page() {
           href="https://support.stripe.com/questions/enable-apple-pay-on-your-stripe-account"
           >submitted to Apple</a>.
       </p>
-      <Show when={stripe() && paymentIntent()} fallback={<div>Loading stripe...</div>}>
+      <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
         <Elements stripe={stripe()!}>
           <CheckoutForm />
         </Elements>
@@ -77,7 +64,7 @@ function CheckoutForm() {
     else {
       // payment succeeded
       payload.complete('success')
-      return result.paymentIntent
+      return redirect('/success')
     }
   })
 

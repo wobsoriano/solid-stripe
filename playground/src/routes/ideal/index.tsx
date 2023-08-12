@@ -3,6 +3,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, Ideal, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
+import { redirect, useSearchParams } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
@@ -29,6 +30,7 @@ export default function Page() {
 function CheckoutForm() {
   const stripe = useStripe()
   const elements = useStripeElements()
+  const [searchParams] = useSearchParams()
 
   const [processing, { Form }] = createRouteAction(async (form: FormData) => {
     const paymentIntent = await createPaymentIntent({
@@ -37,9 +39,9 @@ function CheckoutForm() {
       payment_method_types: ['ideal'],
     })
 
-    const result = await stripe()!.confirmIdealPayment(paymentIntent.client_secret!, {
+    const result = await stripe().confirmIdealPayment(paymentIntent.client_secret!, {
       payment_method: {
-        ideal: elements()!.getElement(Ideal)!,
+        ideal: elements().getElement(Ideal)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,
@@ -53,14 +55,14 @@ function CheckoutForm() {
       throw new Error(result.error.message)
     }
     else {
-      return result.paymentIntent
+      return redirect('/success')
     }
   })
 
   return (
     <>
-      <Show when={processing.error}>
-        <Alert message={processing.error.message} type="error" />
+      <Show when={processing.error || searchParams.error}>
+        <Alert message="Payment failed. Please try again." type="error" />
       </Show>
       <Form class="flex flex-col gap-2.5 my-8">
         <input placeholder="Name" class="input input-bordered" name="name" disabled={processing.pending} />

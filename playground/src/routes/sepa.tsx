@@ -3,6 +3,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, Iban, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
+import { redirect } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
@@ -37,9 +38,9 @@ function CheckoutForm() {
       payment_method_types: ['sepa_debit'],
     })
 
-    const result = await stripe()!.confirmSepaDebitPayment(paymentIntent.client_secret!, {
+    const result = await stripe().confirmSepaDebitPayment(paymentIntent.client_secret!, {
       payment_method: {
-        sepa_debit: elements()!.getElement(Iban)!,
+        sepa_debit: elements().getElement(Iban)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,
@@ -52,7 +53,7 @@ function CheckoutForm() {
       throw new Error(result.error.message)
     }
     else {
-      return result.paymentIntent
+      return redirect('/success')
     }
   })
 

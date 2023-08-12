@@ -57,24 +57,25 @@ export const Elements: Component<Props> = (props) => {
   return <StripeContext.Provider value={value}>{props.children}</StripeContext.Provider>
 }
 
-export const useStripe = () => {
-  const ctx = useContext(StripeContext)
-  if (!ctx?.stripe())
-    throw new Error('Stripe not loaded')
-
-  return ctx.stripe
-}
-
-export const useStripeElements = () => {
+export function useStripe() {
   const ctx = useContext(StripeContext)
 
   if (!ctx?.stripe())
     throw new Error('Stripe not loaded')
 
-  return ctx.elements
+  return ctx.stripe as Accessor<Stripe>
 }
 
-export const useStripeProxy = () => {
+export function useStripeElements() {
+  const ctx = useContext(StripeContext)
+
+  if (!ctx?.stripe())
+    throw new Error('Stripe not loaded')
+
+  return ctx.elements as Accessor<StripeElements>
+}
+
+export function useStripeProxy() {
   const ctx = useContext(StripeContext)
 
   if (!ctx?.stripe())
