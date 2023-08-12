@@ -5,7 +5,6 @@ import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { redirect } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
-import '~/styles/payment-request.css'
 import Alert from '~/components/Alert'
 
 export default function Page() {
@@ -73,7 +72,7 @@ function CheckoutForm() {
       <Show when={processing.error}>
         <Alert type="error" message={`${processing.error.message} Please try again.`} />
       </Show>
-      <div class="wrapper">
+      <div class="my-12 mx-0 w-72">
         <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={pay} />
       </div>
     </>

@@ -4,7 +4,6 @@ import { Show, createSignal, onMount } from 'solid-js'
 import { Address, Elements, LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 
-import '~/styles/payment-element.css'
 import { redirect } from 'solid-start'
 import Alert from '~/components/Alert'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
@@ -71,7 +70,7 @@ function CheckoutForm() {
       <Show when={processing.error}>
         <Alert type="error" message={`${processing.error.message} Please try again.`} />
       </Show>
-      <Form>
+      <Form class="flex flex-col gap-2.5 my-8">
         <LinkAuthenticationElement />
         <PaymentElement />
         <Address mode="billing" />
