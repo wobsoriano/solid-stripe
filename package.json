@@ -56,9 +56,9 @@
   },
   "devDependencies": {
     "@antfu/eslint-config-ts": "^0.40.2",
-    "@stripe/stripe-js": "^2.0.0",
+    "@stripe/stripe-js": "^2.1.0",
     "bumpp": "^9.1.1",
-    "esbuild": "^0.19.1",
+    "esbuild": "^0.19.2",
     "esbuild-plugin-solid": "^0.5.0",
     "eslint": "^8.47.0",
     "eslint-plugin-solid": "^0.12.1",
