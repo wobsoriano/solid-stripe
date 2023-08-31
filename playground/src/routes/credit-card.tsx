@@ -52,7 +52,7 @@ function CheckoutForm() {
     }
     else {
       // payment succeeded
-      return redirect('/success')
+      return redirect(`/success?payment_intent=${paymentIntent.id}`)
     }
   })
 

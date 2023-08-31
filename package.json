@@ -64,6 +64,7 @@
     "eslint-plugin-solid": "^0.13.0",
     "solid-js": ">=1.7.11",
     "tsup": "^7.2.0",
+    "@alenaksu/json-viewer": "^2.0.1",
     "tsup-preset-solid": "^2.1.0",
     "typescript": "^5.2.2"
   }

@@ -55,7 +55,7 @@ function CheckoutForm() {
       throw new Error(result.error.message)
     }
     else {
-      return redirect('/success')
+      return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
   })
 

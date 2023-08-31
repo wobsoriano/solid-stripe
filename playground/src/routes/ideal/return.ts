@@ -20,5 +20,5 @@ export async function GET({ request }: APIEvent) {
   if (paymentIntent.status !== 'succeeded')
     throw redirect('/ideal?error=true')
 
-  return redirect('/success')
+  return redirect(`/success?payment_intent=${paymentIntent.id}`)
 }

@@ -63,7 +63,7 @@ function CheckoutForm() {
     else {
       // payment succeeded
       payload.complete('success')
-      return redirect('/success')
+      return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
   })
 
