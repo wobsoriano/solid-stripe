@@ -70,6 +70,9 @@ function CheckoutForm() {
           {processing.pending ? 'Processing...' : 'Pay'}
         </button>
       </Form>
+      <div class="flex flex-col">
+        <a class="link" target="_BLANK" href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/sepa.tsx">View code</a>
+      </div>
     </>
   )
 }

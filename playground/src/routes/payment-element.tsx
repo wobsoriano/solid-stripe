@@ -78,6 +78,10 @@ function CheckoutForm() {
           {processing.pending ? 'Processing...' : 'Pay'}
         </button>
       </Form>
+      <div class="flex flex-col">
+        <a class="link" target="_BLANK" href="https://stripe.com/docs/testing#cards">Test cards</a>
+        <a class="link" target="_BLANK" href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/payment-element.tsx">View code</a>
+      </div>
     </>
   )
 }
