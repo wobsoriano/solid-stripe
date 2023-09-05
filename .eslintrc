@@ -1,4 +1,7 @@
 {
   "plugins": ["solid"],
-  "extends": ["@antfu/eslint-config-ts", "plugin:solid/typescript"]
+  "extends": ["@antfu/eslint-config-ts", "plugin:solid/typescript"],
+  "rules": {
+    "n/prefer-global/process": "off"
+  }
 }
