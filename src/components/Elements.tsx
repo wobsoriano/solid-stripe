@@ -8,7 +8,7 @@ export const StripeContext = createContext<{
 }>()
 
 interface Props {
-  stripe?: Stripe
+  stripe: Stripe | null
   clientSecret?: string
   theme?: Appearance['theme']
   variables?: Appearance['variables']
