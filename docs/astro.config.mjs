@@ -40,7 +40,7 @@ export default defineConfig({
           label: 'Primitives',
           items: [
             { label: 'useStripe', link: '/primitives/use-stripe' },
-            { label: 'useStripeElements', link: '/primitives/use-elements' },
+            { label: 'useElements', link: '/primitives/use-elements' },
             { label: 'useStripeProxy', link: '/primitives/use-stripe-proxy' },
           ],
         },
