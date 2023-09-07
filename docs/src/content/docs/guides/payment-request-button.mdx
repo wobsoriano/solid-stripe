@@ -1,0 +1,84 @@
+---
+title: Payment Request Button
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components'
+
+The Payment Request Button Element gives you a single integration for [Apple Pay](https://stripe.com/docs/apple-pay), [Google Pay](https://stripe.com/docs/google-pay), [Microsoft Pay](https://stripe.com/docs/microsoft-pay), and the browser standard [Payment Request API](https://stripe.com/docs/stripe-js/reference#stripe-payment-request).
+
+To use it, drop a `<PaymentRequestButton />` component:
+
+<Tabs>
+  <TabItem label="Payment.tsx">
+    ```tsx
+    import { loadStripe } from '@stripe/stripe-js'
+    import { Show, createSignal, onMount } from 'solid-js'
+    import { Elements } from 'solid-stripe'
+    import CheckoutForm from './CheckoutForm'
+
+    export default function Payment() {
+      const [stripe, setStripe] = createSignal(null)
+
+      onMount(async () => {
+        const result = await loadStripe('{{STRIPE_PUBLIC_KEY}}')
+        setStripe(result)
+      })
+
+      return (
+        <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
+          <Elements stripe={stripe()}>
+            <CheckoutForm />
+          </Elements>
+        </Show>
+      )
+    }
+    ```
+  </TabItem>
+  <TabItem label="CheckoutForm.tsx">
+    ```tsx
+    import type { PaymentRequestPaymentMethodEvent } from '@stripe/stripe-js'
+    import { PaymentRequestButton, useStripe } from 'solid-stripe'
+
+    export default function CheckoutForm() {
+      const stripe = useStripe()
+
+      // Declare payment metadata (amounts must match payment intent)
+      const paymentRequest = {
+        country: 'US',
+        currency: 'usd',
+        total: { label: 'Demo total', amount: 1099 },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      }
+
+      async function handlePaymentRequest(ev: PaymentRequestPaymentMethodEvent) {
+        // Create payment intent server side
+        const clientSecret = await createPaymentIntent()
+
+        const result = await stripe().confirmCardPayment(clientSecret, {
+          payment_method: ev.paymentMethod.id,
+        })
+
+        if (result.error) {
+          // Report to the browser that the payment failed,
+          // prompting it to re-show the payment interface,
+          // or show an error message and close the payment.
+          ev.complete('fail')
+        }
+        else {
+          // Report to the browser that the confirmation was
+          // successful, prompting it to close the browser
+          // payment method collection interface.
+          ev.complete('success')
+        }
+      }
+
+      return (
+        <PaymentRequestButton paymentRequest={handlePaymentRequest} onPaymentMethod={pay} />
+      )
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+[Live Demo](https://solid-stripe.vercel.app/payment-request)

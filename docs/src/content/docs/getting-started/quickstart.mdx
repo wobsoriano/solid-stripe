@@ -1,0 +1,73 @@
+---
+title: Quickstart
+description: A guide in my new Starlight docs site.
+---
+
+In your payment page, initialize Stripe and add a [`<Elements />`](/guides/elements-provider) component:
+
+```tsx
+import { Show, createSignal, onMount } from 'solid-js'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from 'solid-stripe'
+
+function MyPaymentComponent() {
+  const [stripe, setStripe] = createSignal(null)
+
+  onMount(async () => {
+    const result = await loadStripe('{{STRIPE_PUBLIC_KEY}}')
+    setStripe(result)
+  })
+
+  return (
+    <Show when={stripe()} fallback={<div>Loading stripe</div>}>
+      <Elements stripe={stripe()}>
+        {/* this is where your Stripe components go */}
+      </Elements>
+    </Show>
+  )
+}
+```
+
+## Creating a payment intent
+
+Before making a charge, Stripe should be notified by creating a [payment intent](https://stripe.com/docs/api/payment_intents). It’s a way to tell Stripe what amount to capture and to attach any relavent metadata, for example, the products they are buying. This must happen server-side to avoid anyone tampering with the amount.
+
+Create a `POST` API endpoint that will receive the payment intent options. Be sure to validate the form values before you use them.
+
+This example uses [solid-start API Routes](https://start.solidjs.com/core-concepts/api-routes), but feel free to choose the one that best fits your project's needs.
+
+```ts
+// file: src/api/create-payment-intent.ts
+
+import { json } from 'solid-start'
+import Stripe from 'stripe'
+
+const stripe = new Stripe('{{STRIPE_SECRET_KEY}}')
+
+export async function POST() {
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 2000,
+    // note, for some EU-only payment methods it must be EUR
+    currency: 'usd',
+    // specify what payment methods are allowed
+    // can be card, sepa_debit, ideal, etc...
+    payment_method_types: ['card'],
+  })
+
+  // return the clientSecret to the client
+  return json({
+    clientSecret: paymentIntent.client_secret
+  })
+}
+```
+
+## Accepting payments
+
+There are several types of payment you can accept:
+
+- [Payment Element](/guides/payment-element)
+- [Link Authentication](/guides/link-authentication)
+- [Credit Cards](/guides/credit-cards)
+- [Google Pay and Apple Pay](/guides/payment-request-button)
+- [SEPA](/guides/sepa)
+- [iDEAL](/guides/ideal)

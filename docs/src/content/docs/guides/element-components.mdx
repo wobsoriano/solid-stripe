@@ -1,0 +1,20 @@
+---
+title: Element components
+---
+
+Element components provide a flexible way to securely collect payment information in your Solid app.
+
+You can mount individual Element components inside of your `Elements` tree.
+
+```tsx
+import { PaymentElement } from 'solid-stripe'
+
+function CheckoutForm() {
+  return (
+    <form>
+      <PaymentElement />
+      <button>Submit</button>
+    </form>
+  )
+}
+```

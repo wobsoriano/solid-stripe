@@ -1,4 +1,4 @@
-type Props = {
+interface Props {
   message: string
   type: 'error' | 'success' | 'info' | 'warning'
 }

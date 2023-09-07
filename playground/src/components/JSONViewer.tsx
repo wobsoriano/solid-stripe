@@ -9,7 +9,7 @@ declare module 'solid-js' {
   }
 }
 
-export default function JSONViewer({ data }: { data: Record<string, any> }) {
+export default function JSONViewer(props: { data: Record<string, any> }) {
   let viewer: HTMLElement
 
   onMount(() => {
@@ -19,7 +19,7 @@ export default function JSONViewer({ data }: { data: Record<string, any> }) {
 
   return (
     <json-viewer ref={viewer!}>
-      {JSON.stringify(data)}
+      {JSON.stringify(props.data)}
     </json-viewer>
   )
 }
