@@ -1,0 +1,79 @@
+---
+title: Link Authentication
+---
+
+import { Card, Tabs, TabItem } from '@astrojs/starlight/components'
+
+With [Link](https://www.sveltestripe.com/#link-authentication:~:text=With-,Link,-%2C%20customer%E2%80%99s%20don%E2%80%99t%20have), customer’s don’t have to re-enter payment and address details for each purchase. Their details are retreived based on their e-mail address.
+
+Once they enter their e-mail they receive an SMS code to verify their identity.
+
+It works in conjuction with [`<PaymentElement>`](/guides/payment-element):
+
+<Tabs>
+  <TabItem label="Payment.tsx">
+    ```tsx
+    import { createSignal, Show } from 'solid-js'
+    import { Elements} from 'solid-stripe'
+    import { loadStripe } from '@stripe/stripe-js'
+    import CheckoutForm from './CheckoutForm'
+
+    export default function Payment() {
+      const [stripe, setStripe] = createSignal(null)
+      const [clientSecret, setClientSecret] = createSignal(null)
+
+      onMount(async () => {
+        const result = await loadStripe('{{STRIPE_PUBLIC_KEY}}')
+        setStripe(result)
+
+        // Create payment intent server side
+        const secret = await createPaymentIntent()
+        setClientSecret(secret)
+      })
+
+      return (
+        <Show when={stripe() && clientSecret()}>
+          <Elements stripe={stripe()} clientSecret={clientSecret()}>
+            <CheckoutForm />
+          </Elements>
+        </Show>
+      )
+    }
+    ```
+  </TabItem>
+  <TabItem label="CheckoutForm.tsx">
+    ```tsx
+    import { LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+
+    export default function CheckoutForm() {
+      const stripe = useStripe()
+      const elements = useStripeElements()
+
+      async function handleSubmit(event: SubmitEvent) {
+        event.preventDefault()
+        const result = await stripe().confirmPayment({
+          elements: elements(),
+          redirect: 'if_required',
+        })
+
+        if (result.error) {
+          // payment failed
+        }
+        else {
+          // payment succeeded
+        }
+      }
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <PaymentElement />
+          <LinkAuthenticationElement />
+          <button>Pay</button>
+        </form>
+      )
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+[Live Demo](https://solid-stripe.vercel.app/link-authentication)

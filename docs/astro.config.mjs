@@ -7,25 +7,42 @@ export default defineConfig({
   integrations: [
     solid(),
     starlight({
-      title: 'My Docs',
+      title: 'Solid Stripe',
       customCss: [
         // Relative path to your custom CSS file
         './src/styles/custom.css',
       ],
       social: {
-        github: 'https://github.com/withastro/starlight',
+        github: 'https://github.com/wobsoriano/solid-stripe',
       },
       sidebar: [
         {
-          label: 'Guides',
+          label: 'Getting Started',
           items: [
-            // Each item here is one entry in the navigation menu.
-            { label: 'Example Guide', link: '/guides/example/' },
+            { label: 'Installation', link: '/getting-started/installation' },
+            { label: 'Quickstart', link: '/getting-started/quickstart' },
           ],
         },
         {
-          label: 'Reference',
-          autogenerate: { directory: 'reference' },
+          label: 'Guides',
+          items: [
+            { label: 'Payment Element', link: '/guides/payment-element/' },
+            { label: 'Link Authentication', link: '/guides/link-authentication/' },
+            { label: 'Credit Cards', link: '/guides/credit-cards/' },
+            { label: 'GooglePay & ApplePay', link: '/guides/payment-request-button/' },
+            { label: 'SEPA', link: '/guides/sepa/' },
+            { label: 'iDEAL', link: '/guides/ideal/' },
+            { label: 'Elements provider', link: '/guides/elements-provider' },
+            { label: 'Element components', link: '/guides/element-components' },
+          ],
+        },
+        {
+          label: 'Primitives',
+          items: [
+            { label: 'useStripe', link: '/primitives/use-stripe' },
+            { label: 'useStripeElements', link: '/primitives/use-elements' },
+            { label: 'useStripeProxy', link: '/primitives/use-stripe-proxy' },
+          ],
         },
       ],
     }),

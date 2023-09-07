@@ -1,0 +1,30 @@
+---
+title: Elements provider
+---
+
+The `Elements` provider allows you to use Element components and access the [Stripe object](https://stripe.com/docs/js/initializing) in any nested component.
+
+To use the `Elements` provider, call `loadStripe` from `@stripe/stripe-js` with your publishable key. The loadStripe function asynchronously loads the Stripe.js script and initializes a Stripe object. Pass the result of the promise to `Elements`.
+
+```tsx
+import { Show, createSignal, onMount } from 'solid-js'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from 'solid-stripe'
+
+export default function MyPaymentComponent() {
+  const [stripe, setStripe] = createSignal(null)
+
+  onMount(async () => {
+    const result = await loadStripe('{{PUBLIC_KEY}}')
+    setStripe(result)
+  })
+
+  return (
+    <Show when={stripe()} fallback={<div>Loading stripe</div>}>
+      <Elements stripe={stripe()}>
+        <CheckoutForm />
+      </Elements>
+    </Show>
+  )
+}
+```
