@@ -1,7 +1,7 @@
 import type { StripeElementType, StripeElementsOptions } from '@stripe/stripe-js'
 import type { Accessor } from 'solid-js'
 import { createEffect, onCleanup } from 'solid-js'
-import { useStripeElements } from '../Elements'
+import { useStripeElements } from '../components/Elements'
 
 type FixMe = Record<string, any>
 type NormalFn = () => StripeElementsOptions & FixMe
