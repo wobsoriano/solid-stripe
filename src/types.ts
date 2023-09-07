@@ -1,14 +1,14 @@
 import type * as stripeJs from '@stripe/stripe-js'
 import type { Component } from 'solid-js'
-import type { CardElementProps } from './credit-cards/Card'
-import type { CardCvcElementProps } from './credit-cards/CardCvc'
-import type { CardExpiryElementProps } from './credit-cards/CardExpiry'
-import type { CardNumberElementProps } from './credit-cards/CardNumber'
-import type { PaymentRequestButtonProps } from './googlepay-applepay/PaymentRequestButton'
-import type { IdealBankElementProps } from './ideal/Ideal'
-import type { LinkAuthenticationElementProps } from './link-authentication/LinkAuthenticationElement'
-import type { PaymentElementProps } from './payment-element/PaymentElement'
-import type { IbanElementProps } from './sepa/Iban'
+import type { CardElementProps } from './components/Card'
+import type { CardCvcElementProps } from './components/CardCvc'
+import type { CardExpiryElementProps } from './components/CardExpiry'
+import type { CardNumberElementProps } from './components/CardNumber'
+import type { PaymentRequestButtonProps } from './components/PaymentRequestButton'
+import type { IdealBankElementProps } from './components/Ideal'
+import type { LinkAuthenticationElementProps } from './components/LinkAuthenticationElement'
+import type { PaymentElementProps } from './components/PaymentElement'
+import type { IbanElementProps } from './components/Iban'
 
 export interface ElementProps<
   T extends stripeJs.StripeElementType,

@@ -43,11 +43,11 @@ It works in conjuction with [`<PaymentElement>`](/guides/payment-element):
   </TabItem>
   <TabItem label="CheckoutForm.tsx">
     ```tsx
-    import { LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+    import { LinkAuthenticationElement, PaymentElement, useStripe, useElements } from 'solid-stripe'
 
     export default function CheckoutForm() {
       const stripe = useStripe()
-      const elements = useStripeElements()
+      const elements = useElements()
 
       async function handleSubmit(event: SubmitEvent) {
         event.preventDefault()

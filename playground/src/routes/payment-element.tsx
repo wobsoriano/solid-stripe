@@ -1,7 +1,7 @@
 import type { PaymentIntent, Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Address, Elements, LinkAuthenticationElement, PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+import { Address, Elements, LinkAuthenticationElement, PaymentElement, useElements, useStripe, useStripeElements } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 
 import { redirect } from 'solid-start'
@@ -47,11 +47,11 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
-  const elements = useStripeElements()
+  const elements = useElements()
 
   const [processing, { Form }] = createRouteAction(async () => {
-    const result = await stripe().confirmPayment({
-      elements: elements(),
+    const result = await stripe()!.confirmPayment({
+      elements: elements()!,
       redirect: 'if_required',
     })
 

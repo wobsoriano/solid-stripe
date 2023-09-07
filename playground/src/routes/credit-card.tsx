@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { CardCvc, CardExpiry, CardNumber, Elements, useStripe, useStripeElements } from 'solid-stripe'
+import { CardCvc, CardExpiry, CardNumber, Elements, useElements, useStripe } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { redirect } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
@@ -29,7 +29,7 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
-  const elements = useStripeElements()
+  const elements = useElements()
 
   const [processing, { Form }] = createRouteAction(async (form: FormData) => {
     const paymentIntent = await createPaymentIntent({
@@ -37,9 +37,9 @@ function CheckoutForm() {
       currency: 'usd',
       payment_method_types: ['card'],
     })
-    const result = await stripe().confirmCardPayment(paymentIntent.client_secret!, {
+    const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret!, {
       payment_method: {
-        card: elements().getElement(CardNumber)!,
+        card: elements()!.getElement(CardNumber)!,
         billing_details: {
           name: form.get('name') as string,
         },

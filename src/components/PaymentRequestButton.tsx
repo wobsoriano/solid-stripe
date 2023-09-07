@@ -6,7 +6,7 @@ import type {
 import type { Component, Setter } from 'solid-js'
 import { createEffect, mergeProps, onCleanup } from 'solid-js'
 import type { ElementProps } from '../types'
-import { useStripe, useStripeElements } from '../Elements'
+import { useStripe, useStripeElements } from './Elements'
 
 export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'>
 & Omit<StripePaymentRequestButtonElementOptions, 'paymentRequest'>

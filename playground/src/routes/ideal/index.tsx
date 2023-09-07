@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, Ideal, useStripe, useStripeElements } from 'solid-stripe'
+import { Elements, Ideal, useElements, useStripe } from 'solid-stripe'
 import { createRouteAction } from 'solid-start/data'
 import { redirect, useSearchParams } from 'solid-start'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
@@ -29,7 +29,7 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
-  const elements = useStripeElements()
+  const elements = useElements()
   const [searchParams] = useSearchParams()
 
   const [processing, { Form }] = createRouteAction(async (form: FormData) => {
@@ -39,9 +39,9 @@ function CheckoutForm() {
       payment_method_types: ['ideal'],
     })
 
-    const result = await stripe().confirmIdealPayment(paymentIntent.client_secret!, {
+    const result = await stripe()!.confirmIdealPayment(paymentIntent.client_secret!, {
       payment_method: {
-        ideal: elements().getElement(Ideal)!,
+        ideal: elements()!.getElement(Ideal)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,

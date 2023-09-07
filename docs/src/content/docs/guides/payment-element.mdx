@@ -43,11 +43,11 @@ Here's an example on how to collect payments with `<PaymentElement />`:
   </TabItem>
   <TabItem label="CheckoutForm.tsx">
     ```tsx
-    import { PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+    import { PaymentElement, useStripe, useElements } from 'solid-stripe'
 
     export default function CheckoutForm() {
       const stripe = useStripe()
-      const elements = useStripeElements()
+      const elements = useElements()
 
       async function handleSubmit(event: SubmitEvent) {
         event.preventDefault()

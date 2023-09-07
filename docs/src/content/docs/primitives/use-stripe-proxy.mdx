@@ -1,43 +1,47 @@
 ---
-title: useStripe
+title: useStripeProxy
 ---
 
-Same as [`useStripe`](/primitives/use-stripe), but returns a proxy instead of an accessor.
+import { Tabs, TabItem } from '@astrojs/starlight/components'
 
-```tsx
-import { PaymentElement, useStripeProxy } from 'solid-stripe'
+A proxy that returns stripe and elements instance. Use this if you want better type-narrowing.
 
-export default function CheckoutForm() {
-  const stripe = useStripeProxy()
+<Tabs>
+  <TabItem label="with useStripeProxy">
+    ```tsx
+    const sp = useStripeProxy()
 
-  async function handleSubmit(event) {
-    // We don't want to let default form submission happen here,
-    // which would refresh the page.
-    event.preventDefault();
+    async function handleSubmit(event) {
+      event.preventDefault();
 
-    const result = await stripe.confirmPayment({
-      // `Elements` instance that was used to create the Payment Element
-      elements: stripe.elements,
-      confirmParams: {
-        return_url: 'https://example.com/order/123/complete,
-      },
-    })
+      if (!sp.stripe || !sp.elements) {
+        return
+      }
 
-    if (result.error) {
-      // Show error to your customer (for example, payment details incomplete)
-      console.log(result.error.message);
-    } else {
-      // Your customer will be redirected to your `return_url`. For some payment
-      // methods like iDEAL, your customer will be redirected to an intermediate
-      // site first to authorize the payment, then redirected to the `return_url`.
+      // Non-null assertion not needed
+      const result = await sp.stripe.confirmPayment({
+        elements: sp.elements,
+      })
     }
-  }
+    ```
+  </TabItem>
+  <TabItem label="with useStripe and useElements">
+    ```tsx
+    const stripe = useStripe()
+    const elements = useElements()
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement />
-      <button>Submit</button>
-    </form>
-  )
-}
-```
+    async function handleSubmit(event) {
+      event.preventDefault();
+
+      if (!stripe() || !elements()) {
+        return
+      }
+
+      // Non-null assertion needed
+      const result = await stripe()!.confirmPayment({
+        elements: elements()!,
+      })
+    }
+    ```
+  </TabItem>
+</Tabs>

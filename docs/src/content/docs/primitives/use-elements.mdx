@@ -1,15 +1,15 @@
 ---
-title: useStripeElements
+title: useElements
 ---
 
 To safely pass the payment information collected by the Payment Element to the Stripe API, access the Elements instance so that you can use it with [stripe.confirmPayment](https://stripe.com/docs/js/payment_intents/confirm_payment).
 
 ```tsx
-import { PaymentElement, useStripe, useStripeElements } from 'solid-stripe'
+import { PaymentElement, useStripe, useElements } from 'solid-stripe'
 
 export default function CheckoutForm() {
   const stripe = useStripe()
-  const elements = useStripeElements()
+  const elements = useElements()
 
   async function handleSubmit(event) {
     // We don't want to let default form submission happen here,
