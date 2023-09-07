@@ -66,7 +66,12 @@ export function useStripe() {
   return ctx.stripe as Accessor<Stripe>
 }
 
-export function useStripeElements() {
+/**
+ * Deprecated. Use `useElements` instead.
+ */
+export const useStripeElements = useElements
+
+export function useElements() {
   const ctx = useContext(StripeContext)
 
   if (!ctx?.stripe())
