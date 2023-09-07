@@ -39,12 +39,12 @@ These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
       CardExpiry,
       CardNumber,
       useStripe,
-      useStripeElements
+      useElements
     } from 'solid-stripe'
 
     export default function CheckoutForm() {
       const stripe = useStripe()
-      const elements = useStripeElements()
+      const elements = useElements()
 
       async function handleSubmit(event) {
         event.preventDefault()

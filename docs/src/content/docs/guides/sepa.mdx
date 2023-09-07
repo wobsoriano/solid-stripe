@@ -34,11 +34,11 @@ To process SEPA debits, use the `<Iban>` component:
   </TabItem>
   <TabItem label="CheckoutForm.tsx">
     ```tsx
-    import { Iban, useStripe, useStripeElements } from 'solid-stripe'
+    import { Iban, useStripe, useElements } from 'solid-stripe'
 
     export default function CheckoutForm() {
       const stripe = useStripe()
-      const elements = useStripeElements()
+      const elements = useElements()
 
       async function handleSubmit(event: SubmitEvent) {
         event.preventDefault()

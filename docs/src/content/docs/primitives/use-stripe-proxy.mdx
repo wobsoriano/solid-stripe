@@ -14,7 +14,7 @@ A proxy that returns stripe and elements instance. Use this if you want better t
     async function handleSubmit(event) {
       event.preventDefault();
 
-      if (!sp.stripe || !sp.elements()) {
+      if (!sp.stripe || !sp.elements) {
         return
       }
 
