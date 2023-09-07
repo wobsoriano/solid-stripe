@@ -1,9 +1,9 @@
 import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createComputed, createContext, createMemo, createSignal, mergeProps, useContext } from 'solid-js'
+import { createComputed, createContext, createSignal, mergeProps, useContext } from 'solid-js'
 
 export const StripeContext = createContext<{
-  stripe: Accessor<Stripe | undefined>
+  stripe: Accessor<Stripe | null>
   elements: Accessor<StripeElements | null>
 }>()
 
@@ -48,7 +48,7 @@ export const Elements: Component<Props> = (props) => {
     }
   })
 
-  const stripe = createMemo(() => props.stripe)
+  const stripe = () => props.stripe || null
   const value = {
     stripe,
     elements,
@@ -60,10 +60,10 @@ export const Elements: Component<Props> = (props) => {
 export function useStripe() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx?.stripe())
-    throw new Error('Stripe not loaded')
+  if (!ctx)
+    throw new Error('useStripe must be used within a <Elements> component')
 
-  return ctx.stripe as Accessor<Stripe>
+  return ctx.stripe
 }
 
 /**
@@ -74,17 +74,17 @@ export const useStripeElements = useElements
 export function useElements() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx?.stripe())
-    throw new Error('Stripe not loaded')
+  if (!ctx)
+    throw new Error('useElements must be used within a <Elements> component')
 
-  return ctx.elements as Accessor<StripeElements>
+  return ctx.elements
 }
 
 export function useStripeProxy() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx?.stripe())
-    throw new Error('Stripe not loaded')
+  if (!ctx)
+    throw new Error('useStripeProxy must be used within a <Elements> component')
 
   return {
     get stripe() {
