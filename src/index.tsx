@@ -12,5 +12,6 @@ export {
   Elements,
   useStripe,
   useStripeElements,
+  useElements,
   useStripeProxy,
 } from './components/Elements'
