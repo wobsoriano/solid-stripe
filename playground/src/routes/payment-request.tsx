@@ -1,7 +1,7 @@
-import type { PaymentRequestPaymentMethodEvent, Stripe } from '@stripe/stripe-js'
+import type { PaymentRequest, PaymentRequestPaymentMethodEvent, Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
+import { Show, createComputed, createSignal, onMount } from 'solid-js'
+import { Elements, PaymentRequestButtonElement, useStripe } from 'solid-stripe'
 import { action, redirect, useAction, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
@@ -39,15 +39,7 @@ export default function Page() {
 
 function CheckoutForm() {
   const stripe = useStripe()
-
-  // declare payment metadata (amounts must match payment intent)
-  const paymentRequest = {
-    country: 'US',
-    currency: 'usd',
-    total: { label: 'Demo total', amount: 1099 },
-    requestPayerName: true,
-    requestPayerEmail: true,
-  }
+  const [paymentRequest, setPaymentRequest] = createSignal<PaymentRequest | null>(null)
 
   const paymentAction = action(async (payload: PaymentRequestPaymentMethodEvent) => {
     const paymentIntent = await createPaymentIntent()
@@ -70,13 +62,31 @@ function CheckoutForm() {
   const submission = useSubmission(paymentAction)
   const submit = useAction(paymentAction)
 
+  createComputed(() => {
+    const pr = stripe()!.paymentRequest({
+      country: 'US',
+      currency: 'usd',
+      total: { label: 'Demo total', amount: 1099 },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    })
+    pr.on('paymentmethod', submit)
+    setPaymentRequest(pr)
+  })
+
   return (
     <>
       <Show when={submission.error}>
         <Alert type="error" message={`${submission.error.message} Please try again.`} />
       </Show>
       <div class="my-12 mx-0 w-72">
-        <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={submit} />
+        <Show when={paymentRequest()}>
+          <PaymentRequestButtonElement
+            options={{
+              paymentRequest: paymentRequest(),
+            }}
+          />
+        </Show>
       </div>
     </>
   )

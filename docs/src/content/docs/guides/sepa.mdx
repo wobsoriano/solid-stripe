@@ -4,7 +4,7 @@ title: SEPA
 
 import { Tabs, TabItem } from '@astrojs/starlight/components'
 
-To process SEPA debits, use the `<Iban>` component:
+To process SEPA debits, use the `<IbanElement>` component:
 
 <Tabs>
   <TabItem label="Payment.tsx">
@@ -34,7 +34,7 @@ To process SEPA debits, use the `<Iban>` component:
   </TabItem>
   <TabItem label="CheckoutForm.tsx">
     ```tsx
-    import { Iban, useStripe, useElements } from 'solid-stripe'
+    import { IbanElement, useStripe, useElements } from 'solid-stripe'
 
     export default function CheckoutForm() {
       const stripe = useStripe()
@@ -51,7 +51,7 @@ To process SEPA debits, use the `<Iban>` component:
         // When the form submits, pass the Iban component to stripe().confirmSepaDebitPayment()
         const result = await stripe().confirmSepaDebitPayment(clientSecret, {
           payment_method: {
-            sepa_debit: elements().getElement(Iban),
+            sepa_debit: elements().getElement(IbanElement),
             billing_details: {
               name: formData.get('name'),
               email: formData.get('email')
@@ -71,7 +71,7 @@ To process SEPA debits, use the `<Iban>` component:
         <form onSubmit={handleSubmit}>
           <input name="name" placeholder="Name" />
           <input type="email" placeholder="Email" name="email" />
-          <Iban supportedCountries={['SEPA']} />
+          <IbanElement options={{ supportedCountries: ['SEPA'] }} />
           <button>Pay</button>
         </form>
       )

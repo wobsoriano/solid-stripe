@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, Iban, useElements, useStripe } from 'solid-stripe'
+import { Elements, IbanElement, useElements, useStripe } from 'solid-stripe'
 import { action, redirect, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
@@ -39,7 +39,7 @@ function CheckoutForm() {
 
     const result = await stripe()!.confirmSepaDebitPayment(paymentIntent.client_secret!, {
       payment_method: {
-        sepa_debit: elements()!.getElement(Iban)!,
+        sepa_debit: elements()!.getElement(IbanElement)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,
@@ -76,7 +76,7 @@ function CheckoutForm() {
           name="email"
           disabled={submission.pending}
         />
-        <Iban supportedCountries={['SEPA']} classes={{ base: 'stripe-input' }} />
+        <IbanElement options={{ supportedCountries: ['SEPA'], classes: { base: 'stripe-input' } }} />
         <button class="btn btn-primary" disabled={submission.pending}>
           {submission.pending ? 'Processing...' : 'Pay'}
         </button>

@@ -1,7 +1,7 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { Elements, Ideal, useElements, useStripe } from 'solid-stripe'
+import { Elements, IdealBankElement, useElements, useStripe } from 'solid-stripe'
 import { action, redirect, useSearchParams, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
@@ -40,7 +40,7 @@ function CheckoutForm() {
 
     const result = await stripe()!.confirmIdealPayment(paymentIntent.client_secret!, {
       payment_method: {
-        ideal: elements()!.getElement(Ideal)!,
+        ideal: elements()!.getElement(IdealBankElement)!,
         billing_details: {
           name: form.get('name') as string,
           email: form.get('email') as string,
@@ -78,7 +78,7 @@ function CheckoutForm() {
           name="email"
           disabled={submission.pending}
         />
-        <Ideal classes={{ base: 'stripe-input' }} />
+        <IdealBankElement options={{ classes: { base: 'stripe-input' } }} />
         <button class="btn btn-primary" disabled={submission.pending}>
           {submission.pending ? 'Processing...' : 'Pay'}
         </button>

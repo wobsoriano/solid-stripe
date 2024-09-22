@@ -42,15 +42,6 @@ To use it, drop a `<PaymentRequestButton />` component:
     export default function CheckoutForm() {
       const stripe = useStripe()
 
-      // Declare payment metadata (amounts must match payment intent)
-      const paymentRequest = {
-        country: 'US',
-        currency: 'usd',
-        total: { label: 'Demo total', amount: 1099 },
-        requestPayerName: true,
-        requestPayerEmail: true,
-      }
-
       async function handlePaymentRequest(ev: PaymentRequestPaymentMethodEvent) {
         // Create payment intent server side
         const clientSecret = await createPaymentIntent()
@@ -73,8 +64,19 @@ To use it, drop a `<PaymentRequestButton />` component:
         }
       }
 
+      // Declare payment metadata (amounts must match payment intent)
+      const paymentRequest = stripe().paymentRequest({
+        country: 'US',
+        currency: 'usd',
+        total: { label: 'Demo total', amount: 1099 },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      })
+      pr.on('paymentmethod', handlePaymentRequest)
+      onCleanup(() => pr.off())
+
       return (
-        <PaymentRequestButton paymentRequest={handlePaymentRequest} onPaymentMethod={pay} />
+        <PaymentRequestButton options={{ paymentRequest }} />
       )
     }
     ```
