@@ -2,7 +2,7 @@ import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import {
-  Address,
+  AddressElement,
   Elements,
   LinkAuthenticationElement,
   PaymentElement,
@@ -92,7 +92,7 @@ function CheckoutForm() {
       <form action={paymentAction} class="flex flex-col gap-2.5 my-8" method="post">
         <LinkAuthenticationElement />
         <PaymentElement />
-        <Address mode="billing" />
+        <AddressElement options={{ mode: 'billing' }} />
         <button class="btn btn-primary" disabled={submission.pending}>
           {submission.pending ? 'Processing...' : 'Pay'}
         </button>

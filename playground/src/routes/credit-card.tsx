@@ -1,7 +1,14 @@
 import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
-import { CardCvc, CardExpiry, CardNumber, Elements, useElements, useStripe } from 'solid-stripe'
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+  Elements,
+  useElements,
+  useStripe,
+} from 'solid-stripe'
 import { action, redirect, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
@@ -38,7 +45,7 @@ function CheckoutForm() {
     })
     const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret!, {
       payment_method: {
-        card: elements()!.getElement(CardNumber)!,
+        card: elements()!.getElement(CardNumberElement)!,
         billing_details: {
           name: form.get('name') as string,
         },
@@ -68,11 +75,11 @@ function CheckoutForm() {
           disabled={submission.pending}
           class="input input-bordered"
         />
-        <CardNumber classes={{ base: 'stripe-input' }} />
+        <CardNumberElement options={{ classes: { base: 'stripe-input' } }} />
 
         <div class="flex gap-2">
-          <CardExpiry classes={{ base: 'stripe-input w-1/4' }} />
-          <CardCvc classes={{ base: 'stripe-input w-1/4' }} />
+          <CardExpiryElement options={{ classes: { base: 'stripe-input w-1/4' } }} />
+          <CardCvcElement options={{ classes: { base: 'stripe-input w-1/4' } }} />
         </div>
 
         <button class="btn btn-primary" disabled={submission.pending}>

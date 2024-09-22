@@ -34,12 +34,10 @@ Before making a charge, Stripe should be notified by creating a [payment intent]
 
 Create a `POST` API endpoint that will receive the payment intent options. Be sure to validate the form values before you use them.
 
-This example uses [solid-start API Routes](https://start.solidjs.com/core-concepts/api-routes), but feel free to choose the one that best fits your project's needs.
+This example uses [SolidStart API Routes](https://docs.solidjs.com/solid-start/building-your-application/api-routes#api-routes), but feel free to choose the one that best fits your project's needs.
 
 ```ts
-// file: src/api/create-payment-intent.ts
-
-import { json } from 'solid-start'
+// src/api/create-payment-intent.ts
 import Stripe from 'stripe'
 
 const stripe = new Stripe('{{STRIPE_SECRET_KEY}}')
@@ -55,9 +53,9 @@ export async function POST() {
   })
 
   // return the clientSecret to the client
-  return json({
+  return {
     clientSecret: paymentIntent.client_secret
-  })
+  }
 }
 ```
 

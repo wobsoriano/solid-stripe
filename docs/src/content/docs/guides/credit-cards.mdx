@@ -4,7 +4,7 @@ title: Credit Cards
 
 import { Tabs, TabItem } from '@astrojs/starlight/components'
 
-These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
+These use the `<CardNumberElement>`, `<CardExpiryElement>` and `<CardCvcElement>` components:
 
 <Tabs>
   <TabItem label="Payment.tsx">
@@ -35,9 +35,9 @@ These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
   <TabItem label="CheckoutForm.tsx">
     ```tsx
     import {
-      CardCvc,
-      CardExpiry,
-      CardNumber,
+      CardCvcelement,
+      CardExpiryElement,
+      CardNumberElement,
       useStripe,
       useElements
     } from 'solid-stripe'
@@ -55,7 +55,7 @@ These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
         // When the form submits, pass the CardNumber component to stripe().confirmCardPayment()
         const result = await stripe().confirmCardPayment(clientSecret, {
           payment_method: {
-            card: elements().getElement(CardNumber),
+            card: elements().getElement(CardNumberElement),
             billing_details: {},
           },
         })
@@ -70,9 +70,9 @@ These use the `<CardNumber>`, `<CardExpiry>` and `<CardCvc>` components:
 
       return (
         <form onSubmit={handleSubmit}>
-          <CardNumber />
-          <CardExpiry />
-          <CardCvc />
+          <CardNumberElement />
+          <CardExpiryElement />
+          <CardCvcElement />
           <button>Pay</button>
         </form>
       )
