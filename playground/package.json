@@ -1,33 +1,28 @@
 {
   "name": "playground",
   "scripts": {
-    "dev": "solid-start dev",
-    "build": "solid-start build",
-    "start": "solid-start start"
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start",
+    "version": "vinxi version"
   },
   "type": "module",
   "devDependencies": {
-    "@types/node": "^20.5.7",
-    "@vitejs/plugin-basic-ssl": "^1.0.1",
-    "autoprefixer": "^10.4.15",
+    "autoprefixer": "^10.4.20",
     "daisyui": "^3.6.4",
-    "postcss": "^8.4.29",
-    "solid-start-node": "^0.3.5",
-    "solid-start-vercel": "^0.3.5",
-    "tailwindcss": "^3.3.3",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.9"
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.12"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.28.6",
-    "@solidjs/router": "^0.8.3",
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.14.1",
+    "@solidjs/start": "^1.0.6",
     "@stripe/stripe-js": "^2.1.0",
-    "solid-js": "^1.7.11",
-    "solid-sonner": "^0.2.0",
-    "solid-start": "^0.3.5",
+    "solid-js": "^1.8.22",
+    "solid-sonner": "^0.2.8",
     "solid-stripe": "workspace:*",
-    "stripe": "^13.3.0",
-    "undici": "^5.23.0"
+    "stripe": "^16.12.0",
+    "vinxi": "^0.4.1"
   },
   "engines": {
     "node": ">=18"

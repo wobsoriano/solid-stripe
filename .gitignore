@@ -1,12 +1,13 @@
 node_modules
-types
 dist
+gitignore
 
-.yarn/*
-!.yarn/cache
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
+# tsup
+tsup.config.bundled_*.{m,c,}s
 
-.vscode
+## Solid
+.solid
+.output
+.vercel
+.netlify
+.vinxi

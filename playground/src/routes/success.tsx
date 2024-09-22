@@ -1,25 +1,24 @@
 import type { PaymentIntent } from '@stripe/stripe-js'
 import { Show } from 'solid-js'
-import type { RouteDataArgs } from 'solid-start'
-import { createRouteData, unstable_clientOnly, useRouteData } from 'solid-start'
+import { cache, createAsync, useLocation } from '@solidjs/router'
+import { clientOnly } from '@solidjs/start'
 
-const JSONViewer = unstable_clientOnly(() => import('~/components/JSONViewer'))
+const JSONViewer = clientOnly(() => import('~/components/JSONViewer'))
 
-export function routeData({ location }: RouteDataArgs) {
-  return createRouteData(async () => {
-    const resp = await fetch('/api/retrieve-payment', {
-      method: 'POST',
-      body: JSON.stringify({
-        paymentIntentId: location.query.payment_intent,
-      }),
-    })
-    const result = await resp.json()
-    return result as PaymentIntent
+const getPaymentInfo = cache(async (paymentIntentId: string) => {
+  const resp = await fetch('/api/retrieve-payment', {
+    method: 'POST',
+    body: JSON.stringify({
+      paymentIntentId,
+    }),
   })
-}
+  const result = await resp.json()
+  return result as PaymentIntent
+}, 'paymentInfo')
 
 export default function Success() {
-  const paymentIntent = useRouteData<typeof routeData>()
+  const location = useLocation()
+  const paymentIntent = createAsync(() => getPaymentInfo(location.query.payment_intent))
 
   return (
     <main>

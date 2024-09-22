@@ -5,9 +5,10 @@ import { createWrapper } from '../primitives/createWrapper'
 import { createStripeElement } from '../primitives/createStripeElement'
 import type { ElementProps } from '../types'
 
-export type CardElementProps = ElementProps<'card', stripeJs.StripeCardElementChangeEvent> & stripeJs.StripeCardElementOptions
+export type CardElementProps = ElementProps<'card', stripeJs.StripeCardElementChangeEvent> &
+  stripeJs.StripeCardElementOptions
 
-export const Card: Component<CardElementProps> = (props) => {
+export const Card: Component<CardElementProps> = props => {
   const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
@@ -20,16 +21,13 @@ export const Card: Component<CardElementProps> = (props) => {
   }
   const merged = mergeProps(defaultValues, props)
 
-  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+  const [options] = splitProps(
+    merged,
+    Object.keys(defaultValues) as Array<keyof typeof defaultValues>,
+  )
 
-  createStripeElement(
-    wrapper,
-    'card',
-    options,
-    (type, event) => props[type]?.(event),
-  );
-
-  (Card as any).__elementType = 'card'
+  createStripeElement(wrapper, 'card', options, (type, event) => props[type]?.(event))
+  ;(Card as any).__elementType = 'card'
 
   return <div ref={setWrapper} />
 }

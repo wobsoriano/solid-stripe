@@ -35,8 +35,11 @@
     "build": "tsup",
     "prepublishOnly": "pnpm build",
     "release": "pnpm build && changeset publish",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\" \"playground/**/*.{js,ts,json,css,tsx,jsx}\"",
+    "lint": "concurrently pnpm:lint:*",
+    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx}",
+    "lint:types": "tsc --noEmit",
+    "update-deps": "pnpm up -Li"
   },
   "repository": {
     "type": "git",
@@ -52,21 +55,24 @@
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
   "peerDependencies": {
-    "@stripe/stripe-js": "*",
+    "@stripe/stripe-js": "^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0",
     "solid-js": "^1.6.0"
   },
   "devDependencies": {
     "@alenaksu/json-viewer": "^2.0.1",
-    "@antfu/eslint-config-ts": "^0.41.0",
     "@changesets/cli": "^2.27.8",
-    "@stripe/stripe-js": "^2.1.0",
-    "esbuild": "^0.19.2",
-    "esbuild-plugin-solid": "^0.5.0",
-    "eslint": "^8.48.0",
-    "eslint-plugin-solid": "^0.13.0",
-    "solid-js": ">=1.7.11",
-    "tsup": "^7.2.0",
-    "tsup-preset-solid": "^2.1.0",
-    "typescript": "^5.2.2"
+    "@stripe/stripe-js": "^4.5.0",
+    "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
+    "esbuild": "^0.23.1",
+    "esbuild-plugin-solid": "^0.6.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-no-only-tests": "^3.1.0",
+    "solid-js": "^1.8.22",
+    "tsup": "^8.0.2",
+    "tsup-preset-solid": "^2.2.0",
+    "typescript": "^5.4.5"
   }
 }

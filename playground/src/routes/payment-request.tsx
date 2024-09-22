@@ -2,8 +2,7 @@ import type { PaymentRequestPaymentMethodEvent, Stripe } from '@stripe/stripe-js
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, PaymentRequestButton, useStripe } from 'solid-stripe'
-import { createRouteAction } from 'solid-start/data'
-import { redirect } from 'solid-start'
+import { action, redirect, useAction, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
@@ -19,13 +18,15 @@ export default function Page() {
     <>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Payment Request Example</h1>
       <p>
-        If you see a blank screen, it's because this demo will only work if the TLD is <code
-          >https://localhost</code> or if you're using production keys.
+        If you see a blank screen, it's because this demo will only work if the TLD is{' '}
+        <code>https://localhost</code> or if you're using production keys.
       </p>
       <p>
-        For ApplePay, the production domain must be <a
-          href="https://support.stripe.com/questions/enable-apple-pay-on-your-stripe-account"
-          >submitted to Apple</a>.
+        For ApplePay, the production domain must be{' '}
+        <a href="https://support.stripe.com/questions/enable-apple-pay-on-your-stripe-account">
+          submitted to Apple
+        </a>
+        .
       </p>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
         <Elements stripe={stripe()!}>
@@ -48,7 +49,7 @@ function CheckoutForm() {
     requestPayerEmail: true,
   }
 
-  const [processing, pay] = createRouteAction(async (payload: PaymentRequestPaymentMethodEvent) => {
+  const paymentAction = action(async (payload: PaymentRequestPaymentMethodEvent) => {
     const paymentIntent = await createPaymentIntent()
 
     const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret!, {
@@ -59,21 +60,23 @@ function CheckoutForm() {
       // payment failed
       payload.complete('fail')
       throw new Error(result.error.message)
-    }
-    else {
+    } else {
       // payment succeeded
       payload.complete('success')
       return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
   })
 
+  const submission = useSubmission(paymentAction)
+  const submit = useAction(paymentAction)
+
   return (
     <>
-      <Show when={processing.error}>
-        <Alert type="error" message={`${processing.error.message} Please try again.`} />
+      <Show when={submission.error}>
+        <Alert type="error" message={`${submission.error.message} Please try again.`} />
       </Show>
       <div class="my-12 mx-0 w-72">
-        <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={pay} />
+        <PaymentRequestButton paymentRequest={paymentRequest} onPaymentMethod={submit} />
       </div>
     </>
   )

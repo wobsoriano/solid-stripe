@@ -2,8 +2,7 @@ import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { CardCvc, CardExpiry, CardNumber, Elements, useElements, useStripe } from 'solid-stripe'
-import { createRouteAction } from 'solid-start/data'
-import { redirect } from 'solid-start'
+import { action, redirect, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
@@ -19,7 +18,7 @@ export default function Page() {
     <>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Credit Card Example</h1>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()!} options={{ theme: 'stripe' }}>
+        <Elements stripe={stripe()}>
           <CheckoutForm />
         </Elements>
       </Show>
@@ -31,7 +30,7 @@ function CheckoutForm() {
   const stripe = useStripe()
   const elements = useElements()
 
-  const [processing, { Form }] = createRouteAction(async (form: FormData) => {
+  const paymentAction = action(async (form: FormData) => {
     const paymentIntent = await createPaymentIntent({
       amount: 2000,
       currency: 'usd',
@@ -49,34 +48,48 @@ function CheckoutForm() {
     if (result.error) {
       // payment failed
       throw new Error(result.error.message)
-    }
-    else {
+    } else {
       // payment succeeded
       return redirect(`/success?payment_intent=${paymentIntent.id}`)
     }
   })
 
+  const submission = useSubmission(paymentAction)
+
   return (
     <>
-      <Show when={processing.error}>
-        <Alert message={processing.error.message} type="error" />
+      <Show when={submission.error}>
+        <Alert message={submission.error.message} type="error" />
       </Show>
-      <Form class="flex flex-col gap-2.5 my-8">
-        <input name="name" placeholder="Your name" disabled={processing.pending} class="input input-bordered" />
+      <form action={paymentAction} class="flex flex-col gap-2.5 my-8" method="post">
+        <input
+          name="name"
+          placeholder="Your name"
+          disabled={submission.pending}
+          class="input input-bordered"
+        />
         <CardNumber classes={{ base: 'stripe-input' }} />
 
         <div class="flex gap-2">
           <CardExpiry classes={{ base: 'stripe-input w-1/4' }} />
-          <CardCvc classes={{ base: 'stripe-input w-1/4' }}/>
+          <CardCvc classes={{ base: 'stripe-input w-1/4' }} />
         </div>
 
-        <button class="btn btn-primary" disabled={processing.pending}>
-          {processing.pending ? 'Processing...' : 'Pay'}
+        <button class="btn btn-primary" disabled={submission.pending}>
+          {submission.pending ? 'Processing...' : 'Pay'}
         </button>
-      </Form>
+      </form>
       <div class="flex flex-col">
-        <a class="link" target="_BLANK" href="https://stripe.com/docs/testing#cards">Test cards</a>
-        <a class="link" target="_BLANK" href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/credit-card.tsx">View code</a>
+        <a class="link" target="_BLANK" href="https://stripe.com/docs/testing#cards">
+          Test cards
+        </a>
+        <a
+          class="link"
+          target="_BLANK"
+          href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/credit-card.tsx"
+        >
+          View code
+        </a>
       </div>
     </>
   )

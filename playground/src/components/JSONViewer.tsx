@@ -17,9 +17,5 @@ export default function JSONViewer(props: { data: Record<string, any> }) {
     viewer?.expandAll()
   })
 
-  return (
-    <json-viewer ref={viewer!}>
-      {JSON.stringify(props.data)}
-    </json-viewer>
-  )
+  return <json-viewer ref={viewer!}>{JSON.stringify(props.data)}</json-viewer>
 }

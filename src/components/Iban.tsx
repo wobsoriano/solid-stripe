@@ -5,9 +5,10 @@ import { createWrapper } from '../primitives/createWrapper'
 import { createStripeElement } from '../primitives/createStripeElement'
 import type { ElementProps } from '../types'
 
-export type IbanElementProps = ElementProps<'iban', StripeIbanElementChangeEvent> & StripeIbanElementOptions
+export type IbanElementProps = ElementProps<'iban', StripeIbanElementChangeEvent> &
+  StripeIbanElementOptions
 
-export const Iban: Component<IbanElementProps> = (props) => {
+export const Iban: Component<IbanElementProps> = props => {
   const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
@@ -19,16 +20,13 @@ export const Iban: Component<IbanElementProps> = (props) => {
     iconStyle: 'default',
   }
   const merged = mergeProps(defaultValues, props)
-  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+  const [options] = splitProps(
+    merged,
+    Object.keys(defaultValues) as Array<keyof typeof defaultValues>,
+  )
 
-  createStripeElement(
-    wrapper,
-    'iban',
-    options,
-    (type, event) => props[type]?.(event),
-  );
-
-  (Iban as any).__elementType = 'iban'
+  createStripeElement(wrapper, 'iban', options, (type, event) => props[type]?.(event))
+  ;(Iban as any).__elementType = 'iban'
 
   return <div ref={setWrapper} />
 }

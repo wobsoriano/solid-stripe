@@ -1,48 +1,34 @@
-import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
+import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
 import { createComputed, createContext, createSignal, mergeProps, useContext } from 'solid-js'
+import { UnknownOptions } from 'src/types'
 
 export const StripeContext = createContext<{
   stripe: Accessor<Stripe | null>
   elements: Accessor<StripeElements | null>
 }>()
 
-interface Props {
+interface ElementsProps {
+  /**
+   * A [Stripe object](https://stripe.com/docs/js/initializing).
+   * The easiest way to initialize a `Stripe` object is with the the [Stripe.js wrapper module](https://github.com/stripe/stripe-js/blob/master/README.md#readme).
+   * Once this prop has been set, it can not be changed.
+   */
   stripe: Stripe | null
-  clientSecret?: string
-  theme?: Appearance['theme']
-  variables?: Appearance['variables']
-  rules?: Appearance['rules']
-  options?: Record<string, any>
-  labels?: Appearance['labels']
+  /**
+   * Optional [Elements configuration options](https://stripe.com/docs/js/elements_object/create).
+   * Once the stripe prop has been set, these options cannot be changed.
+   */
+  options?: StripeElementsOptions
   children?: JSX.Element
 }
 
-export const Elements: Component<Props> = (props) => {
+export const Elements: Component<ElementsProps> = props => {
   const [elements, setElements] = createSignal<StripeElements | null>(null)
-
-  const merged = mergeProps(
-    {
-      clientSecret: undefined,
-      theme: 'stripe',
-      variables: {},
-      rules: {},
-      labels: 'above',
-    },
-    props,
-  )
 
   createComputed(() => {
     if (props.stripe && !elements()) {
-      const instance = props.stripe.elements({
-        clientSecret: merged.clientSecret,
-        appearance: {
-          theme: merged.theme as Appearance['theme'],
-          variables: merged.variables,
-          rules: merged.rules,
-          labels: merged.labels as Appearance['labels'],
-        },
-      })
+      const instance = props.stripe.elements(props.options as UnknownOptions)
 
       setElements(instance)
     }
@@ -60,22 +46,15 @@ export const Elements: Component<Props> = (props) => {
 export function useStripe() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx)
-    throw new Error('useStripe must be used within a <Elements> component')
+  if (!ctx) throw new Error('useStripe must be used within a <Elements> component')
 
   return ctx.stripe
 }
 
-/**
- * Deprecated. Use `useElements` instead.
- */
-export const useStripeElements = useElements
-
 export function useElements() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx)
-    throw new Error('useElements must be used within a <Elements> component')
+  if (!ctx) throw new Error('useElements must be used within a <Elements> component')
 
   return ctx.elements
 }
@@ -83,8 +62,7 @@ export function useElements() {
 export function useStripeProxy() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx)
-    throw new Error('useStripeProxy must be used within a <Elements> component')
+  if (!ctx) throw new Error('useStripeProxy must be used within a <Elements> component')
 
   return {
     get stripe() {

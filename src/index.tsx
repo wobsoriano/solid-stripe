@@ -8,10 +8,4 @@ export { LinkAuthenticationElement } from './components/LinkAuthenticationElemen
 export { Ideal } from './components/Ideal'
 export { Iban } from './components/Iban'
 export { Address } from './components/Address'
-export {
-  Elements,
-  useStripe,
-  useStripeElements,
-  useElements,
-  useStripeProxy,
-} from './components/Elements'
+export { Elements, useStripe, useElements, useStripeProxy } from './components/Elements'

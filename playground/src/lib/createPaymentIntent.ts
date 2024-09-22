@@ -5,11 +5,7 @@ export async function createPaymentIntent(paymentIntentParams?: Record<string, a
   console.log('Creating payment intent:', paymentIntentParams)
   const resp = await fetch('/api/create-payment-intent', {
     method: 'POST',
-    body: JSON.stringify({
-      amount: 2000,
-      currency: 'usd',
-      ...paymentIntentParams,
-    }),
+    body: JSON.stringify(paymentIntentParams),
   })
   const result = await resp.json()
 

@@ -1,13 +1,17 @@
-import type { StripeCardCvcElementChangeEvent, StripeCardCvcElementOptions } from '@stripe/stripe-js'
+import type {
+  StripeCardCvcElementChangeEvent,
+  StripeCardCvcElementOptions,
+} from '@stripe/stripe-js'
 import type { Component } from 'solid-js'
 import { mergeProps, splitProps } from 'solid-js'
 import { createWrapper } from '../primitives/createWrapper'
 import { createStripeElement } from '../primitives/createStripeElement'
 import type { ElementProps } from '../types'
 
-export type CardCvcElementProps = ElementProps<'cardCvc', StripeCardCvcElementChangeEvent> & StripeCardCvcElementOptions
+export type CardCvcElementProps = ElementProps<'cardCvc', StripeCardCvcElementChangeEvent> &
+  StripeCardCvcElementOptions
 
-export const CardCvc: Component<CardCvcElementProps> = (props) => {
+export const CardCvc: Component<CardCvcElementProps> = props => {
   const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
@@ -17,16 +21,13 @@ export const CardCvc: Component<CardCvcElementProps> = (props) => {
     disabled: false,
   }
   const merged = mergeProps(defaultValues, props)
-  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+  const [options] = splitProps(
+    merged,
+    Object.keys(defaultValues) as Array<keyof typeof defaultValues>,
+  )
 
-  createStripeElement(
-    wrapper,
-    'cardCvc',
-    options,
-    (type, event) => props[type]?.(event),
-  );
-
-  (CardCvc as any).__elementType = 'cardCvc'
+  createStripeElement(wrapper, 'cardCvc', options, (type, event) => props[type]?.(event))
+  ;(CardCvc as any).__elementType = 'cardCvc'
 
   return <div ref={setWrapper} />
 }

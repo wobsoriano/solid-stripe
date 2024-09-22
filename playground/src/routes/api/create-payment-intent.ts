@@ -1,14 +1,9 @@
-import type { APIEvent } from 'solid-start'
-import { json } from 'solid-start'
+import type { APIEvent } from '@solidjs/start/server'
 import { stripe } from '~/lib/stripe'
 
 export async function POST({ request }: APIEvent) {
   const body = await request.json()
-  const result = await stripe.paymentIntents.create({
-    amount: 2000,
-    currency: 'usd',
-    ...body,
-  })
+  const result = await stripe.paymentIntents.create(body)
 
-  return json(result)
+  return result
 }

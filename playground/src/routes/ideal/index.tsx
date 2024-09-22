@@ -2,8 +2,7 @@ import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, Ideal, useElements, useStripe } from 'solid-stripe'
-import { createRouteAction } from 'solid-start/data'
-import { redirect, useSearchParams } from 'solid-start'
+import { action, redirect, useSearchParams, useSubmission } from '@solidjs/router'
 import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
@@ -19,7 +18,7 @@ export default function Page() {
     <>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">iDEAL Example</h1>
       <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()!} options={{ theme: 'stripe' }}>
+        <Elements stripe={stripe()}>
           <CheckoutForm />
         </Elements>
       </Show>
@@ -32,7 +31,7 @@ function CheckoutForm() {
   const elements = useElements()
   const [searchParams] = useSearchParams()
 
-  const [processing, { Form }] = createRouteAction(async (form: FormData) => {
+  const paymentAction = action(async (form: FormData) => {
     const paymentIntent = await createPaymentIntent({
       amount: 2000,
       currency: 'eur',
@@ -53,27 +52,45 @@ function CheckoutForm() {
     if (result.error) {
       // payment failed
       throw new Error(result.error.message)
-    }
-    else {
+    } else {
       return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
   })
 
+  const submission = useSubmission(paymentAction)
+
   return (
     <>
-      <Show when={processing.error || searchParams.error}>
+      <Show when={submission.error || searchParams.error}>
         <Alert message="Payment failed. Please try again." type="error" />
       </Show>
-      <Form class="flex flex-col gap-2.5 my-8">
-        <input placeholder="Name" class="input input-bordered" name="name" disabled={processing.pending} />
-        <input type="email" placeholder="Email" class="input input-bordered" name="email" disabled={processing.pending} />
+      <form action={paymentAction} class="flex flex-col gap-2.5 my-8" method="post">
+        <input
+          placeholder="Name"
+          class="input input-bordered"
+          name="name"
+          disabled={submission.pending}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          class="input input-bordered"
+          name="email"
+          disabled={submission.pending}
+        />
         <Ideal classes={{ base: 'stripe-input' }} />
-        <button class="btn btn-primary" disabled={processing.pending}>
-          {processing.pending ? 'Processing...' : 'Pay'}
+        <button class="btn btn-primary" disabled={submission.pending}>
+          {submission.pending ? 'Processing...' : 'Pay'}
         </button>
-      </Form>
+      </form>
       <div class="flex flex-col">
-        <a class="link" target="_BLANK" href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/ideal/index.tsx">View code</a>
+        <a
+          class="link"
+          target="_BLANK"
+          href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/ideal/index.tsx"
+        >
+          View code
+        </a>
       </div>
     </>
   )

@@ -6,21 +6,20 @@ import type {
 import type { Component, Setter } from 'solid-js'
 import { createEffect, mergeProps, onCleanup } from 'solid-js'
 import type { ElementProps } from '../types'
-import { useStripe, useStripeElements } from './Elements'
+import { useStripe, useElements } from './Elements'
 
-export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'>
-& Omit<StripePaymentRequestButtonElementOptions, 'paymentRequest'>
-& {
-  setCanMakePayment?: Setter<boolean>
-  paymentRequest: PaymentRequestOptions
-  onPaymentMethod: (payload: PaymentRequestPaymentMethodEvent) => void
-}
+export type PaymentRequestButtonProps = ElementProps<'paymentRequestButton'> &
+  Omit<StripePaymentRequestButtonElementOptions, 'paymentRequest'> & {
+    setCanMakePayment?: Setter<boolean>
+    paymentRequest: PaymentRequestOptions
+    onPaymentMethod: (payload: PaymentRequestPaymentMethodEvent) => void
+  }
 
-export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props) => {
+export const PaymentRequestButton: Component<PaymentRequestButtonProps> = props => {
   let wrapper!: HTMLDivElement
 
   const stripe = useStripe()
-  const elements = useStripeElements()
+  const elements = useElements()
 
   const merged = mergeProps(
     {
@@ -31,8 +30,7 @@ export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props
   )
 
   createEffect(() => {
-    if (!stripe() && !elements())
-      return
+    if (!stripe() && !elements()) return
 
     const paymentRequestObject = stripe()!.paymentRequest(props.paymentRequest)
 
@@ -44,27 +42,24 @@ export const PaymentRequestButton: Component<PaymentRequestButtonProps> = (props
       paymentRequest: paymentRequestObject,
     })
 
-    paymentRequestObject.canMakePayment()
-      .then((result) => {
-        if (result) {
-          props.setCanMakePayment?.(true)
-          element?.mount(wrapper)
-          paymentRequestObject.on('paymentmethod', (e) => {
-            props.onPaymentMethod(e)
-          })
-        }
-        else {
-          props.setCanMakePayment?.(false)
-          wrapper.style.display = 'none'
-        }
-      })
+    paymentRequestObject.canMakePayment().then(result => {
+      if (result) {
+        props.setCanMakePayment?.(true)
+        element?.mount(wrapper)
+        paymentRequestObject.on('paymentmethod', e => {
+          props.onPaymentMethod(e)
+        })
+      } else {
+        props.setCanMakePayment?.(false)
+        wrapper.style.display = 'none'
+      }
+    })
 
     onCleanup(() => {
       element.unmount()
     })
-  });
-
-  (PaymentRequestButton as any).__elementType = 'paymentRequestButton'
+  })
+  ;(PaymentRequestButton as any).__elementType = 'paymentRequestButton'
 
   return <div ref={wrapper} />
 }

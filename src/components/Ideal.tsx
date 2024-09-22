@@ -7,7 +7,7 @@ import type { ElementProps } from '../types'
 
 export type IdealBankElementProps = ElementProps<'idealBank'> & StripeIdealBankElementOptions
 
-export const Ideal: Component<IdealBankElementProps> = (props) => {
+export const Ideal: Component<IdealBankElementProps> = props => {
   const [wrapper, setWrapper] = createWrapper()
 
   const defaultValues = {
@@ -18,16 +18,13 @@ export const Ideal: Component<IdealBankElementProps> = (props) => {
     hideIcon: true,
   }
   const merged = mergeProps(defaultValues, props)
-  const [options] = splitProps(merged, Object.keys(defaultValues) as Array<keyof typeof defaultValues>)
+  const [options] = splitProps(
+    merged,
+    Object.keys(defaultValues) as Array<keyof typeof defaultValues>,
+  )
 
-  createStripeElement(
-    wrapper,
-    'idealBank',
-    options,
-    (type, event) => props[type]?.(event),
-  );
-
-  (Ideal as any).__elementType = 'idealBank'
+  createStripeElement(wrapper, 'idealBank', options, (type, event) => props[type]?.(event))
+  ;(Ideal as any).__elementType = 'idealBank'
 
   return <div ref={setWrapper} />
 }
