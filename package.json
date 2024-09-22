@@ -2,6 +2,7 @@
   "version": "0.4.0",
   "name": "solid-stripe",
   "description": "Solid wrapper for Stripe.js",
+  "packageManager": "pnpm@9.11.0",
   "type": "module",
   "sideEffects": false,
   "files": [
@@ -33,7 +34,7 @@
     "dev": "tsup --watch --onSuccess=\"pnpm --filter playground dev\"",
     "build": "tsup",
     "prepublishOnly": "pnpm build",
-    "release": "bumpp --commit --push --tag && pnpm publish",
+    "release": "pnpm build && changeset publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -55,16 +56,16 @@
     "solid-js": "^1.6.0"
   },
   "devDependencies": {
+    "@alenaksu/json-viewer": "^2.0.1",
     "@antfu/eslint-config-ts": "^0.41.0",
+    "@changesets/cli": "^2.27.8",
     "@stripe/stripe-js": "^2.1.0",
-    "bumpp": "^9.2.0",
     "esbuild": "^0.19.2",
     "esbuild-plugin-solid": "^0.5.0",
     "eslint": "^8.48.0",
     "eslint-plugin-solid": "^0.13.0",
     "solid-js": ">=1.7.11",
     "tsup": "^7.2.0",
-    "@alenaksu/json-viewer": "^2.0.1",
     "tsup-preset-solid": "^2.1.0",
     "typescript": "^5.2.2"
   }
