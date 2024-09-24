@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.6.1
+
+### Patch Changes
+
+- 458d3a4: Fix incorrect elements and custom checkout contexts
+
 ## 0.6.0
 
 ### Minor Changes
