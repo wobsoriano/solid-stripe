@@ -76,7 +76,9 @@ function CheckoutForm() {
           name="email"
           disabled={submission.pending}
         />
-        <IbanElement options={{ supportedCountries: ['SEPA'], classes: { base: 'stripe-input' } }} />
+        <IbanElement
+          options={{ supportedCountries: ['SEPA'], classes: { base: 'stripe-input' } }}
+        />
         <button class="btn btn-primary" disabled={submission.pending}>
           {submission.pending ? 'Processing...' : 'Pay'}
         </button>
