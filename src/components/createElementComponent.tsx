@@ -58,6 +58,7 @@ export const createElementComponent = ({
     useAttachEvent(element(), 'shippingaddresschange', props.onShippingAddressChange)
     useAttachEvent(element(), 'shippingratechange', props.onShippingRateChange)
     useAttachEvent(element(), 'change', props.onChange)
+    useAttachEvent(element(), 'ready', props.onReady)
 
     return <div id={props.id} class={props.class} ref={setDomNode}></div>
   }
