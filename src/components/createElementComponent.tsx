@@ -1,7 +1,8 @@
-import { StripeElement, StripeElementType } from '@stripe/stripe-js'
+import * as stripeJs from '@stripe/stripe-js'
 import { Component, createComputed, createEffect, createSignal, onCleanup } from 'solid-js'
 import { ElementProps, UnknownOptions } from 'src/types'
 import { useElements } from './Elements'
+import { useCustomCheckout } from './CustomCheckout'
 
 type UnknownCallback = (...args: unknown[]) => any
 
@@ -27,23 +28,29 @@ interface PrivateElementProps {
 export const createElementComponent = ({
   type,
 }: {
-  type: StripeElementType
+  type: stripeJs.StripeElementType
 }): Component<ElementProps> => {
   const Element: Component<PrivateElementProps> = props => {
     const elements = useElements()
-    const [element, setElement] = createSignal<StripeElement | null>(null)
-    const [domNode, setDomNode] = createSignal<HTMLDivElement | null>(null)
+    const customCheckoutSdk = useCustomCheckout()
+    const [element, setElement] = createSignal<stripeJs.StripeElement | null>(null)
+    const [domRef, setDomRef] = createSignal<HTMLDivElement | null>(null)
 
     createComputed(() => {
-      if (!domNode()) {
-        return
+      if (element() === null && domRef() !== null && (elements() || customCheckoutSdk())) {
+        let newElement: stripeJs.StripeElement | null = null
+        if (customCheckoutSdk()) {
+          newElement = customCheckoutSdk()!.createElement(type as any, props.options)
+        } else if (elements()) {
+          newElement = elements()!.create(type as any, props.options)
+        }
+
+        setElement(newElement)
+
+        if (newElement) {
+          newElement.mount(domRef()!)
+        }
       }
-
-      const newElement = elements()!.create(type as any, props.options)
-      setElement(newElement)
-      newElement.mount(domNode()!)
-
-      onCleanup(() => newElement.unmount())
     })
 
     useAttachEvent(element(), 'blur', props.onBlur)
@@ -58,11 +65,23 @@ export const createElementComponent = ({
     useAttachEvent(element(), 'shippingaddresschange', props.onShippingAddressChange)
     useAttachEvent(element(), 'shippingratechange', props.onShippingRateChange)
     useAttachEvent(element(), 'change', props.onChange)
-    useAttachEvent(element(), 'ready', () => {
-      props.onReady?.(element())
-    })
 
-    return <div id={props.id} class={props.class} ref={setDomNode}></div>
+    let readyCallback: UnknownCallback | undefined
+    if (props.onReady) {
+      if (type === 'expressCheckout') {
+        // Passes through the event, which includes visible PM types
+        readyCallback = props.onReady
+      } else {
+        // For other Elements, pass through the Element itself.
+        readyCallback = () => {
+          props.onReady?.(element())
+        }
+      }
+    }
+
+    useAttachEvent(element(), 'ready', readyCallback)
+
+    return <div id={props.id} class={props.class} ref={setDomRef}></div>
   }
 
   ;(Element as any).__elementType = type

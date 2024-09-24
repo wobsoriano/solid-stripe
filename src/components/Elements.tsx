@@ -1,6 +1,6 @@
 import type { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createComputed, createContext, createSignal, mergeProps, useContext } from 'solid-js'
+import { createComputed, createContext, createSignal, useContext } from 'solid-js'
 import { UnknownOptions } from 'src/types'
 
 export const StripeContext = createContext<{
@@ -46,7 +46,10 @@ export const Elements: Component<ElementsProps> = props => {
 export function useStripe() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx) throw new Error(`Could not find Elements context; You need to wrap the part of your app that calls useStripe in an <Elements> provider.`)
+  if (!ctx)
+    throw new Error(
+      `Could not find Elements context; You need to wrap the part of your app that calls useStripe in an <Elements> provider.`,
+    )
 
   return ctx.stripe
 }
@@ -54,7 +57,10 @@ export function useStripe() {
 export function useElements() {
   const ctx = useContext(StripeContext)
 
-  if (!ctx) throw new Error(`Could not find Elements context; You need to wrap the part of your app that calls useElements in an <Elements> provider.`)
+  if (!ctx)
+    throw new Error(
+      `Could not find Elements context; You need to wrap the part of your app that calls useElements in an <Elements> provider.`,
+    )
 
   return ctx.elements
 }

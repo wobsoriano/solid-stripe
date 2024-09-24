@@ -22,6 +22,7 @@ import {
 } from './types'
 
 export { Elements, useStripe, useElements } from './components/Elements'
+export { CustomCheckoutProvider, useCustomCheckout } from './components/CustomCheckout'
 
 export const AuBankAccountElement: AuBankAccountElementComponent = createElementComponent({
   type: 'auBankAccount',
@@ -36,7 +37,9 @@ export const CardExpiryElement: CardExpiryElementComponent = createElementCompon
 export const CardCvcElement: CardCvcElementComponent = createElementComponent({ type: 'cardCvc' })
 export const FpxBankElement: FpxBankElementComponent = createElementComponent({ type: 'fpxBank' })
 export const IbanElement: IbanElementComponent = createElementComponent({ type: 'iban' })
-export const IdealBankElement: IdealBankElementComponent = createElementComponent({ type: 'idealBank' })
+export const IdealBankElement: IdealBankElementComponent = createElementComponent({
+  type: 'idealBank',
+})
 export const P24BankElement: P24BankElementComponent = createElementComponent({ type: 'p24Bank' })
 export const EpsBankElement: EpsBankElementComponent = createElementComponent({ type: 'epsBank' })
 export const PaymentElement: PaymentElementComponent = createElementComponent({ type: 'payment' })
