@@ -1,5 +1,12 @@
 # solid-stripe
 
+## 0.6.0
+
+### Minor Changes
+
+- 3a5da4b: Remove `useStripeProxy` primitive
+- f905620: Add custom checkout component
+
 ## 0.5.1
 
 ### Patch Changes
