@@ -11,7 +11,7 @@ export interface ElementProps {
   /**
    * Passes through to the [Element’s container](https://stripe.com/docs/js/element/the_element_container).
    */
-  className?: string
+  class?: string
 
   /**
    * Triggered when the Element loses focus.

@@ -21,8 +21,9 @@ import {
   ShippingAddressElementComponent,
 } from './types'
 
-export { Elements, useStripe, useElements } from './components/Elements'
+export { Elements, useElements } from './components/Elements'
 export { CustomCheckoutProvider, useCustomCheckout } from './components/CustomCheckout'
+export { useStripe } from './components/useStripe'
 
 export const AuBankAccountElement: AuBankAccountElementComponent = createElementComponent({
   type: 'auBankAccount',

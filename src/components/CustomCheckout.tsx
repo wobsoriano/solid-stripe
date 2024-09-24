@@ -9,14 +9,37 @@ import {
   type Component,
 } from 'solid-js'
 import * as stripeJs from '@stripe/stripe-js'
+import { ElementsContext, parseElementsContext } from './Elements'
 
-const CustomCheckoutSdkContext = createContext<Accessor<CustomCheckoutContextValue | null>>()
+interface CustomCheckoutSdkContextValue {
+  customCheckoutSdk: Accessor<stripeJs.StripeCustomCheckout | null>
+  stripe: Accessor<stripeJs.Stripe | null>
+}
+
+const CustomCheckoutSdkContext = createContext<CustomCheckoutSdkContextValue | null>(null)
+
+export const parseCustomCheckoutSdkContext = (
+  ctx: CustomCheckoutSdkContextValue | null,
+  useCase: string,
+): CustomCheckoutSdkContextValue => {
+  if (!ctx) {
+    throw new Error(
+      `Could not find CustomCheckoutProvider context; You need to wrap the part of your app that ${useCase} in an <CustomCheckoutProvider> provider.`,
+    )
+  }
+
+  return ctx
+}
 
 type StripeCustomCheckoutActions = Omit<Omit<stripeJs.StripeCustomCheckout, 'session'>, 'on'>
 
 interface CustomCheckoutContextValue
   extends StripeCustomCheckoutActions,
     stripeJs.StripeCustomCheckoutSession {}
+
+const CustomCheckoutContext = createContext<Accessor<CustomCheckoutContextValue | null> | null>(
+  null,
+)
 
 export const extractCustomCheckoutContextValue = (
   customCheckoutSdk: stripeJs.StripeCustomCheckout | null,
@@ -72,10 +95,34 @@ export const CustomCheckoutProvider: Component<CustomCheckoutProviderProps> = pr
   )
 
   return (
-    <CustomCheckoutSdkContext.Provider value={customCheckoutContextValue}>
-      {props.children}
+    <CustomCheckoutSdkContext.Provider
+      value={{
+        customCheckoutSdk: customCheckoutSdk,
+        stripe: () => props.stripe,
+      }}
+    >
+      <CustomCheckoutContext.Provider value={customCheckoutContextValue}>
+        {props.children}
+      </CustomCheckoutContext.Provider>
     </CustomCheckoutSdkContext.Provider>
   )
+}
+
+export function useElementsOrCustomCheckoutSdkContextWithUseCase(useCaseString: string) {
+  const customCheckoutSdkContext = useContext(CustomCheckoutSdkContext)
+  const elementsContext = useContext(ElementsContext)
+
+  if (customCheckoutSdkContext && elementsContext) {
+    throw new Error(
+      `You cannot wrap the part of your app that ${useCaseString} in both <CustomCheckoutProvider> and <Elements> providers.`,
+    )
+  }
+
+  if (customCheckoutSdkContext) {
+    return parseCustomCheckoutSdkContext(customCheckoutSdkContext, useCaseString)
+  }
+
+  return parseElementsContext(elementsContext, useCaseString)
 }
 
 export function useCustomCheckout() {

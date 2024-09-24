@@ -1,8 +1,7 @@
 import * as stripeJs from '@stripe/stripe-js'
 import { Component, createComputed, createEffect, createSignal, onCleanup } from 'solid-js'
 import { ElementProps, UnknownOptions } from 'src/types'
-import { useElements } from './Elements'
-import { useCustomCheckout } from './CustomCheckout'
+import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
 
 type UnknownCallback = (...args: unknown[]) => any
 
@@ -25,23 +24,28 @@ interface PrivateElementProps {
   options?: UnknownOptions
 }
 
+const capitalized = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+
 export const createElementComponent = ({
   type,
 }: {
   type: stripeJs.StripeElementType
 }): Component<ElementProps> => {
+  const displayName = `${capitalized(type)}Element`
+
   const Element: Component<PrivateElementProps> = props => {
-    const elements = useElements()
-    const customCheckoutSdk = useCustomCheckout()
+    const ctx = useElementsOrCustomCheckoutSdkContextWithUseCase(`mounts <${displayName}>`)
+    const elements = 'elements' in ctx ? ctx.elements : null
+    const customCheckoutSdk = 'customCheckoutSdk' in ctx ? ctx.customCheckoutSdk : null
     const [element, setElement] = createSignal<stripeJs.StripeElement | null>(null)
     const [domRef, setDomRef] = createSignal<HTMLDivElement | null>(null)
 
     createComputed(() => {
-      if (element() === null && domRef() !== null && (elements() || customCheckoutSdk())) {
+      if (element() === null && domRef() !== null && (elements?.() || customCheckoutSdk?.())) {
         let newElement: stripeJs.StripeElement | null = null
-        if (customCheckoutSdk()) {
+        if (customCheckoutSdk?.()) {
           newElement = customCheckoutSdk()!.createElement(type as any, props.options)
-        } else if (elements()) {
+        } else if (elements?.()) {
           newElement = elements()!.create(type as any, props.options)
         }
 
@@ -90,7 +94,7 @@ export const createElementComponent = ({
 }
 
 export const useAttachEvent = <A extends unknown[]>(
-  element: StripeElement | null,
+  element: stripeJs.StripeElement | null,
   event: string,
   cb?: (...args: A) => any,
 ) => {
