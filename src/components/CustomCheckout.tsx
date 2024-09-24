@@ -125,7 +125,16 @@ export function useElementsOrCustomCheckoutSdkContextWithUseCase(useCaseString: 
   return parseElementsContext(elementsContext, useCaseString)
 }
 
+export const useCustomCheckoutSdkContextWithUseCase = (
+  useCaseString: string,
+): CustomCheckoutSdkContextValue => {
+  const ctx = useContext(CustomCheckoutSdkContext)
+  return parseCustomCheckoutSdkContext(ctx, useCaseString)
+}
+
 export function useCustomCheckout() {
+  // ensure it's in CustomCheckoutProvider
+  useCustomCheckoutSdkContextWithUseCase('calls useCustomCheckout()')
   const ctx = useContext(CustomCheckoutSdkContext)
   if (!ctx) {
     throw new Error(
