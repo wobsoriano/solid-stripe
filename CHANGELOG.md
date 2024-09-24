@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.6.2
+
+### Patch Changes
+
+- 1306d77: Ensure `useCustomCheckout` calls are inside `CustomCheckoutProvider` component.
+
 ## 0.6.1
 
 ### Patch Changes
