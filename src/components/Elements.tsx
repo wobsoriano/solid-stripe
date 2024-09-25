@@ -1,8 +1,7 @@
 import * as stripeJs from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createComputed, createContext, createSignal, useContext } from 'solid-js'
+import { createComputed, createContext, createEffect, createSignal, useContext, on } from 'solid-js'
 import { UnknownOptions } from 'src/types'
-import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
 
 export interface ElementsContextValue {
   elements: Accessor<stripeJs.StripeElements | null>
@@ -49,6 +48,23 @@ export const Elements: Component<ElementsProps> = props => {
       setElements(instance)
     }
   })
+
+  createEffect(
+    on(
+      () => {
+        // @ts-expect-error: Need only updateable options
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { clientSecret, fonts, ...rest } = props.options
+        return rest
+      },
+      stripeElementUpdateOptions => {
+        elements()?.update(stripeElementUpdateOptions)
+      },
+      {
+        defer: true,
+      },
+    ),
+  )
 
   const stripe = () => props.stripe || null
   const value = {

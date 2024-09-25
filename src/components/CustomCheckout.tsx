@@ -6,7 +6,9 @@ import {
   createSignal,
   JSX,
   useContext,
+  on,
   type Component,
+  createEffect,
 } from 'solid-js'
 import * as stripeJs from '@stripe/stripe-js'
 import { ElementsContext, parseElementsContext } from './Elements'
@@ -76,19 +78,29 @@ export const CustomCheckoutProvider: Component<CustomCheckoutProviderProps> = pr
   const [session, setSession] = createSignal<stripeJs.StripeCustomCheckoutSession | null>(null)
 
   createComputed(() => {
-    if (!props.stripe) {
-      return
-    }
-
-    props.stripe.initCustomCheckout(props.options).then(value => {
-      if (value) {
+    if (props.stripe && !customCheckoutSdk()) {
+      props.stripe.initCustomCheckout(props.options).then(value => {
         setCustomCheckoutSdk(value)
-        value.on('change', _session => {
-          setSession(_session)
-        })
-      }
-    })
+        value.on('change', setSession)
+      })
+    }
   })
+
+  createEffect(
+    on(
+      () => props.options.elementsOptions?.appearance,
+      appearance => {
+        if (!customCheckoutSdk() || !appearance) {
+          return
+        }
+
+        customCheckoutSdk()?.changeAppearance(appearance)
+      },
+      {
+        defer: true,
+      },
+    ),
+  )
 
   const customCheckoutContextValue = createMemo(() =>
     extractCustomCheckoutContextValue(customCheckoutSdk(), session()),
