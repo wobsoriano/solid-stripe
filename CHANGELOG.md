@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.0
+
+### Minor Changes
+
+- 4f0a83f: Add embedded checkout components
+
 ## 0.6.2
 
 ### Patch Changes
