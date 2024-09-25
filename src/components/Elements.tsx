@@ -52,9 +52,8 @@ export const Elements: Component<ElementsProps> = props => {
   createEffect(
     on(
       () => {
-        // @ts-expect-error: Need only updateable options
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { clientSecret, fonts, ...rest } = props.options
+        const { clientSecret, fonts, ...rest } = props.options ?? {}
         return rest
       },
       stripeElementUpdateOptions => {
