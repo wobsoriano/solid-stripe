@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.1
+
+### Patch Changes
+
+- 673e286: Fix event handlers not emitting
+
 ## 0.7.0
 
 ### Minor Changes
