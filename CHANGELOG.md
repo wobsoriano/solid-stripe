@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.2
+
+### Patch Changes
+
+- 8ffb902: Make sure callback is defined before passing to an event handler
+
 ## 0.7.1
 
 ### Patch Changes
