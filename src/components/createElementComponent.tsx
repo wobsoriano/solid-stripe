@@ -1,5 +1,5 @@
 import * as stripeJs from '@stripe/stripe-js'
-import { Accessor, Component, createComputed, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Accessor, Component, createComputed, createEffect, createSignal, on, onCleanup } from 'solid-js'
 import { ElementProps, UnknownOptions } from 'src/types'
 import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
 
@@ -56,6 +56,22 @@ export const createElementComponent = ({
         }
       }
     })
+
+    createEffect(
+      on(
+        () => props.options,
+        options => {
+          if (!element() || !options) {
+            return
+          }
+
+          element()!.update(options)
+        },
+        {
+          defer: true,
+        },
+      ),
+    )
 
     useAttachEvent(element, 'blur', props.onBlur)
     useAttachEvent(element, 'focus', props.onFocus)
