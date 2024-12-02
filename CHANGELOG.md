@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.3
+
+### Patch Changes
+
+- 25f2419: Update element options on options prop change
+
 ## 0.7.2
 
 ### Patch Changes
