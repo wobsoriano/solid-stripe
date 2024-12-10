@@ -115,7 +115,7 @@ export const useAttachEvent = <A extends unknown[]>(
   cb?: (...args: A) => any,
 ) => {
   createEffect(() => {
-    if (!element() && !cb) {
+    if (!element() || !cb) {
       return
     }
 
