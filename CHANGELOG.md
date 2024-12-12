@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.4
+
+### Patch Changes
+
+- 5160c82: Register handlers only when defined
+
 ## 0.7.3
 
 ### Patch Changes
