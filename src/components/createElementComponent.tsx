@@ -1,5 +1,13 @@
 import * as stripeJs from '@stripe/stripe-js'
-import { Accessor, Component, createComputed, createEffect, createSignal, on, onCleanup } from 'solid-js'
+import {
+  Accessor,
+  Component,
+  createComputed,
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+} from 'solid-js'
 import { ElementProps, UnknownOptions } from 'src/types'
 import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
 
@@ -102,8 +110,9 @@ export const createElementComponent = ({
     useAttachEvent(element, 'ready', readyCallback)
 
     onCleanup(() => {
-      if (typeof element()?.destroy == 'function') {
-        element()!.destroy()
+      const currentElement = element()
+      if (currentElement && typeof currentElement.destroy === 'function') {
+        currentElement.destroy()
       }
     })
 
