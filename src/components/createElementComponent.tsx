@@ -101,6 +101,12 @@ export const createElementComponent = ({
 
     useAttachEvent(element, 'ready', readyCallback)
 
+    onCleanup(() => {
+      if (typeof element()?.destroy == 'function') {
+        element()!.destroy()
+      }
+    })
+
     return <div id={props.id} class={props.class} ref={setDomRef}></div>
   }
 
