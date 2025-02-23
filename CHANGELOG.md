@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.7.5
+
+### Patch Changes
+
+- 03b2940: Destroy Elements on clean up
+
 ## 0.7.4
 
 ### Patch Changes
