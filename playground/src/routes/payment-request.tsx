@@ -7,12 +7,7 @@ import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
 export default function Page() {
-  const [stripe, setStripe] = createSignal<Stripe | null>(null)
-
-  onMount(async () => {
-    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-    setStripe(result)
-  })
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
   return (
     <>
@@ -28,11 +23,9 @@ export default function Page() {
         </a>
         .
       </p>
-      <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()!}>
-          <CheckoutForm />
-        </Elements>
-      </Show>
+      <Elements stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements>
     </>
   )
 }
@@ -83,7 +76,7 @@ function CheckoutForm() {
         <Show when={paymentRequest()}>
           <PaymentRequestButtonElement
             options={{
-              paymentRequest: paymentRequest(),
+              paymentRequest: paymentRequest()!,
             }}
           />
         </Show>

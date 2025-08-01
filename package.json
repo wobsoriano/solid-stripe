@@ -69,7 +69,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
-    "solid-js": "^1.9.3",
+    "solid-js": "^1.9.5",
     "tsup": "^8.0.2",
     "tsup-preset-solid": "^2.2.0",
     "typescript": "^5.4.5"

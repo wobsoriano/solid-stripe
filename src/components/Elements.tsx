@@ -32,7 +32,7 @@ interface ElementsProps {
    *
    * You can also pass in `null` or a `Promise` resolving to `null` if you are performing an initial server-side render or when generating a static site.
    */
-  stripe: PromiseLike<stripeJs.Stripe> | stripeJs.Stripe | null
+  stripe: PromiseLike<stripeJs.Stripe | null> | stripeJs.Stripe | null
   /**
    * Optional [Elements configuration options](https://stripe.com/docs/js/elements_object/create).
    * Once the stripe prop has been set, these options cannot be changed.
