@@ -8,7 +8,9 @@ import {
   onCleanup,
   createComputed,
   Accessor,
+  createMemo,
 } from 'solid-js'
+import { parseStripeProp } from 'src/parseStripeProp'
 
 type EmbeddedCheckoutPublicInterface = {
   mount(location: string | HTMLElement): void
@@ -62,7 +64,11 @@ interface EmbeddedCheckoutProviderProps {
   children: JSX.Element
 }
 
+const INVALID_STRIPE_ERROR =
+  'Invalid prop `stripe` supplied to `EmbeddedCheckoutProvider`. We recommend using the `loadStripe` utility from `@stripe/stripe-js`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.';
+
 export const EmbeddedCheckoutProvider: Component<EmbeddedCheckoutProviderProps> = props => {
+  const parsed = createMemo(() => parseStripeProp(props.stripe), INVALID_STRIPE_ERROR)
   const [ctx, setContext] = createSignal<EmbeddedCheckoutContextValue>({
     embeddedCheckout: null,
   })
