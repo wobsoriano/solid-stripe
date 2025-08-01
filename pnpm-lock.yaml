@@ -66,8 +66,8 @@ importers:
         specifier: ^1.0.10
         version: 1.0.10(solid-js@1.9.3)(vinxi@0.4.3(@types/node@20.17.9)(ioredis@5.4.1)(terser@5.36.0)(typescript@5.7.2))(vite@5.4.11(@types/node@20.17.9)(terser@5.36.0))
       '@stripe/stripe-js':
-        specifier: ^2.1.0
-        version: 2.4.0
+        specifier: ^7.7.0
+        version: 7.7.0
       solid-sonner:
         specifier: ^0.2.8
         version: 0.2.8(solid-js@1.9.3)
@@ -1262,9 +1262,6 @@ packages:
 
   '@solidjs/start@1.0.10':
     resolution: {integrity: sha512-3yg4KraSxc4rXs9dy/3kkqjDhU0JCPsZFLmDl5n6hHRPwtLLac6WUhs2k5VxGzitHaaJM/ZQCfT7i544Mf+4tw==}
-
-  '@stripe/stripe-js@2.4.0':
-    resolution: {integrity: sha512-WFkQx1mbs2b5+7looI9IV1BLa3bIApuN3ehp9FP58xGg7KL9hCHDECgW3BwO9l9L+xBPVAD7Yjn1EhGe6EDTeA==}
 
   '@stripe/stripe-js@7.7.0':
     resolution: {integrity: sha512-SXuhqhuR5FXaYgKTXzZJeqtVA6JKb9IZWaGeEUxHHiOcFy2p51wccO72bYpXwoK4D5pzQOIYLTuAc7etxyMmwg==}
@@ -4725,8 +4722,6 @@ snapshots:
       - supports-color
       - vinxi
       - vite
-
-  '@stripe/stripe-js@2.4.0': {}
 
   '@stripe/stripe-js@7.7.0': {}
 

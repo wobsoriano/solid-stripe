@@ -2,7 +2,7 @@ import * as stripeJs from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
 import { createComputed, createContext, createEffect, createSignal, useContext, on, createMemo } from 'solid-js'
 import { UnknownOptions } from '../types'
-import { parseStripeProp } from 'src/parseStripeProp'
+import { parseStripeProp } from '../utils/parseStripeProp'
 
 export interface ElementsContextValue {
   elements: Accessor<stripeJs.StripeElements | null>
@@ -75,7 +75,7 @@ export const Elements: Component<ElementsProps> = props => {
         const { clientSecret, fonts, ...rest } = props.options ?? {}
         return rest
       },
-      stripeElementUpdateOptions => {
+      (stripeElementUpdateOptions) => {
         elements()?.update(stripeElementUpdateOptions)
       },
       {

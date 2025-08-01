@@ -10,6 +10,7 @@ import {
 } from 'solid-js'
 import { ElementProps, UnknownOptions } from '../types'
 import { useElementsOrCheckoutSdkContextWithUseCase } from './CheckoutProvider'
+import { isServer } from 'solid-js/web'
 
 type UnknownCallback = (...args: unknown[]) => any
 
@@ -41,7 +42,7 @@ export const createElementComponent = ({
 }): Component<ElementProps> => {
   const displayName = `${capitalized(type)}Element`
 
-  const Element: Component<PrivateElementProps> = props => {
+  const ClientElement: Component<PrivateElementProps> = props => {
     const ctx = useElementsOrCheckoutSdkContextWithUseCase(`mounts <${displayName}>`)
     const elements = 'elements' in ctx ? ctx.elements : null
     const checkoutSdk = 'checkoutSdk' in ctx ? ctx.checkoutSdk : null
@@ -116,6 +117,7 @@ export const createElementComponent = ({
             return
           }
 
+          // @ts-expect-error: TODO, why is update method not typed
           elementRef()!.update(options)
         },
         {
@@ -124,6 +126,9 @@ export const createElementComponent = ({
       ),
     )
 
+    // For every event where the merchant provides a callback, call element.on
+    // with that callback. If the merchant ever changes the callback, removes
+    // the old callback with element.off and then call element.on with the new one.
     useAttachEvent(elementRef, 'blur', props.onBlur)
     useAttachEvent(elementRef, 'focus', props.onFocus)
     useAttachEvent(elementRef, 'escape', props.onEscape)
@@ -163,6 +168,14 @@ export const createElementComponent = ({
 
     return <div id={props.id} class={props.class} ref={setDomNode}></div>
   }
+
+  // Only render the Element wrapper in a server environment.
+  const ServerElement: Component<PrivateElementProps> = (props) => {
+    useElementsOrCheckoutSdkContextWithUseCase(`mounts <${displayName}>`);
+    return <div id={props.id} class={props.class} />;
+  };
+
+  const Element = isServer ? ServerElement : ClientElement;
 
   ;(Element as any).__elementType = type
 

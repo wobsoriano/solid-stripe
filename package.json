@@ -1,7 +1,7 @@
 {
   "version": "0.7.5",
   "name": "solid-stripe",
-  "description": "Solid wrapper for Stripe.js",
+  "description": "Solid components for Stripe.js and Stripe Elements",
   "packageManager": "pnpm@9.11.0",
   "type": "module",
   "sideEffects": false,
@@ -46,10 +46,9 @@
     "url": "git+https://github.com/wobsoriano/solid-stripe.git"
   },
   "keywords": [
-    "stripe",
-    "elements",
     "solid",
-    "typescript"
+    "stripe",
+    "elements"
   ],
   "author": "Robert Soriano <sorianorobertc@gmail.com>",
   "license": "MIT",

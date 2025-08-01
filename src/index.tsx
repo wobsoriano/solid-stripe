@@ -22,7 +22,13 @@ import {
 } from './types'
 
 export { Elements, useElements } from './components/Elements'
-export { CustomCheckoutProvider, useCustomCheckout } from './components/CustomCheckout'
+
+export {
+  useCheckout,
+  CheckoutProvider,
+} from './components/CheckoutProvider';
+export {EmbeddedCheckout} from './components/EmbeddedCheckout';
+export {EmbeddedCheckoutProvider} from './components/EmbeddedCheckoutProvider';
 export { useStripe } from './components/useStripe'
 
 export const AuBankAccountElement: AuBankAccountElementComponent = createElementComponent({
