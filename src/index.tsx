@@ -23,12 +23,9 @@ import {
 
 export { Elements, useElements } from './components/Elements'
 
-export {
-  useCheckout,
-  CheckoutProvider,
-} from './components/CheckoutProvider';
-export {EmbeddedCheckout} from './components/EmbeddedCheckout';
-export {EmbeddedCheckoutProvider} from './components/EmbeddedCheckoutProvider';
+export { useCheckout, CheckoutProvider } from './components/CheckoutProvider'
+export { EmbeddedCheckout } from './components/EmbeddedCheckout'
+export { EmbeddedCheckoutProvider } from './components/EmbeddedCheckoutProvider'
 export { useStripe } from './components/useStripe'
 
 export const AuBankAccountElement: AuBankAccountElementComponent = createElementComponent({

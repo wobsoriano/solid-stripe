@@ -55,49 +55,43 @@ export const createElementComponent = ({
 
         if (checkoutSdk?.()) {
           switch (type) {
-                      case 'payment':
-                        newElement = checkoutSdk()!.createPaymentElement(props.options);
-                        break;
-                      case 'address':
-                        if ('mode' in props.options!) {
-                          const {mode, ...restOptions} = props.options;
-                          if (mode === 'shipping') {
-                            newElement = checkoutSdk()!.createShippingAddressElement(
-                              restOptions
-                            );
-                          } else if (mode === 'billing') {
-                            newElement = checkoutSdk()!.createBillingAddressElement(
-                              restOptions
-                            );
-                          } else {
-                            throw new Error(
-                              "Invalid options.mode. mode must be 'billing' or 'shipping'."
-                            );
-                          }
-                        } else {
-                          throw new Error(
-                            "You must supply options.mode. mode must be 'billing' or 'shipping'."
-                          );
-                        }
-                        break;
-                      case 'expressCheckout':
-                        newElement = checkoutSdk()!.createExpressCheckoutElement(
-                          props.options as any
-                        ) as stripeJs.StripeExpressCheckoutElement;
-                        break;
-                      case 'currencySelector':
-                        newElement = checkoutSdk()!.createCurrencySelectorElement();
-                        break;
-                      case 'taxId':
-                        newElement = checkoutSdk()!.createTaxIdElement(props.options);
-                        break;
-                      default:
-                        throw new Error(
-                          `Invalid Element type ${displayName}. You must use either the <PaymentElement />, <AddressElement options={{mode: 'shipping'}} />, <AddressElement options={{mode: 'billing'}} />, or <ExpressCheckoutElement />.`
-                        );
-                    }
+            case 'payment':
+              newElement = checkoutSdk()!.createPaymentElement(props.options)
+              break
+            case 'address':
+              if ('mode' in props.options!) {
+                const { mode, ...restOptions } = props.options
+                if (mode === 'shipping') {
+                  newElement = checkoutSdk()!.createShippingAddressElement(restOptions)
+                } else if (mode === 'billing') {
+                  newElement = checkoutSdk()!.createBillingAddressElement(restOptions)
+                } else {
+                  throw new Error("Invalid options.mode. mode must be 'billing' or 'shipping'.")
+                }
+              } else {
+                throw new Error(
+                  "You must supply options.mode. mode must be 'billing' or 'shipping'.",
+                )
+              }
+              break
+            case 'expressCheckout':
+              newElement = checkoutSdk()!.createExpressCheckoutElement(
+                props.options as any,
+              ) as stripeJs.StripeExpressCheckoutElement
+              break
+            case 'currencySelector':
+              newElement = checkoutSdk()!.createCurrencySelectorElement()
+              break
+            case 'taxId':
+              newElement = checkoutSdk()!.createTaxIdElement(props.options)
+              break
+            default:
+              throw new Error(
+                `Invalid Element type ${displayName}. You must use either the <PaymentElement />, <AddressElement options={{mode: 'shipping'}} />, <AddressElement options={{mode: 'billing'}} />, or <ExpressCheckoutElement />.`,
+              )
+          }
         } else if (elements?.()) {
-          newElement = elements()!.create(type as any, props.options);
+          newElement = elements()!.create(type as any, props.options)
         }
 
         // Store element in state to facilitate event listener attachment
@@ -170,12 +164,12 @@ export const createElementComponent = ({
   }
 
   // Only render the Element wrapper in a server environment.
-  const ServerElement: Component<PrivateElementProps> = (props) => {
-    useElementsOrCheckoutSdkContextWithUseCase(`mounts <${displayName}>`);
-    return <div id={props.id} class={props.class} />;
-  };
+  const ServerElement: Component<PrivateElementProps> = props => {
+    useElementsOrCheckoutSdkContextWithUseCase(`mounts <${displayName}>`)
+    return <div id={props.id} class={props.class} />
+  }
 
-  const Element = isServer ? ServerElement : ClientElement;
+  const Element = isServer ? ServerElement : ClientElement
 
   ;(Element as any).__elementType = type
 

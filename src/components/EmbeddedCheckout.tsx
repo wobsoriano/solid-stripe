@@ -49,10 +49,10 @@ export const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = p
 // Only render the wrapper in a server environment.
 const EmbeddedCheckoutServerElement = (props: EmbeddedCheckoutProps) => {
   // Validate that we are in the right context by calling useEmbeddedCheckoutContext.
-  useEmbeddedCheckoutContext();
-  return <div id={props.id} class={props.class} />;
-};
+  useEmbeddedCheckoutContext()
+  return <div id={props.id} class={props.class} />
+}
 
 export const EmbeddedCheckout = isServer
   ? EmbeddedCheckoutServerElement
-  : EmbeddedCheckoutClientElement;
+  : EmbeddedCheckoutClientElement

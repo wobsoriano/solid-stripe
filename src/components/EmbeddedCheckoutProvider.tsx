@@ -55,22 +55,24 @@ interface EmbeddedCheckoutProviderProps {
     fetchClientSecret?: (() => Promise<string>) | null
     onComplete?: () => void
     onShippingDetailsChange?: (
-      event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent
-    ) => Promise<stripeJs.ResultAction>;
+      event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent,
+    ) => Promise<stripeJs.ResultAction>
     onLineItemsChange?: (
-      event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent
-    ) => Promise<stripeJs.ResultAction>;
+      event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent,
+    ) => Promise<stripeJs.ResultAction>
   }
   children: JSX.Element
 }
 
 const INVALID_STRIPE_ERROR =
-  'Invalid prop `stripe` supplied to `EmbeddedCheckoutProvider`. We recommend using the `loadStripe` utility from `@stripe/stripe-js`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.';
+  'Invalid prop `stripe` supplied to `EmbeddedCheckoutProvider`. We recommend using the `loadStripe` utility from `@stripe/stripe-js`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.'
 
 export const EmbeddedCheckoutProvider: Component<EmbeddedCheckoutProviderProps> = props => {
   const parsed = createMemo(() => parseStripeProp(props.stripe), INVALID_STRIPE_ERROR)
 
-  const [embeddedCheckoutPromise, setEmbeddedCheckoutPromise] = createSignal<Promise<void> | null>(null)
+  const [embeddedCheckoutPromise, setEmbeddedCheckoutPromise] = createSignal<Promise<void> | null>(
+    null,
+  )
   const [loadedStripe, setLoadedStripe] = createSignal<stripeJs.Stripe | null>(null)
 
   const [ctx, setContext] = createSignal<EmbeddedCheckoutContextValue>({
@@ -80,58 +82,58 @@ export const EmbeddedCheckoutProvider: Component<EmbeddedCheckoutProviderProps> 
   createComputed(() => {
     // Don't support any ctx updates once embeddedCheckout or stripe is set.
     if (loadedStripe() || embeddedCheckoutPromise()) {
-      return;
+      return
     }
 
     const setStripeAndInitEmbeddedCheckout = (stripe: stripeJs.Stripe) => {
-      if (loadedStripe() || embeddedCheckoutPromise()) return;
+      if (loadedStripe() || embeddedCheckoutPromise()) return
 
-      setLoadedStripe(stripe);
+      setLoadedStripe(stripe)
       setEmbeddedCheckoutPromise(
         loadedStripe()!
-        .initEmbeddedCheckout(props.options as any)
-        .then((embeddedCheckout) => {
-            setContext({embeddedCheckout});
-          })
-      );
-    };
+          .initEmbeddedCheckout(props.options as any)
+          .then(embeddedCheckout => {
+            setContext({ embeddedCheckout })
+          }),
+      )
+    }
 
     // For an async stripePromise, store it once resolved
-    const unwrappedParsed = parsed();
+    const unwrappedParsed = parsed()
     if (
       unwrappedParsed.tag === 'async' &&
       !loadedStripe() &&
       (props.options.clientSecret || props.options.fetchClientSecret)
     ) {
-      unwrappedParsed.stripePromise.then((stripe) => {
+      unwrappedParsed.stripePromise.then(stripe => {
         if (stripe) {
-          setStripeAndInitEmbeddedCheckout(stripe);
+          setStripeAndInitEmbeddedCheckout(stripe)
         }
-      });
+      })
     } else if (
       unwrappedParsed.tag === 'sync' &&
       !loadedStripe() &&
       (props.options.clientSecret || props.options.fetchClientSecret)
     ) {
       // Or, handle a sync stripe instance going from null -> populated
-      setStripeAndInitEmbeddedCheckout(unwrappedParsed.stripe);
+      setStripeAndInitEmbeddedCheckout(unwrappedParsed.stripe)
     }
   })
 
   onCleanup(() => {
     if (ctx().embeddedCheckout) {
-      setEmbeddedCheckoutPromise(null);
-      ctx().embeddedCheckout!.destroy();
+      setEmbeddedCheckoutPromise(null)
+      ctx().embeddedCheckout!.destroy()
     } else if (embeddedCheckoutPromise()) {
       // If embedded checkout is still initializing, destroy it once
       // it's done. This could be caused by unmounting very quickly
       // after mounting.
       embeddedCheckoutPromise()!.then(() => {
-        setEmbeddedCheckoutPromise(null);
+        setEmbeddedCheckoutPromise(null)
         if (ctx().embeddedCheckout) {
-          ctx().embeddedCheckout!.destroy();
+          ctx().embeddedCheckout!.destroy()
         }
-      });
+      })
     }
   })
 

@@ -1,6 +1,14 @@
 import * as stripeJs from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createComputed, createContext, createEffect, createSignal, useContext, on, createMemo } from 'solid-js'
+import {
+  createComputed,
+  createContext,
+  createEffect,
+  createSignal,
+  useContext,
+  on,
+  createMemo,
+} from 'solid-js'
 import { UnknownOptions } from '../types'
 import { parseStripeProp } from '../utils/parseStripeProp'
 
@@ -45,18 +53,22 @@ export const Elements: Component<ElementsProps> = props => {
   const parsed = createMemo(() => parseStripeProp(props.stripe))
 
   const [stripe, setStripe] = createSignal(
-    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe : null
+    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe : null,
   )
   const [elements, setElements] = createSignal<stripeJs.StripeElements | null>(
-    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe.elements(props.options as UnknownOptions) : null
+    parsed().tag === 'sync'
+      ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe.elements(
+          props.options as UnknownOptions,
+        )
+      : null,
   )
 
   createComputed(() => {
-    const parsedStripe = parsed();
+    const parsedStripe = parsed()
 
     // For an async stripePromise, store it in context once resolved
     if (parsedStripe.tag === 'async' && !stripe()) {
-      parsedStripe.stripePromise.then((loadedStripe) => {
+      parsedStripe.stripePromise.then(loadedStripe => {
         if (loadedStripe) {
           setStripe(loadedStripe)
           setElements(loadedStripe.elements(props.options as UnknownOptions))
@@ -75,7 +87,7 @@ export const Elements: Component<ElementsProps> = props => {
         const { clientSecret, fonts, ...rest } = props.options ?? {}
         return rest
       },
-      (stripeElementUpdateOptions) => {
+      stripeElementUpdateOptions => {
         elements()?.update(stripeElementUpdateOptions)
       },
       {

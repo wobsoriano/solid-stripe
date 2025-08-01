@@ -35,13 +35,9 @@ export const parseCheckoutSdkContext = (
 
 type StripeCheckoutActions = Omit<Omit<stripeJs.StripeCheckout, 'session'>, 'on'>
 
-interface CheckoutContextValue
-  extends StripeCheckoutActions,
-    stripeJs.StripeCheckoutSession {}
+interface CheckoutContextValue extends StripeCheckoutActions, stripeJs.StripeCheckoutSession {}
 
-const CheckoutContext = createContext<Accessor<CheckoutContextValue | null> | null>(
-  null,
-)
+const CheckoutContext = createContext<Accessor<CheckoutContextValue | null> | null>(null)
 
 export const extractCheckoutContextValue = (
   checkoutSdk: stripeJs.StripeCheckout | null,
@@ -53,10 +49,10 @@ export const extractCheckoutContextValue = (
 
   const { on: _on, session: _session, ...actions } = checkoutSdk
   if (!sessionState) {
-    return Object.assign(checkoutSdk.session(), actions);
+    return Object.assign(checkoutSdk.session(), actions)
   }
 
-  return Object.assign(sessionState, actions);
+  return Object.assign(sessionState, actions)
 }
 
 interface CheckoutProviderProps {
@@ -73,8 +69,7 @@ interface CheckoutProviderProps {
 }
 
 export const CheckoutProvider: Component<CheckoutProviderProps> = props => {
-  const [checkoutSdk, setCheckoutSdk] =
-    createSignal<stripeJs.StripeCheckout | null>(null)
+  const [checkoutSdk, setCheckoutSdk] = createSignal<stripeJs.StripeCheckout | null>(null)
   const [session, setSession] = createSignal<stripeJs.StripeCheckoutSession | null>(null)
 
   createComputed(() => {
