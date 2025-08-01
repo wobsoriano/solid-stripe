@@ -53,8 +53,11 @@ interface EmbeddedCheckoutProviderProps {
     fetchClientSecret?: (() => Promise<string>) | null
     onComplete?: () => void
     onShippingDetailsChange?: (
-      event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent,
-    ) => Promise<stripeJs.ResultAction>
+      event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent
+    ) => Promise<stripeJs.ResultAction>;
+    onLineItemsChange?: (
+      event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent
+    ) => Promise<stripeJs.ResultAction>;
   }
   children: JSX.Element
 }

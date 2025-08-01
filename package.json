@@ -55,13 +55,13 @@
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
   "peerDependencies": {
-    "@stripe/stripe-js": "^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0",
+    "@stripe/stripe-js": ">=1.44.1 <8.0.0",
     "solid-js": "^1.6.0"
   },
   "devDependencies": {
     "@alenaksu/json-viewer": "^2.0.1",
     "@changesets/cli": "^2.27.8",
-    "@stripe/stripe-js": "^4.5.0",
+    "@stripe/stripe-js": "^7.6.1",
     "@types/node": "^20.5.7",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",

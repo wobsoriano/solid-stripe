@@ -8,8 +8,8 @@ import {
   on,
   onCleanup,
 } from 'solid-js'
-import { ElementProps, UnknownOptions } from 'src/types'
-import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
+import { ElementProps, UnknownOptions } from '../types'
+import { useElementsOrCheckoutSdkContextWithUseCase } from './CheckoutProvider'
 
 type UnknownCallback = (...args: unknown[]) => any
 
@@ -42,25 +42,68 @@ export const createElementComponent = ({
   const displayName = `${capitalized(type)}Element`
 
   const Element: Component<PrivateElementProps> = props => {
-    const ctx = useElementsOrCustomCheckoutSdkContextWithUseCase(`mounts <${displayName}>`)
+    const ctx = useElementsOrCheckoutSdkContextWithUseCase(`mounts <${displayName}>`)
     const elements = 'elements' in ctx ? ctx.elements : null
-    const customCheckoutSdk = 'customCheckoutSdk' in ctx ? ctx.customCheckoutSdk : null
-    const [element, setElement] = createSignal<stripeJs.StripeElement | null>(null)
-    const [domRef, setDomRef] = createSignal<HTMLDivElement | null>(null)
+    const checkoutSdk = 'checkoutSdk' in ctx ? ctx.checkoutSdk : null
+    const [elementRef, setElementRef] = createSignal<stripeJs.StripeElement | null>(null)
+    const [domNode, setDomNode] = createSignal<HTMLDivElement | null>(null)
 
     createComputed(() => {
-      if (element() === null && domRef() !== null && (elements?.() || customCheckoutSdk?.())) {
+      if (elementRef() === null && domNode() !== null && (elements?.() || checkoutSdk?.())) {
         let newElement: stripeJs.StripeElement | null = null
-        if (customCheckoutSdk?.()) {
-          newElement = customCheckoutSdk()!.createElement(type as any, props.options)
+
+        if (checkoutSdk?.()) {
+          switch (type) {
+                      case 'payment':
+                        newElement = checkoutSdk()!.createPaymentElement(props.options);
+                        break;
+                      case 'address':
+                        if ('mode' in props.options!) {
+                          const {mode, ...restOptions} = props.options;
+                          if (mode === 'shipping') {
+                            newElement = checkoutSdk()!.createShippingAddressElement(
+                              restOptions
+                            );
+                          } else if (mode === 'billing') {
+                            newElement = checkoutSdk()!.createBillingAddressElement(
+                              restOptions
+                            );
+                          } else {
+                            throw new Error(
+                              "Invalid options.mode. mode must be 'billing' or 'shipping'."
+                            );
+                          }
+                        } else {
+                          throw new Error(
+                            "You must supply options.mode. mode must be 'billing' or 'shipping'."
+                          );
+                        }
+                        break;
+                      case 'expressCheckout':
+                        newElement = checkoutSdk()!.createExpressCheckoutElement(
+                          props.options as any
+                        ) as stripeJs.StripeExpressCheckoutElement;
+                        break;
+                      case 'currencySelector':
+                        newElement = checkoutSdk()!.createCurrencySelectorElement();
+                        break;
+                      case 'taxId':
+                        newElement = checkoutSdk()!.createTaxIdElement(props.options);
+                        break;
+                      default:
+                        throw new Error(
+                          `Invalid Element type ${displayName}. You must use either the <PaymentElement />, <AddressElement options={{mode: 'shipping'}} />, <AddressElement options={{mode: 'billing'}} />, or <ExpressCheckoutElement />.`
+                        );
+                    }
         } else if (elements?.()) {
-          newElement = elements()!.create(type as any, props.options)
+          newElement = elements()!.create(type as any, props.options);
         }
 
-        setElement(newElement)
+        // Store element in state to facilitate event listener attachment
+        setElementRef(newElement)
 
         if (newElement) {
-          newElement.mount(domRef()!)
+          newElement.mount(domNode()!)
         }
       }
     })
@@ -69,11 +112,11 @@ export const createElementComponent = ({
       on(
         () => props.options,
         options => {
-          if (!element() || !options) {
+          if (!elementRef() || !options) {
             return
           }
 
-          element()!.update(options)
+          elementRef()!.update(options)
         },
         {
           defer: true,
@@ -81,18 +124,18 @@ export const createElementComponent = ({
       ),
     )
 
-    useAttachEvent(element, 'blur', props.onBlur)
-    useAttachEvent(element, 'focus', props.onFocus)
-    useAttachEvent(element, 'escape', props.onEscape)
-    useAttachEvent(element, 'click', props.onClick)
-    useAttachEvent(element, 'loaderror', props.onLoadError)
-    useAttachEvent(element, 'loaderstart', props.onLoaderStart)
-    useAttachEvent(element, 'networkschange', props.onNetworksChange)
-    useAttachEvent(element, 'confirm', props.onConfirm)
-    useAttachEvent(element, 'cancel', props.onCancel)
-    useAttachEvent(element, 'shippingaddresschange', props.onShippingAddressChange)
-    useAttachEvent(element, 'shippingratechange', props.onShippingRateChange)
-    useAttachEvent(element, 'change', props.onChange)
+    useAttachEvent(elementRef, 'blur', props.onBlur)
+    useAttachEvent(elementRef, 'focus', props.onFocus)
+    useAttachEvent(elementRef, 'escape', props.onEscape)
+    useAttachEvent(elementRef, 'click', props.onClick)
+    useAttachEvent(elementRef, 'loaderror', props.onLoadError)
+    useAttachEvent(elementRef, 'loaderstart', props.onLoaderStart)
+    useAttachEvent(elementRef, 'networkschange', props.onNetworksChange)
+    useAttachEvent(elementRef, 'confirm', props.onConfirm)
+    useAttachEvent(elementRef, 'cancel', props.onCancel)
+    useAttachEvent(elementRef, 'shippingaddresschange', props.onShippingAddressChange)
+    useAttachEvent(elementRef, 'shippingratechange', props.onShippingRateChange)
+    useAttachEvent(elementRef, 'change', props.onChange)
 
     let readyCallback: UnknownCallback | undefined
     if (props.onReady) {
@@ -102,21 +145,23 @@ export const createElementComponent = ({
       } else {
         // For other Elements, pass through the Element itself.
         readyCallback = () => {
-          props.onReady?.(element())
+          props.onReady?.(elementRef())
         }
       }
     }
 
-    useAttachEvent(element, 'ready', readyCallback)
+    useAttachEvent(elementRef, 'ready', readyCallback)
 
     onCleanup(() => {
-      const currentElement = element()
+      const currentElement = elementRef()
       if (currentElement && typeof currentElement.destroy === 'function') {
-        currentElement.destroy()
+        try {
+          currentElement.destroy()
+        } catch {}
       }
     })
 
-    return <div id={props.id} class={props.class} ref={setDomRef}></div>
+    return <div id={props.id} class={props.class} ref={setDomNode}></div>
   }
 
   ;(Element as any).__elementType = type

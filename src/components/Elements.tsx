@@ -1,7 +1,8 @@
 import * as stripeJs from '@stripe/stripe-js'
 import type { Accessor, Component, JSX } from 'solid-js'
-import { createComputed, createContext, createEffect, createSignal, useContext, on } from 'solid-js'
-import { UnknownOptions } from 'src/types'
+import { createComputed, createContext, createEffect, createSignal, useContext, on, createMemo } from 'solid-js'
+import { UnknownOptions } from '../types'
+import { parseStripeProp } from 'src/parseStripeProp'
 
 export interface ElementsContextValue {
   elements: Accessor<stripeJs.StripeElements | null>
@@ -25,11 +26,13 @@ export const parseElementsContext = (
 
 interface ElementsProps {
   /**
-   * A [Stripe object](https://stripe.com/docs/js/initializing).
+   * A [Stripe object](https://stripe.com/docs/js/initializing) or a `Promise` resolving to a `Stripe` object.
    * The easiest way to initialize a `Stripe` object is with the the [Stripe.js wrapper module](https://github.com/stripe/stripe-js/blob/master/README.md#readme).
    * Once this prop has been set, it can not be changed.
+   *
+   * You can also pass in `null` or a `Promise` resolving to `null` if you are performing an initial server-side render or when generating a static site.
    */
-  stripe: stripeJs.Stripe | null
+  stripe: PromiseLike<stripeJs.Stripe> | stripeJs.Stripe | null
   /**
    * Optional [Elements configuration options](https://stripe.com/docs/js/elements_object/create).
    * Once the stripe prop has been set, these options cannot be changed.
@@ -39,13 +42,29 @@ interface ElementsProps {
 }
 
 export const Elements: Component<ElementsProps> = props => {
-  const [elements, setElements] = createSignal<stripeJs.StripeElements | null>(null)
+  const parsed = createMemo(() => parseStripeProp(props.stripe))
+
+  const [stripe, setStripe] = createSignal(
+    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe : null
+  )
+  const [elements, setElements] = createSignal<stripeJs.StripeElements | null>(
+    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe.elements(props.options as UnknownOptions) : null
+  )
 
   createComputed(() => {
-    if (props.stripe && !elements()) {
-      const instance = props.stripe.elements(props.options as UnknownOptions)
+    const parsedStripe = parsed();
 
-      setElements(instance)
+    // For an async stripePromise, store it in context once resolved
+    if (parsedStripe.tag === 'async' && !stripe()) {
+      parsedStripe.stripePromise.then((loadedStripe) => {
+        if (loadedStripe) {
+          setStripe(loadedStripe)
+          setElements(loadedStripe.elements(props.options as UnknownOptions))
+        }
+      })
+    } else if (parsedStripe.tag === 'sync' && !stripe()) {
+      // Or, handle a sync stripe instance going from null -> populated
+      setStripe(parsedStripe.stripe)
     }
   })
 
@@ -65,7 +84,6 @@ export const Elements: Component<ElementsProps> = props => {
     ),
   )
 
-  const stripe = () => props.stripe || null
   const value = {
     stripe,
     elements,
