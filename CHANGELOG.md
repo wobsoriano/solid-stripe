@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.8.0
+
+### Minor Changes
+
+- 5fa3d7f: Support stripe-js 5, 6 and 7
+
 ## 0.7.5
 
 ### Patch Changes
