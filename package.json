@@ -1,7 +1,7 @@
 {
   "version": "0.7.5",
   "name": "solid-stripe",
-  "description": "Solid wrapper for Stripe.js",
+  "description": "Solid components for Stripe.js and Stripe Elements",
   "packageManager": "pnpm@9.11.0",
   "type": "module",
   "sideEffects": false,
@@ -37,7 +37,7 @@
     "release": "pnpm build && changeset publish",
     "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\" \"playground/**/*.{js,ts,json,css,tsx,jsx}\"",
     "lint": "concurrently pnpm:lint:*",
-    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx}",
+    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{ts,tsx}",
     "lint:types": "tsc --noEmit",
     "update-deps": "pnpm up -Li"
   },
@@ -46,22 +46,21 @@
     "url": "git+https://github.com/wobsoriano/solid-stripe.git"
   },
   "keywords": [
-    "stripe",
-    "elements",
     "solid",
-    "typescript"
+    "stripe",
+    "elements"
   ],
   "author": "Robert Soriano <sorianorobertc@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/wobsoriano/solid-stripe#readme",
   "peerDependencies": {
-    "@stripe/stripe-js": "^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0",
+    "@stripe/stripe-js": ">=1.44.1 <8.0.0",
     "solid-js": "^1.6.0"
   },
   "devDependencies": {
     "@alenaksu/json-viewer": "^2.0.1",
     "@changesets/cli": "^2.27.8",
-    "@stripe/stripe-js": "^4.5.0",
+    "@stripe/stripe-js": "^7.6.1",
     "@types/node": "^20.5.7",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
@@ -70,7 +69,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
-    "solid-js": "^1.9.3",
+    "solid-js": "^1.9.5",
     "tsup": "^8.0.2",
     "tsup-preset-solid": "^2.2.0",
     "typescript": "^5.4.5"

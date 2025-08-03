@@ -8,7 +8,9 @@ import {
   onCleanup,
   createComputed,
   Accessor,
+  createMemo,
 } from 'solid-js'
+import { parseStripeProp } from 'src/utils/parseStripeProp'
 
 type EmbeddedCheckoutPublicInterface = {
   mount(location: string | HTMLElement): void
@@ -55,31 +57,84 @@ interface EmbeddedCheckoutProviderProps {
     onShippingDetailsChange?: (
       event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent,
     ) => Promise<stripeJs.ResultAction>
+    onLineItemsChange?: (
+      event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent,
+    ) => Promise<stripeJs.ResultAction>
   }
   children: JSX.Element
 }
 
+const INVALID_STRIPE_ERROR =
+  'Invalid prop `stripe` supplied to `EmbeddedCheckoutProvider`. We recommend using the `loadStripe` utility from `@stripe/stripe-js`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.'
+
 export const EmbeddedCheckoutProvider: Component<EmbeddedCheckoutProviderProps> = props => {
+  const parsed = createMemo(() => parseStripeProp(props.stripe), INVALID_STRIPE_ERROR)
+
+  const [embeddedCheckoutPromise, setEmbeddedCheckoutPromise] = createSignal<Promise<void> | null>(
+    null,
+  )
+  const [loadedStripe, setLoadedStripe] = createSignal<stripeJs.Stripe | null>(null)
+
   const [ctx, setContext] = createSignal<EmbeddedCheckoutContextValue>({
     embeddedCheckout: null,
   })
 
   createComputed(() => {
-    if (
-      props.stripe &&
-      !ctx().embeddedCheckout &&
-      (props.options.clientSecret || props.options.fetchClientSecret)
-    ) {
-      props.stripe.initEmbeddedCheckout(props.options as any).then(embeddedCheckout => {
-        setContext({
-          embeddedCheckout,
-        })
-      })
+    // Don't support any ctx updates once embeddedCheckout or stripe is set.
+    if (loadedStripe() || embeddedCheckoutPromise()) {
+      return
     }
 
-    onCleanup(() => {
-      ctx().embeddedCheckout?.destroy()
-    })
+    const setStripeAndInitEmbeddedCheckout = (stripe: stripeJs.Stripe) => {
+      if (loadedStripe() || embeddedCheckoutPromise()) return
+
+      setLoadedStripe(stripe)
+      setEmbeddedCheckoutPromise(
+        loadedStripe()!
+          .initEmbeddedCheckout(props.options as any)
+          .then(embeddedCheckout => {
+            setContext({ embeddedCheckout })
+          }),
+      )
+    }
+
+    // For an async stripePromise, store it once resolved
+    const unwrappedParsed = parsed()
+    if (
+      unwrappedParsed.tag === 'async' &&
+      !loadedStripe() &&
+      (props.options.clientSecret || props.options.fetchClientSecret)
+    ) {
+      unwrappedParsed.stripePromise.then(stripe => {
+        if (stripe) {
+          setStripeAndInitEmbeddedCheckout(stripe)
+        }
+      })
+    } else if (
+      unwrappedParsed.tag === 'sync' &&
+      !loadedStripe() &&
+      (props.options.clientSecret || props.options.fetchClientSecret)
+    ) {
+      // Or, handle a sync stripe instance going from null -> populated
+      setStripeAndInitEmbeddedCheckout(unwrappedParsed.stripe)
+    }
+  })
+
+  onCleanup(() => {
+    if (ctx().embeddedCheckout) {
+      setEmbeddedCheckoutPromise(null)
+      ctx().embeddedCheckout!.destroy()
+    } else if (embeddedCheckoutPromise()) {
+      // If embedded checkout is still initializing, destroy it once
+      // it's done. This could be caused by unmounting very quickly
+      // after mounting.
+      embeddedCheckoutPromise()!.then(() => {
+        setEmbeddedCheckoutPromise(null)
+        if (ctx().embeddedCheckout) {
+          ctx().embeddedCheckout!.destroy()
+        }
+      })
+    }
   })
 
   return (

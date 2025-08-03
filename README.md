@@ -98,15 +98,10 @@ const options = {
 };
 
 const App = () => {
-  const [stripe, setStripe] = createSignal(null);
-
-  onMount(async () => {
-    const _stripe = await loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
-    setStripe(_stripe);
-  })
+  const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
 
   return (
-    <Elements stripe={stripe()} options={options}>
+    <Elements stripe={stripePromise} options={options}>
       <CheckoutForm />
     </Elements>
   )

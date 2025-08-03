@@ -1,6 +1,6 @@
-import { useElementsOrCustomCheckoutSdkContextWithUseCase } from './CustomCheckout'
+import { useElementsOrCheckoutSdkContextWithUseCase } from './CheckoutProvider'
 
 export function useStripe() {
-  const { stripe } = useElementsOrCustomCheckoutSdkContextWithUseCase('calls useStripe()')
+  const { stripe } = useElementsOrCheckoutSdkContextWithUseCase('calls useStripe()')
   return stripe
 }

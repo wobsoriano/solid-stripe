@@ -1,6 +1,5 @@
-import type { Stripe } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Show, createSignal, onMount } from 'solid-js'
+import { Show } from 'solid-js'
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -14,21 +13,14 @@ import { createPaymentIntent } from '~/lib/createPaymentIntent'
 import Alert from '~/components/Alert'
 
 export default function Page() {
-  const [stripe, setStripe] = createSignal<Stripe | null>(null)
-
-  onMount(async () => {
-    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-    setStripe(result)
-  })
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
   return (
     <>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Credit Card Example</h1>
-      <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements stripe={stripe()}>
-          <CheckoutForm />
-        </Elements>
-      </Show>
+      <Elements stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements>
     </>
   )
 }
@@ -43,7 +35,7 @@ function CheckoutForm() {
       currency: 'usd',
       payment_method_types: ['card'],
     })
-    const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret!, {
+    const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret as string, {
       payment_method: {
         card: elements()!.getElement(CardNumberElement)!,
         billing_details: {

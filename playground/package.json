@@ -17,11 +17,11 @@
   "dependencies": {
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.15.1",
-    "@solidjs/start": "^1.0.10",
-    "@stripe/stripe-js": "^2.1.0",
+    "@solidjs/start": "^1.1.0",
+    "@stripe/stripe-js": "^7.7.0",
     "solid-sonner": "^0.2.8",
     "solid-stripe": "workspace:*",
     "stripe": "^16.12.0",
-    "vinxi": "^0.4.1"
+    "vinxi": "^0.5.7"
   }
 }
