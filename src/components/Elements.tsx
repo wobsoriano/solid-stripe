@@ -77,6 +77,7 @@ export const Elements: Component<ElementsProps> = props => {
     } else if (parsedStripe.tag === 'sync' && !stripe()) {
       // Or, handle a sync stripe instance going from null -> populated
       setStripe(parsedStripe.stripe)
+      setElements(parsedStripe.stripe.elements(props.options as UnknownOptions))
     }
   })
 
