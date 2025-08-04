@@ -1,5 +1,11 @@
 # solid-stripe
 
+## 0.8.1
+
+### Patch Changes
+
+- 90876d6: Add missing element value setting for sync stripe version
+
 ## 0.8.0
 
 ### Minor Changes

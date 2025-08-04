@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "name": "solid-stripe",
   "description": "Solid components for Stripe.js and Stripe Elements",
   "packageManager": "pnpm@9.11.0",
