@@ -1,4 +1,5 @@
-import { loadStripe } from '@stripe/stripe-js'
+import { action, redirect, useSubmission } from '@solidjs/router'
+import type { StripeElementStyle } from '@stripe/stripe-js'
 import { Show } from 'solid-js'
 import {
   CardCvcElement,
@@ -8,84 +9,111 @@ import {
   useElements,
   useStripe,
 } from 'solid-stripe'
-import { action, redirect, useSubmission } from '@solidjs/router'
+import ExampleLayout from '~/components/ExampleLayout'
+import { legacyElementStyle, useColorScheme } from '~/lib/appearance'
+import { useEventLog } from '~/lib/eventLog'
 import { createPaymentIntent } from '~/lib/paymentIntent'
-import Alert from '~/components/Alert'
+import { formatAmount, UNIT_AMOUNT } from '~/lib/pricing'
+import { getStripeJs } from '~/lib/stripeJs'
+import { testCards } from '~/testData'
 
 export default function Page() {
-  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-
   return (
-    <>
-      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Credit Card Example</h1>
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
-    </>
+    <ExampleLayout
+      slug="credit-card"
+      testData={testCards}
+      note={
+        <>
+          The <a href="/payment-element">Payment Element</a> replaces the split card fields for new
+          integrations. It adds wallets and local payment methods without code changes.
+        </>
+      }
+    >
+      <CardDemo />
+    </ExampleLayout>
   )
 }
 
-function CheckoutForm() {
+function CardDemo() {
+  const scheme = useColorScheme()
+
+  return (
+    <Elements stripe={getStripeJs()}>
+      <CardForm style={legacyElementStyle(scheme())} />
+    </Elements>
+  )
+}
+
+function CardForm(props: { style: StripeElementStyle }) {
   const stripe = useStripe()
   const elements = useElements()
+  const log = useEventLog()
+  // `classes.base` lands on the element's container, so it can share the input styles.
+  const fieldOptions = () => ({ style: props.style, classes: { base: 'stripe-field' } })
 
-  const paymentAction = action(async (form: FormData) => {
+  const pay = action(async (form: FormData) => {
     const { clientSecret } = await createPaymentIntent('card')
+    log('server', 'createPaymentIntent')('card')
+
     const result = await stripe()!.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements()!.getElement(CardNumberElement)!,
-        billing_details: {
-          name: form.get('name') as string,
-        },
+        billing_details: { name: String(form.get('name')) },
       },
     })
-
-    if (result.error) {
-      // payment failed
-      throw new Error(result.error.message)
-    } else {
-      // payment succeeded
-      return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
-    }
+    log('stripe', 'confirmCardPayment')(result)
+    if (result.error) throw new Error(result.error.message)
+    return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
   }, 'credit-card-payment')
 
-  const submission = useSubmission(paymentAction)
+  const submission = useSubmission(pay)
 
   return (
-    <>
+    <form action={pay} method="post" class="demo-form">
       <Show when={submission.error}>
-        <Alert message={submission.error.message} type="error" />
+        {error => (
+          <p class="callout callout-danger" role="alert">
+            {error().message}
+          </p>
+        )}
       </Show>
-      <form action={paymentAction} class="flex flex-col gap-2.5 my-8" method="post">
+      <label class="field">
+        <span class="field-label">Name on card</span>
         <input
+          class="input"
           name="name"
-          placeholder="Your name"
+          autocomplete="cc-name"
+          placeholder="Jenny Rosen"
+          required
           disabled={submission.pending}
-          class="input input-bordered"
         />
-        <CardNumberElement options={{ classes: { base: 'stripe-input' } }} />
-
-        <div class="flex gap-2">
-          <CardExpiryElement options={{ classes: { base: 'stripe-input w-1/4' } }} />
-          <CardCvcElement options={{ classes: { base: 'stripe-input w-1/4' } }} />
-        </div>
-
-        <button class="btn btn-primary" disabled={submission.pending}>
-          {submission.pending ? 'Processing...' : 'Pay'}
-        </button>
-      </form>
-      <div class="flex flex-col">
-        <a class="link" target="_BLANK" href="https://stripe.com/docs/testing#cards">
-          Test cards
-        </a>
-        <a
-          class="link"
-          target="_BLANK"
-          href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/credit-card.tsx"
-        >
-          View code
-        </a>
+      </label>
+      <div class="field">
+        <span class="field-label">Card number</span>
+        <CardNumberElement
+          options={{ ...fieldOptions(), showIcon: true }}
+          onReady={log('CardNumberElement', 'ready')}
+          onChange={log('CardNumberElement', 'change')}
+          onFocus={log('CardNumberElement', 'focus')}
+          onBlur={log('CardNumberElement', 'blur')}
+        />
       </div>
-    </>
+      <div class="field-row">
+        <div class="field">
+          <span class="field-label">Expiry</span>
+          <CardExpiryElement
+            options={fieldOptions()}
+            onChange={log('CardExpiryElement', 'change')}
+          />
+        </div>
+        <div class="field">
+          <span class="field-label">CVC</span>
+          <CardCvcElement options={fieldOptions()} onChange={log('CardCvcElement', 'change')} />
+        </div>
+      </div>
+      <button class="button button-block" disabled={submission.pending}>
+        {submission.pending ? 'Processing…' : `Pay ${formatAmount(UNIT_AMOUNT, 'usd')}`}
+      </button>
+    </form>
   )
 }
