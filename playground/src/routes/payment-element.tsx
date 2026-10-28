@@ -1,4 +1,5 @@
-import { action, redirect, useSubmission } from '@solidjs/router'
+import { formAction } from '@solidjs/router'
+import { redirect } from '@solidjs/web'
 import { createSignal, Show } from 'solid-js'
 import {
   AddressElement,
@@ -16,6 +17,7 @@ import { useEventLog } from '~/lib/eventLog'
 import { createPaymentIntent } from '~/lib/paymentIntent'
 import { formatAmount, MAX_QUANTITY, UNIT_AMOUNT } from '~/lib/pricing'
 import { getStripeJs } from '~/lib/stripeJs'
+import { useSubmission } from '~/lib/submission'
 import { testCards } from '~/testData'
 
 type Layout = 'tabs' | 'accordion'
@@ -90,7 +92,7 @@ function CheckoutForm(props: {
   const log = useEventLog()
   const total = () => formatAmount(UNIT_AMOUNT * props.quantity, 'usd')
 
-  const pay = action(async () => {
+  const pay = formAction(async () => {
     const { error: submitError } = await elements()!.submit()
     if (submitError) throw new Error(submitError.message)
 
@@ -123,11 +125,11 @@ function CheckoutForm(props: {
           value={props.quantity}
           min={1}
           max={MAX_QUANTITY}
-          disabled={submission.pending}
+          disabled={submission.pending()}
           onChange={props.onQuantityChange}
         />
       </div>
-      <Show when={submission.error}>
+      <Show when={submission.error()}>
         {error => (
           <p class="callout callout-danger" role="alert">
             {error().message}
@@ -150,8 +152,8 @@ function CheckoutForm(props: {
         onReady={log('AddressElement', 'ready')}
         onChange={log('AddressElement', 'change')}
       />
-      <button class="button button-block" disabled={submission.pending}>
-        {submission.pending ? 'Processing…' : `Pay ${total()}`}
+      <button class="button button-block" disabled={submission.pending()}>
+        {submission.pending() ? 'Processing…' : `Pay ${total()}`}
       </button>
     </form>
   )
