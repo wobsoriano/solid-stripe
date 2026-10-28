@@ -1,4 +1,5 @@
-import { action, redirect, useSubmission } from '@solidjs/router'
+import { formAction } from '@solidjs/router'
+import { redirect } from '@solidjs/web'
 import type { StripeElementStyle } from '@stripe/stripe-js'
 import { Show } from 'solid-js'
 import {
@@ -15,6 +16,7 @@ import { useEventLog } from '~/lib/eventLog'
 import { createPaymentIntent } from '~/lib/paymentIntent'
 import { formatAmount, UNIT_AMOUNT } from '~/lib/pricing'
 import { getStripeJs } from '~/lib/stripeJs'
+import { useSubmission } from '~/lib/submission'
 import { testCards } from '~/testData'
 
 export default function Page() {
@@ -51,7 +53,7 @@ function CardForm(props: { style: StripeElementStyle }) {
   // `classes.base` lands on the element's container, so it can share the input styles.
   const fieldOptions = () => ({ style: props.style, classes: { base: 'stripe-field' } })
 
-  const pay = action(async (form: FormData) => {
+  const pay = formAction(async (form: FormData) => {
     const { clientSecret } = await createPaymentIntent('card')
     log('server', 'createPaymentIntent')('card')
 
@@ -70,7 +72,7 @@ function CardForm(props: { style: StripeElementStyle }) {
 
   return (
     <form action={pay} method="post" class="demo-form">
-      <Show when={submission.error}>
+      <Show when={submission.error()}>
         {error => (
           <p class="callout callout-danger" role="alert">
             {error().message}
@@ -85,7 +87,7 @@ function CardForm(props: { style: StripeElementStyle }) {
           autocomplete="cc-name"
           placeholder="Jenny Rosen"
           required
-          disabled={submission.pending}
+          disabled={submission.pending()}
         />
       </label>
       <div class="field">
@@ -111,8 +113,8 @@ function CardForm(props: { style: StripeElementStyle }) {
           <CardCvcElement options={fieldOptions()} onChange={log('CardCvcElement', 'change')} />
         </div>
       </div>
-      <button class="button button-block" disabled={submission.pending}>
-        {submission.pending ? 'Processing…' : `Pay ${formatAmount(UNIT_AMOUNT, 'usd')}`}
+      <button class="button button-block" disabled={submission.pending()}>
+        {submission.pending() ? 'Processing…' : `Pay ${formatAmount(UNIT_AMOUNT, 'usd')}`}
       </button>
     </form>
   )

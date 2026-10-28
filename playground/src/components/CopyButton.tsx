@@ -1,9 +1,9 @@
-import { createSignal, onCleanup } from 'solid-js'
+import { createSignal, onSettled } from 'solid-js'
 
 export default function CopyButton(props: { text: string; label: string }) {
   const [copied, setCopied] = createSignal(false)
   let timer: ReturnType<typeof setTimeout> | undefined
-  onCleanup(() => clearTimeout(timer))
+  onSettled(() => () => clearTimeout(timer))
 
   const copy = async () => {
     await navigator.clipboard.writeText(props.text)

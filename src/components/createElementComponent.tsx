@@ -1,6 +1,5 @@
 import type * as stripeJs from '@stripe/stripe-js'
-import { createEffect, createMemo, onCleanup, untrack, type Component } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { createEffect, createMemo, createSignal, untrack, type Component } from 'solid-js'
 import type { ElementProps } from '../types'
 import {
   extractAllowedOptionsUpdates,
@@ -59,46 +58,56 @@ const createElementComponent = (
   const displayName = customDisplayName ?? `${capitalized(type)}Element`
   const useCase = `mounts <${displayName}>`
 
-  const ClientElement: Component<PrivateElementProps> = props => {
+  // The server renders this same component. Effects never run there, and a separate server
+  // variant would create fewer owners, so the client's hydration keys would not match.
+  const Element: Component<PrivateElementProps> = props => {
     const ctx = useElementsOrCheckoutContextWithUseCase(useCase)
     let domNode!: HTMLDivElement
 
-    const element = createMemo(() => {
-      const source = 'checkoutSdk' in ctx ? ctx.checkoutSdk() : ctx.elements()
-      if (!source) return null
+    const [element, setElement] = createSignal<MountableElement | null>(null)
 
-      // Options are read once at creation; later changes go through `update()`.
-      const created = untrack(() => {
-        const options = props.options ?? {}
+    createEffect(
+      () => ('checkoutSdk' in ctx ? ctx.checkoutSdk() : ctx.elements()),
+      source => {
+        if (!source) {
+          setElement(null)
+          return
+        }
+
+        // Options are read once at creation; later changes go through `update()`.
+        const options = untrack(() => props.options) ?? {}
         const instance =
           'checkoutSdk' in ctx
             ? createCheckoutElement(source as CheckoutSdk, type, displayName, options)
             : (source as stripeJs.StripeElements).create(type as any, options)
-        return instance as unknown as MountableElement
-      })
-      onCleanup(() => {
-        try {
-          created.destroy()
-        } catch {
-          // The Elements instance may already be gone.
-        }
-      })
-      return created
-    })
+        const created = instance as unknown as MountableElement
+        created.mount(domNode)
+        setElement(created)
 
-    createEffect(() => element()?.mount(domNode))
+        return () => {
+          try {
+            created.destroy()
+          } catch {
+            // The Elements instance may already be gone.
+          }
+        }
+      },
+    )
 
     const listen = (event: string, getCallback: () => UnknownCallback | undefined) => {
+      // An effect re-runs on every compute; the memo keeps a new callback from re-subscribing.
       const hasCallback = createMemo(() => !!getCallback())
-      createEffect(() => {
-        const current = element()
-        if (!current || !hasCallback()) return
+      createEffect(
+        () => [element(), hasCallback()] as const,
+        ([current, enabled]) => {
+          if (!current || !enabled) return
 
-        // Read the callback when the event fires, so a new callback never re-subscribes.
-        const handler: UnknownCallback = (...args) => getCallback()?.(...args)
-        current.on(event, handler)
-        onCleanup(() => current.off(event, handler))
-      })
+          // Read the callback when the event fires, so the handler always calls the latest one.
+          const handler: UnknownCallback = (...args) => untrack(getCallback)?.(...args)
+          current.on(event, handler)
+          return () => current.off(event, handler)
+        },
+      )
     }
 
     for (const [prop, event] of Object.entries(elementEvents)) {
@@ -110,7 +119,7 @@ const createElementComponent = (
       if (!onReady) return undefined
       // Express Checkout passes its event (which lists the visible payment methods);
       // every other element passes the element itself.
-      return type === 'expressCheckout' ? onReady : () => onReady(element())
+      return type === 'expressCheckout' ? onReady : () => onReady(untrack(element))
     })
 
     watch(
@@ -127,13 +136,6 @@ const createElementComponent = (
     return <div id={props.id} class={props.class} ref={domNode} />
   }
 
-  // Only render the Element wrapper in a server environment.
-  const ServerElement: Component<PrivateElementProps> = props => {
-    useElementsOrCheckoutContextWithUseCase(useCase)
-    return <div id={props.id} class={props.class} />
-  }
-
-  const Element = isServer ? ServerElement : ClientElement
   Object.assign(Element, { __elementType: type })
 
   return Element as Component<ElementProps>

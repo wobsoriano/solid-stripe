@@ -135,4 +135,5 @@ export const handlerFor = (element: MockElement, event: string) =>
     | ((...args: unknown[]) => unknown)
     | undefined
 
-export const flush = () => new Promise(resolve => setTimeout(resolve, 0))
+/** Waits a macrotask, so pending promises and Solid's queued flush have run. */
+export const tick = () => new Promise(resolve => setTimeout(resolve, 0))

@@ -49,11 +49,8 @@ export const createCheckoutProvider = <
       setState({ type: 'error', error: error as { message: string } })
     const stripe = createStripeLoader(() => props.stripe, { name: config.name, onError: fail })
 
-    let initialized = false
-    createEffect(() => {
-      const instance = stripe()
-      if (!instance || initialized) return
-      initialized = true
+    createEffect(stripe, instance => {
+      if (!instance) return
 
       try {
         // Options are read once; appearance and fonts changes are applied below.
@@ -115,11 +112,9 @@ export const createCheckoutProvider = <
     )
 
     return (
-      <CheckoutContext.Provider value={{ kind: config.kind, checkoutState: state }}>
-        <CheckoutSdkContext.Provider value={{ stripe, checkoutSdk }}>
-          {props.children}
-        </CheckoutSdkContext.Provider>
-      </CheckoutContext.Provider>
+      <CheckoutContext value={{ kind: config.kind, checkoutState: state }}>
+        <CheckoutSdkContext value={{ stripe, checkoutSdk }}>{props.children}</CheckoutSdkContext>
+      </CheckoutContext>
     )
   }
 }

@@ -1,5 +1,4 @@
 import { Title } from '@solidjs/meta'
-import { A } from '@solidjs/router'
 import { For } from 'solid-js'
 import CopyButton from '~/components/CopyButton'
 import { examplesByGroup } from '~/examples'
@@ -29,13 +28,13 @@ export default function Home() {
             <div class="card-grid">
               <For each={section.items}>
                 {example => (
-                  <A href={`/${example.slug}`} class="card example-card">
+                  <a href={`/${example.slug}`} class="card example-card">
                     <h3>{example.title}</h3>
                     <p>{example.summary}</p>
                     <ul class="chips" aria-label="Components used">
                       <For each={example.components}>{name => <li class="chip">{name}</li>}</For>
                     </ul>
-                  </A>
+                  </a>
                 )}
               </For>
             </div>

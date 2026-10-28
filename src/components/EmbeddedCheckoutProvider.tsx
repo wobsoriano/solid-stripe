@@ -110,32 +110,42 @@ export const EmbeddedCheckoutProvider: ParentComponent<EmbeddedCheckoutProviderP
   const [embeddedCheckout, setEmbeddedCheckout] =
     createSignal<EmbeddedCheckoutPublicInterface | null>(null)
 
+  let page: EmbeddedCheckoutPublicInterface | undefined
   let initialized = false
   let disposed = false
 
-  createEffect(() => {
-    const instance = stripe()
-    const hasClientSecret = !!(props.options.clientSecret || props.options.fetchClientSecret)
-    if (!instance || !hasClientSecret || initialized) return
+  createEffect(
+    () => {
+      const instance = stripe()
+      const hasClientSecret = !!(props.options.clientSecret || props.options.fetchClientSecret)
+      return hasClientSecret ? instance : null
+    },
+    instance => {
+      if (!instance || initialized) return
 
-    initialized = true
-    void instance.createEmbeddedCheckoutPage(untrack(() => props.options) as any).then(created => {
-      // Unmounted while the page was still initializing.
-      if (disposed) created.destroy()
-      else setEmbeddedCheckout(created)
-    })
-  })
+      initialized = true
+      void instance
+        .createEmbeddedCheckoutPage(untrack(() => props.options) as any)
+        .then(created => {
+          // Unmounted while the page was still initializing.
+          if (disposed) {
+            created.destroy()
+          } else {
+            page = created
+            setEmbeddedCheckout(created)
+          }
+        })
+    },
+  )
 
   onCleanup(() => {
     disposed = true
-    embeddedCheckout()?.destroy()
+    page?.destroy()
   })
 
   watch(() => props.options, warnOnOptionsChange)
 
   return (
-    <EmbeddedCheckoutContext.Provider value={{ embeddedCheckout }}>
-      {props.children}
-    </EmbeddedCheckoutContext.Provider>
+    <EmbeddedCheckoutContext value={{ embeddedCheckout }}>{props.children}</EmbeddedCheckoutContext>
   )
 }

@@ -1,4 +1,5 @@
 import type * as stripeJs from '@stripe/stripe-js'
+import type { JSX } from '@solidjs/web'
 import {
   createContext,
   createMemo,
@@ -6,7 +7,6 @@ import {
   useContext,
   type Accessor,
   type Component,
-  type JSX,
   type ParentComponent,
 } from 'solid-js'
 import { createStripeLoader } from '../utils/createStripeLoader'
@@ -79,11 +79,7 @@ export const Elements: ParentComponent<ElementsProps> = props => {
     },
   )
 
-  return (
-    <ElementsContext.Provider value={{ stripe, elements }}>
-      {props.children}
-    </ElementsContext.Provider>
-  )
+  return <ElementsContext value={{ stripe, elements }}>{props.children}</ElementsContext>
 }
 
 export const useElementsContextWithUseCase = (useCaseMessage: string): ElementsContextValue => {

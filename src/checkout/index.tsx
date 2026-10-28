@@ -1,5 +1,5 @@
 import type * as stripeJs from '@stripe/stripe-js'
-import { splitProps, type Component } from 'solid-js'
+import { omit, type Component } from 'solid-js'
 import createElementComponent from '../components/createElementComponent'
 import type {
   BillingAddressElementComponent,
@@ -60,13 +60,13 @@ type AddressElementProps = Omit<Parameters<BillingAddressElementComponent>[0], '
 const AddressElement = createElementComponent('address') as Component<AddressElementProps>
 
 export const BillingAddressElement: BillingAddressElementComponent = props => {
-  const [local, rest] = splitProps(props, ['options'])
-  return <AddressElement {...rest} options={{ ...local.options, mode: 'billing' }} />
+  const rest = omit(props, 'options')
+  return <AddressElement {...rest} options={{ ...props.options, mode: 'billing' }} />
 }
 
 export const ShippingAddressElement: ShippingAddressElementComponent = props => {
-  const [local, rest] = splitProps(props, ['options'])
-  return <AddressElement {...rest} options={{ ...local.options, mode: 'shipping' }} />
+  const rest = omit(props, 'options')
+  return <AddressElement {...rest} options={{ ...props.options, mode: 'shipping' }} />
 }
 
 /**
