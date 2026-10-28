@@ -1,6 +1,6 @@
 import { query } from '@solidjs/router'
 import type Stripe from 'stripe'
-import { getStripe } from './stripe'
+import { requestStripe } from './stripe'
 
 export interface PaymentResult {
   kind: 'PaymentIntent' | 'Checkout Session'
@@ -27,9 +27,11 @@ export const getPaymentResult = query(
   }): Promise<PaymentResult | null> => {
     'use server'
     if (params.sessionId) {
-      const session = await getStripe().checkout.sessions.retrieve(params.sessionId, {
-        expand: ['payment_intent.payment_method'],
-      })
+      const session = await requestStripe(stripe =>
+        stripe.checkout.sessions.retrieve(params.sessionId!, {
+          expand: ['payment_intent.payment_method'],
+        }),
+      )
       const paymentIntent = session.payment_intent as Stripe.PaymentIntent | null
       const paymentMethod = paymentIntent?.payment_method as Stripe.PaymentMethod | null | undefined
       return {
@@ -44,9 +46,11 @@ export const getPaymentResult = query(
       }
     }
     if (params.paymentIntentId) {
-      const paymentIntent = await getStripe().paymentIntents.retrieve(params.paymentIntentId, {
-        expand: ['payment_method'],
-      })
+      const paymentIntent = await requestStripe(stripe =>
+        stripe.paymentIntents.retrieve(params.paymentIntentId!, {
+          expand: ['payment_method'],
+        }),
+      )
       const paymentMethod = paymentIntent.payment_method as Stripe.PaymentMethod | null
       return {
         kind: 'PaymentIntent',
