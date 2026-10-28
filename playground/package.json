@@ -25,5 +25,8 @@
     "tailwindcss": "^3.4.12",
     "vite": "catalog:",
     "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }
