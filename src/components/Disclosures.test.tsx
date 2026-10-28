@@ -78,6 +78,29 @@ describe('disclosure options', () => {
     expect(container.textContent).toBe('Globex')
   })
 
+  it('removes the previous disclosure when an update fails', async () => {
+    const stripe = mockStripe()
+    const error = { type: 'invalid_request_error', message: 'Unknown program' }
+    const onError = vi.fn()
+    const [programId, setProgramId] = createSignal('ip_1')
+    const { container } = render(() => (
+      <IssuingDisclosure
+        stripe={asStripe(stripe)}
+        options={{ issuingProgramID: programId() }}
+        onError={onError}
+      />
+    ))
+
+    await flush()
+    expect(container.textContent).toBe('disclosure')
+
+    stripe.createIssuingDisclosure.mockResolvedValueOnce({ error } as never)
+    setProgramId('ip_2')
+    await flush()
+    expect(onError).toHaveBeenCalledWith(error)
+    expect(container.textContent).toBe('')
+  })
+
   it('waits for a stripe promise before creating the disclosure', async () => {
     const stripe = mockStripe()
     render(() => <IssuingDisclosure stripe={Promise.resolve(asStripe(stripe))} />)

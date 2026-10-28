@@ -55,6 +55,8 @@ const createDisclosureComponent = <Options extends object>(
       void instance[method](options).then(({ htmlElement, error }) => {
         if (stale) return
         if (error) {
+          // A disclosure for the previous options no longer applies.
+          container.replaceChildren()
           props.onError?.(error)
         } else if (htmlElement) {
           container.replaceChildren(htmlElement)
