@@ -1,16 +1,16 @@
-import * as stripeJs from '@stripe/stripe-js'
+import type * as stripeJs from '@stripe/stripe-js'
 import {
-  Component,
   createContext,
+  createEffect,
   createSignal,
-  JSX,
-  useContext,
   onCleanup,
-  createComputed,
-  Accessor,
-  createMemo,
+  untrack,
+  useContext,
+  type Accessor,
+  type ParentComponent,
 } from 'solid-js'
-import { parseStripeProp } from '../utils/parseStripeProp'
+import { createStripeLoader } from '../utils/createStripeLoader'
+import { watch } from '../utils/watch'
 
 type EmbeddedCheckoutPublicInterface = {
   mount(location: string | HTMLElement): void
@@ -18,13 +18,13 @@ type EmbeddedCheckoutPublicInterface = {
   destroy(): void
 }
 
-export type EmbeddedCheckoutContextValue = {
-  embeddedCheckout: EmbeddedCheckoutPublicInterface | null
+interface EmbeddedCheckoutContextValue {
+  embeddedCheckout: Accessor<EmbeddedCheckoutPublicInterface | null>
 }
 
-const EmbeddedCheckoutContext = createContext<Accessor<EmbeddedCheckoutContextValue>>()
+const EmbeddedCheckoutContext = createContext<EmbeddedCheckoutContextValue | null>(null)
 
-export const useEmbeddedCheckoutContext = (): Accessor<EmbeddedCheckoutContextValue> => {
+export const useEmbeddedCheckoutContext = (): EmbeddedCheckoutContextValue => {
   const ctx = useContext(EmbeddedCheckoutContext)
   if (!ctx) {
     throw new Error('<EmbeddedCheckout> must be used within <EmbeddedCheckoutProvider>')
@@ -32,7 +32,19 @@ export const useEmbeddedCheckoutContext = (): Accessor<EmbeddedCheckoutContextVa
   return ctx
 }
 
-interface EmbeddedCheckoutProviderProps {
+interface EmbeddedCheckoutOptions {
+  clientSecret?: string | null
+  fetchClientSecret?: (() => Promise<string>) | null
+  onComplete?: () => void
+  onShippingDetailsChange?: (
+    event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent,
+  ) => Promise<stripeJs.ResultAction>
+  onLineItemsChange?: (
+    event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent,
+  ) => Promise<stripeJs.ResultAction>
+}
+
+export interface EmbeddedCheckoutProviderProps {
   /**
    * A [Stripe object](https://stripe.com/docs/js/initializing) or a `Promise`
    * resolving to a `Stripe` object.
@@ -43,102 +55,86 @@ interface EmbeddedCheckoutProviderProps {
    * You can also pass in `null` or a `Promise` resolving to `null` if you are
    * performing an initial server-side render or when generating a static site.
    */
-  stripe: stripeJs.Stripe | null
+  stripe: PromiseLike<stripeJs.Stripe | null> | stripeJs.Stripe | null
   /**
    * Embedded Checkout configuration options.
    * You can initially pass in `null` to `options.clientSecret` or
    * `options.fetchClientSecret` if you are performing an initial server-side
    * render or when generating a static site.
    */
-  options: {
-    clientSecret?: string | null
-    fetchClientSecret?: (() => Promise<string>) | null
-    onComplete?: () => void
-    onShippingDetailsChange?: (
-      event: stripeJs.StripeEmbeddedCheckoutShippingDetailsChangeEvent,
-    ) => Promise<stripeJs.ResultAction>
-    onLineItemsChange?: (
-      event: stripeJs.StripeEmbeddedCheckoutLineItemsChangeEvent,
-    ) => Promise<stripeJs.ResultAction>
-  }
-  children: JSX.Element
+  options: EmbeddedCheckoutOptions
 }
 
-const INVALID_STRIPE_ERROR =
-  'Invalid prop `stripe` supplied to `EmbeddedCheckoutProvider`. We recommend using the `loadStripe` utility from `@stripe/stripe-js`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.'
+/** Options that are read once, when the embedded checkout page is created. */
+const fixedOptions = [
+  ['clientSecret', 'the client secret', true],
+  ['fetchClientSecret', 'fetchClientSecret', true],
+  ['onComplete', 'the onComplete option', false],
+  ['onShippingDetailsChange', 'the onShippingDetailsChange option', false],
+  ['onLineItemsChange', 'the onLineItemsChange option', false],
+] as const
 
-export const EmbeddedCheckoutProvider: Component<EmbeddedCheckoutProviderProps> = props => {
-  const parsed = createMemo(() => parseStripeProp(props.stripe), INVALID_STRIPE_ERROR)
+const warnOnOptionsChange = (
+  options: EmbeddedCheckoutOptions | undefined,
+  prevOptions: EmbeddedCheckoutOptions | undefined,
+) => {
+  if (prevOptions == null) return
 
-  const [embeddedCheckoutPromise, setEmbeddedCheckoutPromise] = createSignal<Promise<void> | null>(
-    null,
-  )
-  const [loadedStripe, setLoadedStripe] = createSignal<stripeJs.Stripe | null>(null)
+  if (options == null) {
+    console.warn(
+      'Unsupported prop change on EmbeddedCheckoutProvider: You cannot unset options after setting them.',
+    )
+    return
+  }
 
-  const [ctx, setContext] = createSignal<EmbeddedCheckoutContextValue>({
-    embeddedCheckout: null,
-  })
+  if (options.clientSecret === undefined && options.fetchClientSecret === undefined) {
+    console.warn(
+      'Invalid props passed to EmbeddedCheckoutProvider: You must provide one of either `options.fetchClientSecret` or `options.clientSecret`.',
+    )
+  }
 
-  createComputed(() => {
-    // Don't support any ctx updates once embeddedCheckout or stripe is set.
-    if (loadedStripe() || embeddedCheckoutPromise()) {
-      return
-    }
-
-    const setStripeAndInitEmbeddedCheckout = (stripe: stripeJs.Stripe) => {
-      if (loadedStripe() || embeddedCheckoutPromise()) return
-
-      setLoadedStripe(stripe)
-      setEmbeddedCheckoutPromise(
-        loadedStripe()!
-          .initEmbeddedCheckout(props.options as any)
-          .then(embeddedCheckout => {
-            setContext({ embeddedCheckout })
-          }),
+  for (const [key, label, needsRemount] of fixedOptions) {
+    if (prevOptions[key] != null && options[key] !== prevOptions[key]) {
+      const remedy = needsRemount
+        ? ' Unmount and create a new instance of EmbeddedCheckoutProvider instead.'
+        : ''
+      console.warn(
+        `Unsupported prop change on EmbeddedCheckoutProvider: You cannot change ${label} after setting it.${remedy}`,
       )
     }
+  }
+}
 
-    // For an async stripePromise, store it once resolved
-    const unwrappedParsed = parsed()
-    if (
-      unwrappedParsed.tag === 'async' &&
-      !loadedStripe() &&
-      (props.options.clientSecret || props.options.fetchClientSecret)
-    ) {
-      unwrappedParsed.stripePromise.then(stripe => {
-        if (stripe) {
-          setStripeAndInitEmbeddedCheckout(stripe)
-        }
-      })
-    } else if (
-      unwrappedParsed.tag === 'sync' &&
-      !loadedStripe() &&
-      (props.options.clientSecret || props.options.fetchClientSecret)
-    ) {
-      // Or, handle a sync stripe instance going from null -> populated
-      setStripeAndInitEmbeddedCheckout(unwrappedParsed.stripe)
-    }
+export const EmbeddedCheckoutProvider: ParentComponent<EmbeddedCheckoutProviderProps> = props => {
+  const stripe = createStripeLoader(() => props.stripe, { name: 'EmbeddedCheckoutProvider' })
+  const [embeddedCheckout, setEmbeddedCheckout] =
+    createSignal<EmbeddedCheckoutPublicInterface | null>(null)
+
+  let initialized = false
+  let disposed = false
+
+  createEffect(() => {
+    const instance = stripe()
+    const hasClientSecret = !!(props.options.clientSecret || props.options.fetchClientSecret)
+    if (!instance || !hasClientSecret || initialized) return
+
+    initialized = true
+    void instance.createEmbeddedCheckoutPage(untrack(() => props.options) as any).then(created => {
+      // Unmounted while the page was still initializing.
+      if (disposed) created.destroy()
+      else setEmbeddedCheckout(created)
+    })
   })
 
   onCleanup(() => {
-    if (ctx().embeddedCheckout) {
-      setEmbeddedCheckoutPromise(null)
-      ctx().embeddedCheckout!.destroy()
-    } else if (embeddedCheckoutPromise()) {
-      // If embedded checkout is still initializing, destroy it once
-      // it's done. This could be caused by unmounting very quickly
-      // after mounting.
-      embeddedCheckoutPromise()!.then(() => {
-        setEmbeddedCheckoutPromise(null)
-        if (ctx().embeddedCheckout) {
-          ctx().embeddedCheckout!.destroy()
-        }
-      })
-    }
+    disposed = true
+    embeddedCheckout()?.destroy()
   })
 
+  watch(() => props.options, warnOnOptionsChange)
+
   return (
-    <EmbeddedCheckoutContext.Provider value={ctx}>
+    <EmbeddedCheckoutContext.Provider value={{ embeddedCheckout }}>
       {props.children}
     </EmbeddedCheckoutContext.Provider>
   )

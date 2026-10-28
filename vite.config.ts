@@ -2,7 +2,7 @@ import solidRolldown from 'unplugin-solid/rolldown'
 import solid from 'unplugin-solid/vite'
 import { defineConfig } from 'vite-plus'
 
-const entry = { index: 'src/index.tsx' }
+const entry = { index: 'src/index.ts' }
 
 export default defineConfig({
   plugins: [solid({ hot: false })],
@@ -48,6 +48,8 @@ export default defineConfig({
     },
     rules: {
       'no-console': ['warn', { allow: ['warn'] }],
+      // Solid assigns `let ref!: T` through the JSX `ref` prop, which this rule cannot see.
+      'no-unassigned-vars': 'off',
       'no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },

@@ -30,8 +30,8 @@ importers:
         specifier: ^0.8.10
         version: 0.8.10(@solidjs/router@1.0.0(solid-js@1.9.7))(solid-js@1.9.7)
       '@stripe/stripe-js':
-        specifier: ^7.6.1
-        version: 7.7.0
+        specifier: ^10.2.0
+        version: 10.2.0
       '@types/node':
         specifier: ^24.0.0
         version: 24.19.2
@@ -1086,6 +1086,10 @@ packages:
     peerDependenciesMeta:
       '@solidjs/router':
         optional: true
+
+  '@stripe/stripe-js@10.2.0':
+    resolution: {integrity: sha512-C0F6LKxvsa9ONtxfJ4JG/vo8XjramVyy7tOZNZvoaZkw0M82OTm9LD3Ifcvw0QMDI7qPA14h+IP3qagkuC3b2Q==}
+    engines: {node: '>=12.16'}
 
   '@stripe/stripe-js@7.7.0':
     resolution: {integrity: sha512-SXuhqhuR5FXaYgKTXzZJeqtVA6JKb9IZWaGeEUxHHiOcFy2p51wccO72bYpXwoK4D5pzQOIYLTuAc7etxyMmwg==}
@@ -3783,6 +3787,8 @@ snapshots:
       solid-js: 1.9.7
     optionalDependencies:
       '@solidjs/router': 1.0.0(solid-js@1.9.7)
+
+  '@stripe/stripe-js@10.2.0': {}
 
   '@stripe/stripe-js@7.7.0': {}
 
