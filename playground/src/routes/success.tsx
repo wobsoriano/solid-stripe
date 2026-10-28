@@ -4,7 +4,9 @@ import { createMemo, Errored, Show } from 'solid-js'
 import { getPaymentResult, type PaymentResult } from '~/lib/payments'
 import { formatAmount } from '~/lib/pricing'
 
-const param = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
+// Server function arguments travel as JSON, which has no undefined.
+const param = (value: string | string[] | undefined) =>
+  (Array.isArray(value) ? value[0] : value) ?? null
 
 const statusTone: Record<string, 'success' | 'warning' | 'danger'> = {
   succeeded: 'success',

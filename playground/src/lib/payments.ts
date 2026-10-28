@@ -22,8 +22,8 @@ const paymentDashboardUrl = (paymentIntentId: string) =>
 
 export const getPaymentResult = query(
   async (params: {
-    paymentIntentId?: string
-    sessionId?: string
+    paymentIntentId: string | null
+    sessionId: string | null
   }): Promise<PaymentResult | null> => {
     'use server'
     if (params.sessionId) {
