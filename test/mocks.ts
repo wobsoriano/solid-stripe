@@ -37,7 +37,75 @@ const mockDisclosure = () =>
     return { htmlElement }
   })
 
-export const mockStripe = () => ({
+export const mockCheckoutSession = () => ({
+  lineItems: [],
+  currency: 'usd',
+  shippingOptions: [],
+  total: {
+    subtotal: 1099,
+    taxExclusive: 0,
+    taxInclusive: 0,
+    shippingRate: 0,
+    discount: 0,
+    total: 1099,
+  },
+  confirmationRequirements: [],
+  canConfirm: true,
+})
+
+export const mockCheckoutActions = () => ({
+  getSession: vi.fn(() => mockCheckoutSession()),
+  applyPromotionCode: vi.fn(),
+  updateEmail: vi.fn(),
+  confirm: vi.fn(),
+})
+
+const checkoutElementFactories = [
+  'createPaymentElement',
+  'createForm',
+  'createBillingAddressElement',
+  'createShippingAddressElement',
+  'createExpressCheckoutElement',
+  'createCurrencySelectorElement',
+  'createTaxIdElement',
+  'createContactDetailsElement',
+  'createTermsElement',
+  'createLinkSignupElement',
+] as const
+
+export const mockCheckoutSdk = () => {
+  const listeners: Record<string, Array<(...args: unknown[]) => void>> = {}
+  const factories = Object.fromEntries(
+    checkoutElementFactories.map(name => [name, vi.fn(() => mockElement())]),
+  ) as Record<
+    (typeof checkoutElementFactories)[number],
+    ReturnType<typeof vi.fn<() => MockElement>>
+  >
+
+  return {
+    ...factories,
+    changeAppearance: vi.fn(),
+    loadFonts: vi.fn(),
+    on: vi.fn((event: string, callback: (...args: unknown[]) => void) => {
+      listeners[event] = [...(listeners[event] ?? []), callback]
+    }),
+    emit: (event: string, ...args: unknown[]) => listeners[event]?.forEach(cb => cb(...args)),
+    loadActions: vi.fn(async () => ({ type: 'success', actions: mockCheckoutActions() })),
+  }
+}
+
+export type MockCheckoutSdk = ReturnType<typeof mockCheckoutSdk>
+
+/** A checkout SDK without `createLinkSignupElement`, as `initCheckoutFormSdk` returns. */
+export const mockCheckoutFormSdk = () => {
+  const { createLinkSignupElement: _unused, ...sdk } = mockCheckoutSdk()
+  return sdk
+}
+
+export const mockStripe = (
+  checkoutSdk = mockCheckoutSdk(),
+  checkoutFormSdk = mockCheckoutFormSdk(),
+) => ({
   elements: vi.fn(() => mockElements()),
   createToken: vi.fn(),
   createPaymentMethod: vi.fn(),
@@ -47,6 +115,8 @@ export const mockStripe = () => ({
   createIssuingDisclosure: mockDisclosure(),
   createFinancialAccountDisclosure: mockDisclosure(),
   createTreasuryDisclosure: mockDisclosure(),
+  initCheckoutElementsSdk: vi.fn(() => checkoutSdk),
+  initCheckoutFormSdk: vi.fn(() => checkoutFormSdk),
 })
 
 export type MockStripe = ReturnType<typeof mockStripe>
