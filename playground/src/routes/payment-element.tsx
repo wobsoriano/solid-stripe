@@ -1,6 +1,5 @@
-import type { Stripe } from '@stripe/stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
-import { Show, createSignal, onMount } from 'solid-js'
+import { action, redirect, useSubmission } from '@solidjs/router'
+import { createSignal, Show } from 'solid-js'
 import {
   AddressElement,
   Elements,
@@ -9,103 +8,151 @@ import {
   useElements,
   useStripe,
 } from 'solid-stripe'
-
-import Alert from '~/components/Alert'
+import ExampleLayout from '~/components/ExampleLayout'
+import Segmented from '~/components/Segmented'
+import Stepper from '~/components/Stepper'
+import { appearance, defaultTheme, useColorScheme, type StripeTheme } from '~/lib/appearance'
+import { useEventLog } from '~/lib/eventLog'
 import { createPaymentIntent } from '~/lib/paymentIntent'
-import { action, redirect, useSubmission } from '@solidjs/router'
+import { formatAmount, MAX_QUANTITY, UNIT_AMOUNT } from '~/lib/pricing'
+import { getStripeJs } from '~/lib/stripeJs'
+import { testCards } from '~/testData'
+
+type Layout = 'tabs' | 'accordion'
+
+const themes = [
+  { value: 'stripe', label: 'Stripe' },
+  { value: 'night', label: 'Night' },
+  { value: 'flat', label: 'Flat' },
+] as const
+
+const layouts = [
+  { value: 'tabs', label: 'Tabs' },
+  { value: 'accordion', label: 'Accordion' },
+] as const
 
 export default function Page() {
-  const [stripe, setStripe] = createSignal<Stripe | null>(null)
+  return (
+    <ExampleLayout slug="payment-element" testData={testCards}>
+      <PaymentElementDemo />
+    </ExampleLayout>
+  )
+}
 
-  onMount(async () => {
-    const result = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-    setStripe(result)
-  })
+function PaymentElementDemo() {
+  const scheme = useColorScheme()
+  const [chosenTheme, setChosenTheme] = createSignal<StripeTheme>()
+  const theme = () => chosenTheme() ?? defaultTheme(scheme())
+  const [layout, setLayout] = createSignal<Layout>('tabs')
+  const [quantity, setQuantity] = createSignal(1)
 
   return (
     <>
-      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Payment Element Example</h1>
-      <Show when={stripe()} fallback={<div>Loading stripe...</div>}>
-        <Elements
-          stripe={stripe()}
-          options={{
-            mode: 'payment',
-            amount: 1099,
-            currency: 'usd',
-            appearance: {
-              theme: 'flat',
-              labels: 'floating',
-              variables: { colorPrimary: '#7c4dff' },
-              rules: { '.Input': { border: 'solid 1px #0002' } },
-            },
-          }}
-        >
-          <CheckoutForm />
-        </Elements>
-      </Show>
+      <div class="controls">
+        <Segmented
+          legend="Theme"
+          name="theme"
+          options={themes}
+          value={theme()}
+          onChange={setChosenTheme}
+        />
+        <Segmented
+          legend="Layout"
+          name="layout"
+          options={layouts}
+          value={layout()}
+          onChange={setLayout}
+        />
+      </div>
+      {/* Changing amount or appearance calls elements.update() on the mounted instance. */}
+      <Elements
+        stripe={getStripeJs()}
+        options={{
+          mode: 'payment',
+          amount: UNIT_AMOUNT * quantity(),
+          currency: 'usd',
+          appearance: appearance(theme()),
+        }}
+      >
+        <CheckoutForm layout={layout()} quantity={quantity()} onQuantityChange={setQuantity} />
+      </Elements>
     </>
   )
 }
 
-function CheckoutForm() {
+function CheckoutForm(props: {
+  layout: Layout
+  quantity: number
+  onQuantityChange: (quantity: number) => void
+}) {
   const stripe = useStripe()
   const elements = useElements()
+  const log = useEventLog()
+  const total = () => formatAmount(UNIT_AMOUNT * props.quantity, 'usd')
 
-  const paymentAction = action(async () => {
-    // Trigger form validation and wallet collection
+  const pay = action(async () => {
     const { error: submitError } = await elements()!.submit()
+    if (submitError) throw new Error(submitError.message)
 
-    if (submitError) {
-      throw new Error(submitError.message)
-    }
+    // The intent is created only now, with the quantity the server prices.
+    const { clientSecret } = await createPaymentIntent('automatic', props.quantity)
+    log('server', 'createPaymentIntent')(`automatic × ${props.quantity}`)
 
-    const { clientSecret } = await createPaymentIntent('automatic')
-
-    const { error: paymentError, paymentIntent } = await stripe()!.confirmPayment({
+    const result = await stripe()!.confirmPayment({
       elements: elements()!,
       clientSecret,
       redirect: 'if_required',
-      confirmParams: {
-        return_url: `${window.location.origin}/success`,
-      },
+      confirmParams: { return_url: `${window.location.origin}/success` },
     })
-
-    if (paymentError) {
-      // payment failed
-      throw new Error(paymentError.message)
-    } else {
-      // payment succeeded
-      return redirect(`/success?payment_intent=${paymentIntent.id}`)
-    }
+    log('stripe', 'confirmPayment')(result)
+    if (result.error) throw new Error(result.error.message)
+    return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
   }, 'payment-element-payment')
 
-  const submission = useSubmission(paymentAction)
+  const submission = useSubmission(pay)
 
   return (
-    <>
-      <Show when={submission.error}>
-        <Alert type="error" message={`${submission.error.message} Please try again.`} />
-      </Show>
-      <form action={paymentAction} class="flex flex-col gap-2.5 my-8" method="post">
-        <LinkAuthenticationElement />
-        <PaymentElement />
-        <AddressElement options={{ mode: 'billing' }} />
-        <button class="btn btn-primary" disabled={submission.pending}>
-          {submission.pending ? 'Processing...' : 'Pay'}
-        </button>
-      </form>
-      <div class="flex flex-col">
-        <a class="link" target="_BLANK" href="https://stripe.com/docs/testing#cards">
-          Test cards
-        </a>
-        <a
-          class="link"
-          target="_BLANK"
-          href="https://github.com/wobsoriano/solid-stripe/blob/main/playground/src/routes/payment-element.tsx"
-        >
-          View code
-        </a>
+    <form action={pay} method="post" class="demo-form">
+      <div class="product">
+        <div>
+          <p class="product-name">Solid Stripe T-shirt</p>
+          <p class="product-price">{formatAmount(UNIT_AMOUNT, 'usd')} each</p>
+        </div>
+        <Stepper
+          label="Quantity"
+          value={props.quantity}
+          min={1}
+          max={MAX_QUANTITY}
+          disabled={submission.pending}
+          onChange={props.onQuantityChange}
+        />
       </div>
-    </>
+      <Show when={submission.error}>
+        {error => (
+          <p class="callout callout-danger" role="alert">
+            {error().message}
+          </p>
+        )}
+      </Show>
+      <LinkAuthenticationElement
+        onReady={log('LinkAuthenticationElement', 'ready')}
+        onChange={log('LinkAuthenticationElement', 'change')}
+      />
+      <PaymentElement
+        options={{ layout: props.layout }}
+        onReady={log('PaymentElement', 'ready')}
+        onChange={log('PaymentElement', 'change')}
+        onFocus={log('PaymentElement', 'focus')}
+        onBlur={log('PaymentElement', 'blur')}
+      />
+      <AddressElement
+        options={{ mode: 'billing' }}
+        onReady={log('AddressElement', 'ready')}
+        onChange={log('AddressElement', 'change')}
+      />
+      <button class="button button-block" disabled={submission.pending}>
+        {submission.pending ? 'Processing…' : `Pay ${total()}`}
+      </button>
+    </form>
   )
 }
