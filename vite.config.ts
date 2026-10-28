@@ -46,7 +46,7 @@ export default defineConfig({
     printWidth: 100,
     trailingComma: 'all',
     arrowParens: 'avoid',
-    ignorePatterns: ['CHANGELOG.md'],
+    ignorePatterns: ['CHANGELOG.md', 'playground/file-routes.d.ts'],
   },
   lint: {
     ignorePatterns: ['dist/**', 'playground/**'],

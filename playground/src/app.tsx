@@ -1,24 +1,20 @@
-// @refresh reload
-import { MetaProvider, Title } from '@solidjs/meta'
-import { Router } from '@solidjs/router'
-import { FileRoutes } from '@solidjs/start/router'
-import { Suspense } from 'solid-js'
+import { Title } from '@solidjs/meta'
+import { Loading } from 'solid-js'
 import AppShell from './components/AppShell'
+import { Router } from './router'
 import './app.css'
 
-export default function Root() {
+export default function App() {
   return (
-    <Router
-      root={props => (
-        <MetaProvider>
+    <Router>
+      {props => (
+        <>
           <Title>solid-stripe playground</Title>
           <AppShell>
-            <Suspense>{props.children}</Suspense>
+            <Loading>{props.children}</Loading>
           </AppShell>
-        </MetaProvider>
+        </>
       )}
-    >
-      <FileRoutes />
     </Router>
   )
 }
