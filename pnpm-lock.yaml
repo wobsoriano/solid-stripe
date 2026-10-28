@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    solid-js:
+      specifier: ^1.9.17
+      version: 1.9.17
     vite:
       specifier: npm:@voidzero-dev/vite-plus-core@1.4.0
       version: 1.4.0
@@ -28,7 +31,7 @@ importers:
         version: 2.27.10
       '@solidjs/testing-library':
         specifier: ^0.8.10
-        version: 0.8.10(@solidjs/router@1.0.0(solid-js@1.9.7))(solid-js@1.9.7)
+        version: 0.8.10(@solidjs/router@1.0.0(solid-js@1.9.17))(solid-js@1.9.17)
       '@stripe/stripe-js':
         specifier: ^10.2.0
         version: 10.2.0
@@ -39,14 +42,14 @@ importers:
         specifier: ^30.1.3
         version: 30.1.3
       solid-js:
-        specifier: ^1.9.5
-        version: 1.9.7
+        specifier: 'catalog:'
+        version: 1.9.17
       typescript:
         specifier: ^5.4.5
         version: 5.9.2
       unplugin-solid:
         specifier: ^2.0.0
-        version: 2.0.0(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(rolldown@1.2.15)(rollup@4.46.2)(solid-js@1.9.7)
+        version: 2.0.0(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(rolldown@1.2.15)(rollup@4.46.2)(solid-js@1.9.17)
       vite:
         specifier: 'catalog:'
         version: '@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1)'
@@ -72,7 +75,7 @@ importers:
         specifier: 3.0.260903-beta
         version: 3.0.260903-beta
       solid-js:
-        specifier: ^1.9.15
+        specifier: 'catalog:'
         version: 1.9.17
       solid-sonner:
         specifier: ^0.2.8
@@ -2408,12 +2411,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  seroval-plugins@1.3.2:
-    resolution: {integrity: sha512-0QvCV2lM3aj/U3YozDiVwx9zpH0q8A60CTWIv4Jszj/givcudPb48B+rkU5D51NJ0pTpweGMttHjboPa9/zoIQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      seroval: ^1.0
-
   seroval-plugins@1.6.12:
     resolution: {integrity: sha512-+reiwp/lYxiyctSrdvX7OQ1YLrcbWYgBiZrhSFL+V43b0/DGRLNVSDyZINbQe+tWplPOI2fw2dPrdv6hcc09kQ==}
     engines: {node: '>=10'}
@@ -2425,10 +2422,6 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       seroval: ^1.0
-
-  seroval@1.3.2:
-    resolution: {integrity: sha512-RbcPH1n5cfwKrru7v7+zrZvjLurgHhGyso3HTyGtRivGWgYjbOmGuivCQaORNELjNONoK35nj28EoWul9sb1zQ==}
-    engines: {node: '>=10'}
 
   seroval@1.6.12:
     resolution: {integrity: sha512-CqbIVfk/7GL3ITwZI55lcPbpQbjHZ2DD5cUj4iH7E9YsCfHNJV1mx7yNp86Z84w5IpmkZZS/2s5vPOWmVWSdQg==}
@@ -2464,9 +2457,6 @@ packages:
 
   solid-js@1.9.17:
     resolution: {integrity: sha512-4GAmLOWPfNV8H9Jfn2LSFTpNEG6jiOKPiwd5lnLGQtehHaX6l3TOLzJqQ7mqwB/3k1Yy3zyumFVopmc/tm34ow==}
-
-  solid-js@1.9.7:
-    resolution: {integrity: sha512-/saTKi8iWEM233n5OSi1YHCCuh66ZIQ7aK2hsToPe4tqGm7qAejU1SwNuTPivbWAYq7SjuHVVYxxuZQNRbICiw==}
 
   solid-refresh@0.6.3:
     resolution: {integrity: sha512-F3aPsX6hVw9ttm5LYlth8Q15x6MlI/J3Dn+o3EQyRTtTxidepSTwAYdozt01/YA+7ObcciagGEyXIopGZzQtbA==}
@@ -3684,11 +3674,6 @@ snapshots:
     dependencies:
       solid-js: 1.9.17
 
-  '@solidjs/router@1.0.0(solid-js@1.9.7)':
-    dependencies:
-      solid-js: 1.9.7
-    optional: true
-
   '@solidjs/start@2.1.0(@solidjs/router@1.0.0(solid-js@1.9.17))(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(crossws@0.4.17(srvx@1.0.8))(ocache@0.3.1)(solid-js@1.9.17)':
     dependencies:
       '@babel/core': 7.29.7
@@ -3725,12 +3710,12 @@ snapshots:
       - ocache
       - supports-color
 
-  '@solidjs/testing-library@0.8.10(@solidjs/router@1.0.0(solid-js@1.9.7))(solid-js@1.9.7)':
+  '@solidjs/testing-library@0.8.10(@solidjs/router@1.0.0(solid-js@1.9.17))(solid-js@1.9.17)':
     dependencies:
       '@testing-library/dom': 10.4.2
-      solid-js: 1.9.7
+      solid-js: 1.9.17
     optionalDependencies:
-      '@solidjs/router': 1.0.0(solid-js@1.9.7)
+      '@solidjs/router': 1.0.0(solid-js@1.9.17)
 
   '@stripe/stripe-js@10.2.0': {}
 
@@ -4028,13 +4013,6 @@ snapshots:
       babel-plugin-jsx-dom-expressions: 0.40.11(@babel/core@7.29.7)
     optionalDependencies:
       solid-js: 1.9.17
-
-  babel-preset-solid@1.9.16(@babel/core@7.29.7)(solid-js@1.9.7):
-    dependencies:
-      '@babel/core': 7.29.7
-      babel-plugin-jsx-dom-expressions: 0.40.11(@babel/core@7.29.7)
-    optionalDependencies:
-      solid-js: 1.9.7
 
   balanced-match@1.0.2: {}
 
@@ -4967,10 +4945,6 @@ snapshots:
 
   semver@7.7.2: {}
 
-  seroval-plugins@1.3.2(seroval@1.3.2):
-    dependencies:
-      seroval: 1.3.2
-
   seroval-plugins@1.6.12(seroval@1.6.12):
     dependencies:
       seroval: 1.6.12
@@ -4978,8 +4952,6 @@ snapshots:
   seroval-plugins@1.7.2(seroval@1.7.2):
     dependencies:
       seroval: 1.7.2
-
-  seroval@1.3.2: {}
 
   seroval@1.6.12: {}
 
@@ -5018,12 +4990,6 @@ snapshots:
       seroval: 1.6.12
       seroval-plugins: 1.6.12(seroval@1.6.12)
 
-  solid-js@1.9.7:
-    dependencies:
-      csstype: 3.1.3
-      seroval: 1.3.2
-      seroval-plugins: 1.3.2(seroval@1.3.2)
-
   solid-refresh@0.6.3(solid-js@1.9.17):
     dependencies:
       '@babel/generator': 7.29.8
@@ -5033,11 +4999,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  solid-refresh@0.7.8(solid-js@1.9.7):
+  solid-refresh@0.7.8(solid-js@1.9.17):
     dependencies:
       '@babel/generator': 7.29.8
       '@babel/types': 7.29.11
-      solid-js: 1.9.7
+      solid-js: 1.9.17
 
   solid-sonner@0.2.8(solid-js@1.9.17):
     dependencies:
@@ -5247,13 +5213,13 @@ snapshots:
 
   universalify@0.1.2: {}
 
-  unplugin-solid@2.0.0(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(rolldown@1.2.15)(rollup@4.46.2)(solid-js@1.9.7):
+  unplugin-solid@2.0.0(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(rolldown@1.2.15)(rollup@4.46.2)(solid-js@1.9.17):
     dependencies:
       '@babel/core': 7.29.7
-      babel-preset-solid: 1.9.16(@babel/core@7.29.7)(solid-js@1.9.7)
+      babel-preset-solid: 1.9.16(@babel/core@7.29.7)(solid-js@1.9.17)
       merge-anything: 6.0.9
-      solid-js: 1.9.7
-      solid-refresh: 0.7.8(solid-js@1.9.7)
+      solid-js: 1.9.17
+      solid-refresh: 0.7.8(solid-js@1.9.17)
       unplugin: 3.6.0(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))(rolldown@1.2.15)(rollup@4.46.2)
       vitefu: 1.1.3(@voidzero-dev/vite-plus-core@1.4.0(@types/node@24.19.2)(jiti@2.5.1)(terser@5.36.0)(typescript@5.9.2)(yaml@2.6.1))
     optionalDependencies:
