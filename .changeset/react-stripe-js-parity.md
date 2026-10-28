@@ -2,19 +2,39 @@
 'solid-stripe': major
 ---
 
-Reach feature parity with `@stripe/react-stripe-js` 7 on `@stripe/stripe-js` 10.
+solid-stripe now matches `@stripe/react-stripe-js` 7 and requires `@stripe/stripe-js` 10.
 
-**Breaking**
+To upgrade:
 
-- `@stripe/stripe-js` peer range is now `>=10.0.0 <11.0.0`.
-- Removed the element components that Stripe.js 10 no longer supports: `FpxBankElement`, `IdealBankElement`, `P24BankElement`, `EpsBankElement`, `AffirmMessageElement`, `AfterpayClearpayMessageElement`, and `PaymentRequestButtonElement`. Use `PaymentElement` or `ExpressCheckoutElement` instead.
-- Removed `CheckoutProvider` and `useCheckout` from the root entry. Checkout Sessions support moves to `solid-stripe/checkout`.
-- `EmbeddedCheckoutProvider` uses `stripe.createEmbeddedCheckoutPage()`, which replaces `initEmbeddedCheckout()` in Stripe.js 10.
+- Install `@stripe/stripe-js` 10.
+- Replace `PaymentRequestButtonElement` with `ExpressCheckoutElement`.
+- Replace these elements with `PaymentElement`, because Stripe.js 10 removed them:
+  - `FpxBankElement`
+  - `IdealBankElement`
+  - `P24BankElement`
+  - `EpsBankElement`
+  - `AffirmMessageElement`
+  - `AfterpayClearpayMessageElement`
+- Replace `CheckoutProvider` with `CheckoutElementsProvider` from `solid-stripe/checkout`, and `useCheckout()` with `useCheckoutElements()`.
 
-**New**
+New element components:
 
-- Element components: `ContactDetailsElement`, `CurrencySelectorElement`, `LinkSignupElement`, `TaxIdElement`, `TermsElement`, and the Issuing display elements (`IssuingCardNumberDisplayElement`, `IssuingCardCvcDisplayElement`, `IssuingCardExpiryDisplayElement`, `IssuingCardPinDisplayElement`, `IssuingCardCopyButtonElement`).
-- `IssuingDisclosure`, `FinancialAccountDisclosure`, and `TreasuryDisclosure`.
-- `ElementsConsumer` for render-prop access to the Elements context.
-- New element callbacks: `onSavedPaymentMethodRemove`, `onSavedPaymentMethodUpdate`, and `onAvailablePaymentMethodsChange`.
-- `Elements`, element components, and `EmbeddedCheckoutProvider` now accept a `stripe` promise, and only send the options that changed to `update()`. They warn about changes to options that cannot change after creation.
+- `ContactDetailsElement`
+- `CurrencySelectorElement`
+- `LinkSignupElement`
+- `TaxIdElement`
+- `TermsElement`
+- `IssuingCardNumberDisplayElement`, `IssuingCardCvcDisplayElement`, `IssuingCardExpiryDisplayElement`, `IssuingCardPinDisplayElement`, and `IssuingCardCopyButtonElement`
+
+Other additions:
+
+- `IssuingDisclosure`, `FinancialAccountDisclosure`, and `TreasuryDisclosure` render Stripe's disclosure text. If an options change fails, the component removes the old disclosure.
+- `ElementsConsumer` passes the Elements context to a render function.
+- Element components accept `onSavedPaymentMethodRemove`, `onSavedPaymentMethodUpdate`, and `onAvailablePaymentMethodsChange`.
+- `EmbeddedCheckoutProvider` accepts a promise for the `stripe` prop, like `Elements` already did.
+
+Behavior changes:
+
+- `EmbeddedCheckoutProvider` calls `stripe.createEmbeddedCheckoutPage()`. Stripe.js 10 removed `initEmbeddedCheckout()`.
+- `Elements` and element components send only the options that changed to `update()`.
+- Changing an option that Stripe reads only once, such as `clientSecret`, logs a warning. Before, the change was ignored without a warning.

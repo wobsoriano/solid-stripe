@@ -2,9 +2,27 @@
 'solid-stripe': minor
 ---
 
-Add `solid-stripe/checkout` for Stripe Checkout Sessions, matching `@stripe/react-stripe-js/checkout`.
+Add `solid-stripe/checkout` for Stripe Checkout Sessions. It matches `@stripe/react-stripe-js/checkout`.
 
-- `CheckoutElementsProvider` with `useCheckoutElements()`, and `CheckoutFormProvider` with `useCheckoutForm()`. Each hook returns an accessor for `{ type: 'loading' | 'success' | 'error' }`, with session values and actions merged into `checkout` on success. Calling the hook that does not match the surrounding provider throws immediately.
-- `useCheckout()` (deprecated) works under either provider.
-- Checkout element components: `PaymentElement`, `CheckoutForm`, `ExpressCheckoutElement`, `BillingAddressElement`, `ShippingAddressElement`, `CurrencySelectorElement`, `TaxIdElement`, `ContactDetailsElement`, `LinkSignupElement`, and `TermsElement`.
-- Appearance and font changes are applied to the running checkout SDK.
+Providers and hooks:
+
+- Wrap your form in `CheckoutElementsProvider` and read the session with `useCheckoutElements()`.
+- For the Checkout form integration, use `CheckoutFormProvider` and `useCheckoutForm()`.
+- Each hook returns an accessor. Its value has `type: 'loading'`, `'success'`, or `'error'`. On success, `checkout` holds the session values and actions such as `confirm()`.
+- Calling a hook inside the other provider throws right away.
+- `useCheckout()` still works under either provider, but it is deprecated.
+
+Element components:
+
+- `PaymentElement`
+- `CheckoutForm`
+- `ExpressCheckoutElement`
+- `BillingAddressElement`
+- `ShippingAddressElement`
+- `CurrencySelectorElement`
+- `TaxIdElement`
+- `ContactDetailsElement`
+- `LinkSignupElement`
+- `TermsElement`
+
+When `appearance` or `fonts` changes, the provider applies the change to the running checkout.

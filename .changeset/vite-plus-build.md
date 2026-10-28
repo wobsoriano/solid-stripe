@@ -2,4 +2,4 @@
 'solid-stripe': patch
 ---
 
-Build the package with Vite+ (`vp pack`, powered by tsdown). The published entry points are unchanged: `solid` resolves to uncompiled JSX and `default` to the compiled build. The separate `development` build is no longer published.
+Vite+ (`vp pack`) now builds the package. The `solid` export still points to uncompiled JSX, and `default` still points to the compiled build. The package no longer ships a separate `development` build.
