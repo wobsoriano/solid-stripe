@@ -3,15 +3,9 @@ import { Title } from '@solidjs/meta'
 export default function Home() {
   return (
     <>
-      <Title>Hello World</Title>
-      <h1>Hello world!</h1>
-      <p>
-        Visit{' '}
-        <a href="https://start.solidjs.com" target="_blank">
-          start.solidjs.com
-        </a>{' '}
-        to learn how to build SolidStart apps.
-      </p>
+      <Title>Solid Stripe</Title>
+      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Solid Stripe playground</h1>
+      <p>Pick an example from the menu. Each one uses Stripe test mode.</p>
     </>
   )
 }

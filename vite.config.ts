@@ -32,6 +32,9 @@ export default defineConfig({
       outExtensions: () => ({ js: '.jsx' }),
     },
   ],
+  staged: {
+    '*': 'vp check --fix',
+  },
   fmt: {
     semi: false,
     singleQuote: true,
