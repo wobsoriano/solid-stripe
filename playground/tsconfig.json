@@ -12,6 +12,7 @@
     "noEmit": true,
     "types": ["vite/client"],
     "isolatedModules": true,
+    "skipLibCheck": true,
     "paths": {
       "~/*": ["./src/*"]
     }

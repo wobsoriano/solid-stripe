@@ -16,6 +16,8 @@ const rules = [
   ],
   [/\bFunctionComponent</g, 'Component<'],
   [/^(\s*)className\?: string;/gm, '$1class?: string;'],
+  // The checkout types sit one directory closer to the root types here.
+  [/from '\.\.\/\.\.\/types';/g, "from '../types';"],
 ]
 
 let source = readFileSync(from, 'utf8').replace(/\r\n/g, '\n')

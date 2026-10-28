@@ -15,7 +15,9 @@ Solid components for [Stripe.js and Elements](https://stripe.com/docs/stripe-js)
 npm install @stripe/stripe-js solid-stripe
 ```
 
-## Minimal example
+solid-stripe 1.x requires `@stripe/stripe-js` 10.
+
+## Accept a payment with the Payment Element
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -102,6 +104,88 @@ const App = () => {
 
 export default App
 ```
+
+## Differences from React Stripe.js
+
+The components and options match `@stripe/react-stripe-js` 7. These are the places where Solid conventions change the API:
+
+- `useStripe()` and `useElements()` return accessors. Call `stripe()` and `elements()` to read the current value. Both are `null` until Stripe.js loads.
+- `useCheckoutElements()`, `useCheckoutForm()`, and `useCheckout()` also return accessors.
+- Element components take `class` instead of `className`.
+- Callback props such as `onChange` are read when the event fires. Passing a new function does not re-subscribe the listener.
+- Inside `<CheckoutElementsProvider>`, `useCheckoutForm()` throws when it is called. React Stripe.js throws only after the session loads. The same applies to `useCheckoutElements()` inside `<CheckoutFormProvider>`.
+
+## Build a custom checkout with Checkout Sessions
+
+Import the Checkout Sessions components from `solid-stripe/checkout`. Create a Checkout Session with `ui_mode: 'elements'` on your server, and pass its client secret to `CheckoutElementsProvider`.
+
+```tsx
+import { loadStripe } from '@stripe/stripe-js'
+import { createMemo, Show } from 'solid-js'
+import {
+  CheckoutElementsProvider,
+  PaymentElement,
+  useCheckoutElements,
+} from 'solid-stripe/checkout'
+
+const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh')
+
+const CheckoutForm = () => {
+  const checkout = useCheckoutElements()
+  const session = createMemo(() => {
+    const current = checkout()
+    return current.type === 'success' ? current.checkout : undefined
+  })
+
+  return (
+    <Show when={session()} fallback={<p>Loading...</p>}>
+      {current => (
+        <form
+          onSubmit={async event => {
+            event.preventDefault()
+            const result = await current().confirm()
+            if (result.type === 'error') console.error(result.error.message)
+          }}
+        >
+          <p>Total: {current().total.total.amount}</p>
+          <PaymentElement />
+          <button type="submit">Pay</button>
+        </form>
+      )}
+    </Show>
+  )
+}
+
+const App = () => {
+  const clientSecret = fetch('/create-checkout-session', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => data.clientSecret)
+
+  return (
+    <CheckoutElementsProvider stripe={stripePromise} options={{ clientSecret }}>
+      <CheckoutForm />
+    </CheckoutElementsProvider>
+  )
+}
+```
+
+The [playground](./playground) also has examples for the Express Checkout Element, Embedded Checkout, card Elements, and SEPA Direct Debit.
+
+## Upgrade from 0.x
+
+- Install `@stripe/stripe-js` 10.
+- Replace `FpxBankElement`, `IdealBankElement`, `P24BankElement`, `EpsBankElement`, `AffirmMessageElement`, and `AfterpayClearpayMessageElement` with `PaymentElement`. Stripe.js 10 removed these Elements.
+- Replace `PaymentRequestButtonElement` with `ExpressCheckoutElement`.
+- Replace `CheckoutProvider` with `CheckoutElementsProvider` from `solid-stripe/checkout`, and `useCheckout()` with `useCheckoutElements()`.
+
+## Develop
+
+This repository uses [Vite+](https://viteplus.dev). Install dependencies with `pnpm install`, then run these commands:
+
+- `vp check` formats, lints, and type-checks.
+- `vp test` runs the tests.
+- `vp pack` builds the package into `dist`.
+- `vp run --filter playground dev` starts the playground. Copy `playground/.env.example` to `playground/.env` and add your Stripe test keys first.
 
 ## License
 

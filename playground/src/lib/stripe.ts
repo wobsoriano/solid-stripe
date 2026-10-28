@@ -1,3 +1,6 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY, {} as any)
+let client: Stripe | undefined
+
+// Created on first use, so pages still render when the secret key is not configured.
+export const getStripe = () => (client ??= new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY))

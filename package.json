@@ -28,6 +28,11 @@
       "types": "./dist/index.d.ts",
       "solid": "./dist/index.jsx",
       "default": "./dist/index.js"
+    },
+    "./checkout": {
+      "types": "./dist/checkout.d.ts",
+      "solid": "./dist/checkout.jsx",
+      "default": "./dist/checkout.js"
     }
   },
   "scripts": {
@@ -36,7 +41,8 @@
     "check": "vp check",
     "test": "vp test",
     "prepublishOnly": "vp pack",
-    "release": "vp pack && changeset publish"
+    "release": "vp pack && changeset publish",
+    "prepare": "vp config --no-agent"
   },
   "devDependencies": {
     "@alenaksu/json-viewer": "^2.0.1",
@@ -45,7 +51,7 @@
     "@stripe/stripe-js": "^10.2.0",
     "@types/node": "^24.0.0",
     "jsdom": "^30.1.3",
-    "solid-js": "^1.9.5",
+    "solid-js": "catalog:",
     "typescript": "^5.4.5",
     "unplugin-solid": "^2.0.0",
     "vite": "catalog:",
