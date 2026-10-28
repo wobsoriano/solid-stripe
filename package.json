@@ -28,6 +28,11 @@
       "types": "./dist/index.d.ts",
       "solid": "./dist/index.jsx",
       "default": "./dist/index.js"
+    },
+    "./checkout": {
+      "types": "./dist/checkout.d.ts",
+      "solid": "./dist/checkout.jsx",
+      "default": "./dist/checkout.js"
     }
   },
   "scripts": {

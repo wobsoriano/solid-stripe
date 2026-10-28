@@ -2,7 +2,7 @@ import solidRolldown from 'unplugin-solid/rolldown'
 import solid from 'unplugin-solid/vite'
 import { defineConfig } from 'vite-plus'
 
-const entry = { index: 'src/index.ts' }
+const entry = { index: 'src/index.ts', checkout: 'src/checkout/index.tsx' }
 
 export default defineConfig({
   plugins: [solid({ hot: false })],
@@ -46,6 +46,7 @@ export default defineConfig({
       typeAware: true,
       typeCheck: true,
     },
+    overrides: [{ files: ['scripts/**'], rules: { 'no-console': 'off' } }],
     rules: {
       'no-console': ['warn', { allow: ['warn'] }],
       // Solid assigns `let ref!: T` through the JSX `ref` prop, which this rule cannot see.

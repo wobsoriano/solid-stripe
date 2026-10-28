@@ -1,0 +1,103 @@
+import type { Component } from 'solid-js'
+import * as stripeJs from '@stripe/stripe-js'
+import { StripeError } from '@stripe/stripe-js'
+import {
+  ElementProps,
+  PaymentElementProps as RootPaymentElementProps,
+  CheckoutFormProps as RootCheckoutFormProps,
+  ExpressCheckoutElementProps as RootExpressCheckoutElementProps,
+  AddressElementProps as RootAddressElementProps,
+  LinkSignupElementProps as RootLinkSignupElementProps,
+} from '../types'
+
+export interface CurrencySelectorElementProps extends ElementProps {
+  /**
+   * Triggered when the Element is fully rendered and can accept imperative `element.focus()` calls.
+   * Called with a reference to the underlying [Element instance](https://stripe.com/docs/js/element).
+   */
+  onReady?: (element: stripeJs.StripeCurrencySelectorElement) => any
+
+  /**
+   * Triggered when the escape key is pressed within the Element.
+   */
+  onEscape?: () => any
+
+  /**
+   * Triggered when the Element fails to load.
+   */
+  onLoadError?: (event: { elementType: 'currencySelector'; error: StripeError }) => any
+
+  /**
+   * Triggered when the [loader](https://stripe.com/docs/js/elements_object/create#stripe_elements-options-loader) UI is mounted to the DOM and ready to be displayed.
+   */
+  onLoaderStart?: (event: { elementType: 'currencySelector' }) => any
+}
+
+export type CurrencySelectorElementComponent = Component<CurrencySelectorElementProps>
+
+export type LinkSignupElementProps = Omit<RootLinkSignupElementProps, 'options'> & {
+  options?: stripeJs.StripeCheckoutLinkSignupElementOptions
+}
+
+export type LinkSignupElementComponent = Component<LinkSignupElementProps>
+
+export type BillingAddressElementProps = Omit<RootAddressElementProps, 'options'> & {
+  options?: stripeJs.StripeCheckoutAddressElementOptions
+}
+
+export type BillingAddressElementComponent = Component<BillingAddressElementProps>
+
+export type ShippingAddressElementProps = Omit<RootAddressElementProps, 'options'> & {
+  options?: stripeJs.StripeCheckoutAddressElementOptions
+}
+
+export type ShippingAddressElementComponent = Component<ShippingAddressElementProps>
+
+export type PaymentElementProps = Omit<RootPaymentElementProps, 'options'> & {
+  options?: stripeJs.StripeCheckoutPaymentElementOptions
+}
+
+export type PaymentElementComponent = Component<PaymentElementProps>
+
+export type CheckoutFormProps = RootCheckoutFormProps
+
+export type CheckoutFormComponent = Component<CheckoutFormProps>
+
+export type ExpressCheckoutElementProps = Omit<
+  RootExpressCheckoutElementProps,
+  'options' | 'onClick' | 'onShippingAddressChange' | 'onShippingRateChange'
+> & { options?: stripeJs.StripeCheckoutExpressCheckoutElementOptions }
+
+export type ExpressCheckoutElementComponent = Component<ExpressCheckoutElementProps>
+
+export interface TaxIdElementProps extends ElementProps {
+  options: stripeJs.StripeTaxIdElementOptions
+  onChange?: (event: stripeJs.StripeTaxIdElementChangeEvent) => any
+  onReady?: (element: stripeJs.StripeTaxIdElement) => any
+  onEscape?: () => any
+  onLoadError?: (event: { elementType: 'taxId'; error: StripeError }) => any
+  onLoaderStart?: (event: { elementType: 'taxId' }) => any
+}
+
+export type TaxIdElementComponent = Component<TaxIdElementProps>
+
+export interface ContactDetailsElementProps extends ElementProps {
+  options?: stripeJs.StripeContactDetailsElementOptions
+  onChange?: (event: stripeJs.StripeContactDetailsElementChangeEvent) => any
+  onReady?: (element: stripeJs.StripeContactDetailsElement) => any
+  onEscape?: () => any
+  onLoadError?: (event: { elementType: 'contactDetails'; error: StripeError }) => any
+  onLoaderStart?: (event: { elementType: 'contactDetails' }) => any
+}
+
+export type ContactDetailsElementComponent = Component<ContactDetailsElementProps>
+
+export interface TermsElementProps extends ElementProps {
+  options?: stripeJs.StripeCheckoutTermsElementOptions
+  onReady?: (element: stripeJs.StripeTermsElement) => any
+  onEscape?: () => any
+  onLoadError?: (event: { elementType: 'terms'; error: StripeError }) => any
+  onLoaderStart?: (event: { elementType: 'terms' }) => any
+}
+
+export type TermsElementComponent = Component<TermsElementProps>

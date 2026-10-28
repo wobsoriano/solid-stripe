@@ -7,7 +7,11 @@ import {
   type UnknownOptions,
 } from '../utils/extractAllowedOptionsUpdates'
 import { watch } from '../utils/watch'
-import { useElementsContextWithUseCase } from './Elements'
+import {
+  useElementsOrCheckoutContextWithUseCase,
+  type CheckoutSdk,
+} from '../checkout/CheckoutContext'
+import { createCheckoutElement } from '../checkout/createCheckoutElement'
 
 type UnknownCallback = (...args: unknown[]) => unknown
 
@@ -56,17 +60,22 @@ const createElementComponent = (
   const useCase = `mounts <${displayName}>`
 
   const ClientElement: Component<PrivateElementProps> = props => {
-    const ctx = useElementsContextWithUseCase(useCase)
+    const ctx = useElementsOrCheckoutContextWithUseCase(useCase)
     let domNode!: HTMLDivElement
 
     const element = createMemo(() => {
-      const elements = ctx.elements()
-      if (!elements) return null
+      const source = 'checkoutSdk' in ctx ? ctx.checkoutSdk() : ctx.elements()
+      if (!source) return null
 
       // Options are read once at creation; later changes go through `update()`.
-      const created = untrack(
-        () => elements.create(type as any, props.options ?? {}) as unknown as MountableElement,
-      )
+      const created = untrack(() => {
+        const options = props.options ?? {}
+        const instance =
+          'checkoutSdk' in ctx
+            ? createCheckoutElement(source as CheckoutSdk, type, displayName, options)
+            : (source as stripeJs.StripeElements).create(type as any, options)
+        return instance as unknown as MountableElement
+      })
       onCleanup(() => {
         try {
           created.destroy()
@@ -120,7 +129,7 @@ const createElementComponent = (
 
   // Only render the Element wrapper in a server environment.
   const ServerElement: Component<PrivateElementProps> = props => {
-    useElementsContextWithUseCase(useCase)
+    useElementsOrCheckoutContextWithUseCase(useCase)
     return <div id={props.id} class={props.class} />
   }
 
