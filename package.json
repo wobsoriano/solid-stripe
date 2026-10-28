@@ -45,7 +45,6 @@
     "prepare": "vp config --no-agent"
   },
   "devDependencies": {
-    "@alenaksu/json-viewer": "^2.0.1",
     "@changesets/cli": "^2.27.8",
     "@solidjs/testing-library": "^0.8.10",
     "@stripe/stripe-js": "^10.2.0",

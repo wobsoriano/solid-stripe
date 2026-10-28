@@ -14,15 +14,10 @@
     "@stripe/stripe-js": "^10.2.0",
     "nitro": "3.0.260903-beta",
     "solid-js": "catalog:",
-    "solid-sonner": "^0.2.8",
     "solid-stripe": "workspace:*",
     "stripe": "^23.0.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "daisyui": "^3.6.4",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.12",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },
