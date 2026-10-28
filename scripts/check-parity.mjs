@@ -30,7 +30,9 @@ for (const entry of entries) {
   const missing = [...expected].filter(name => !actual.has(name)).sort()
   const extra = [...actual].filter(name => !expected.has(name)).sort()
 
-  console.log(`${entry.upstream} -> ${entry.local}: ${expected.size} upstream, ${actual.size} local`)
+  console.log(
+    `${entry.upstream} -> ${entry.local}: ${expected.size} upstream, ${actual.size} local`,
+  )
   if (missing.length) {
     failed = true
     console.log(`  missing: ${missing.join(', ')}`)
