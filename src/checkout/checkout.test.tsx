@@ -237,13 +237,16 @@ describe('checkout element components', () => {
   it.each([
     ['BillingAddressElement', BillingAddressElement, 'createBillingAddressElement'],
     ['ShippingAddressElement', ShippingAddressElement, 'createShippingAddressElement'],
-  ] as const)('%s creates its address element without the mode option', (_name, Element, method) => {
-    const sdk = mockCheckoutSdk()
-    renderInElementsProvider(mockStripe(sdk), () => (
-      <Element options={{ display: { name: 'split' } }} />
-    ))
-    expect(sdk[method]).toHaveBeenCalledWith({ display: { name: 'split' } })
-  })
+  ] as const)(
+    '%s creates its address element without the mode option',
+    (_name, Element, method) => {
+      const sdk = mockCheckoutSdk()
+      renderInElementsProvider(mockStripe(sdk), () => (
+        <Element options={{ display: { name: 'split' } }} />
+      ))
+      expect(sdk[method]).toHaveBeenCalledWith({ display: { name: 'split' } })
+    },
+  )
 
   it('creates CheckoutForm from the form SDK', () => {
     const stripe = mockStripe()
