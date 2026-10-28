@@ -80,7 +80,7 @@ function CheckoutForm() {
       // payment succeeded
       return redirect(`/success?payment_intent=${paymentIntent.id}`)
     }
-  })
+  }, 'payment-element-payment')
 
   const submission = useSubmission(paymentAction)
 

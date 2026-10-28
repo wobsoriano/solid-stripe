@@ -3,7 +3,6 @@ dist
 gitignore
 
 # tsup
-tsup.config.bundled_*.{m,c,}s
 
 ## Solid
 .solid
@@ -11,3 +10,4 @@ tsup.config.bundled_*.{m,c,}s
 .vercel
 .netlify
 .vinxi
+.vitest/

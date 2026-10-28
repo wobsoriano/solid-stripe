@@ -50,7 +50,7 @@ function CheckoutForm() {
       payload.complete('success')
       return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
-  })
+  }, 'payment-request-payment')
 
   const submission = useSubmission(paymentAction)
   const submit = useAction(paymentAction)

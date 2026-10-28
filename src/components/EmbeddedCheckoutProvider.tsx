@@ -10,7 +10,7 @@ import {
   Accessor,
   createMemo,
 } from 'solid-js'
-import { parseStripeProp } from 'src/utils/parseStripeProp'
+import { parseStripeProp } from '../utils/parseStripeProp'
 
 type EmbeddedCheckoutPublicInterface = {
   mount(location: string | HTMLElement): void
