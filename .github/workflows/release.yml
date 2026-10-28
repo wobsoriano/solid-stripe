@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write # to create release (changesets/action)
       pull-requests: write # to create pull request (changesets/action)
+      id-token: write # npm trusted publishing exchanges the GitHub OIDC token for a publish token
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -24,12 +25,12 @@ jobs:
         with:
           node-version-file: .node-version
           cache: true
+          registry-url: https://registry.npmjs.org
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
