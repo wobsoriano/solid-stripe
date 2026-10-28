@@ -123,6 +123,26 @@ describe('CheckoutElementsProvider', () => {
     expect(read!()).toEqual({ type: 'error', error: failure })
   })
 
+  it('reports an error when a stripe promise passed after null rejects', async () => {
+    let read: ReturnType<typeof useCheckoutElements> | undefined
+    const Probe = () => {
+      read = useCheckoutElements()
+      return null
+    }
+    const failure = new Error('Stripe.js failed to load')
+    const [stripe, setStripe] = createSignal<Promise<Stripe> | null>(null)
+
+    render(() => (
+      <CheckoutElementsProvider stripe={stripe()} options={{ clientSecret }}>
+        <Probe />
+      </CheckoutElementsProvider>
+    ))
+    void setStripe(Promise.reject(failure))
+    flush()
+    await tick()
+    expect(read!()).toEqual({ type: 'error', error: failure })
+  })
+
   it('initializes once, and applies appearance and font changes to the SDK', async () => {
     const sdk = mockCheckoutSdk()
     const stripe = mockStripe(sdk)
