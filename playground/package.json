@@ -14,7 +14,6 @@
     "@stripe/stripe-js": "^10.2.0",
     "nitro": "3.0.260903-beta",
     "solid-js": "catalog:",
-    "solid-sonner": "^0.2.8",
     "solid-stripe": "workspace:*",
     "stripe": "^23.0.1"
   },
