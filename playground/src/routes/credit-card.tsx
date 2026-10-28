@@ -51,7 +51,7 @@ function CheckoutForm() {
       // payment succeeded
       return redirect(`/success?payment_intent=${paymentIntent.id}`)
     }
-  })
+  }, 'credit-card-payment')
 
   const submission = useSubmission(paymentAction)
 

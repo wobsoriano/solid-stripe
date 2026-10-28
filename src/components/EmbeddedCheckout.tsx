@@ -31,7 +31,7 @@ export const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = p
         try {
           embeddedCheckout.unmount()
           setIsMounted(false)
-        } catch (error) {
+        } catch {
           // Do nothing.
           // Parent effects are destroyed before child effects, so
           // in cases where both the EmbeddedCheckoutProvider and

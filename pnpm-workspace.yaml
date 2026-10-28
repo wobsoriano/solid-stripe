@@ -1,3 +1,18 @@
 packages:
   - playground
   - .
+
+overrides:
+  vite@*: 'catalog:'
+
+onlyBuiltDependencies:
+  - esbuild
+  - '@parcel/watcher'
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+  vite-plus: 1.4.0
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: '*'

@@ -55,7 +55,7 @@ function CheckoutForm() {
     } else {
       return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
-  })
+  }, 'ideal-payment')
 
   const submission = useSubmission(paymentAction)
 

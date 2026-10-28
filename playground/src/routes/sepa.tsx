@@ -53,7 +53,7 @@ function CheckoutForm() {
     } else {
       return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
-  })
+  }, 'sepa-payment')
 
   const submission = useSubmission(paymentAction)
 
