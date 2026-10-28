@@ -15,7 +15,7 @@ Solid components for [Stripe.js and Elements](https://stripe.com/docs/stripe-js)
 npm install @stripe/stripe-js solid-stripe
 ```
 
-solid-stripe 1.x requires `@stripe/stripe-js` 10.
+solid-stripe 2.x requires `solid-js` and `@solidjs/web` 2.0.0-rc.19 or later, and `@stripe/stripe-js` 10. Apps on Solid 1 use solid-stripe 1.x.
 
 ## Minimal example
 
