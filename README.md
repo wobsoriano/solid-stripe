@@ -17,7 +17,7 @@ npm install @stripe/stripe-js solid-stripe
 
 solid-stripe 1.x requires `@stripe/stripe-js` 10.
 
-## Accept a payment with the Payment Element
+## Minimal example
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -105,16 +105,6 @@ const App = () => {
 export default App
 ```
 
-## Differences from React Stripe.js
-
-The components and options match `@stripe/react-stripe-js` 7. These are the places where Solid conventions change the API:
-
-- `useStripe()` and `useElements()` return accessors. Call `stripe()` and `elements()` to read the current value. Both are `null` until Stripe.js loads.
-- `useCheckoutElements()`, `useCheckoutForm()`, and `useCheckout()` also return accessors.
-- Element components take `class` instead of `className`.
-- Callback props such as `onChange` are read when the event fires. Passing a new function does not re-subscribe the listener.
-- Inside `<CheckoutElementsProvider>`, `useCheckoutForm()` throws when it is called. React Stripe.js throws only after the session loads. The same applies to `useCheckoutElements()` inside `<CheckoutFormProvider>`.
-
 ## Build a custom checkout with Checkout Sessions
 
 Import the Checkout Sessions components from `solid-stripe/checkout`. Create a Checkout Session with `ui_mode: 'elements'` on your server, and pass its client secret to `CheckoutElementsProvider`.
@@ -170,13 +160,6 @@ const App = () => {
 ```
 
 The [playground](./playground) also has examples for the Express Checkout Element, Embedded Checkout, card Elements, and SEPA Direct Debit.
-
-## Upgrade from 0.x
-
-- Install `@stripe/stripe-js` 10.
-- Replace `FpxBankElement`, `IdealBankElement`, `P24BankElement`, `EpsBankElement`, `AffirmMessageElement`, and `AfterpayClearpayMessageElement` with `PaymentElement`. Stripe.js 10 removed these Elements.
-- Replace `PaymentRequestButtonElement` with `ExpressCheckoutElement`.
-- Replace `CheckoutProvider` with `CheckoutElementsProvider` from `solid-stripe/checkout`, and `useCheckout()` with `useCheckoutElements()`.
 
 ## Develop
 
