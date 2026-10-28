@@ -29,7 +29,10 @@ const checkoutElementFactories: Partial<
   currencySelector: sdk => sdk.createCurrencySelectorElement(),
   taxId: (sdk, options) =>
     (sdk as ElementsSdk).createTaxIdElement(options as stripeJs.StripeTaxIdElementOptions),
-  contactDetails: sdk => (sdk as ElementsSdk).createContactDetailsElement(),
+  contactDetails: (sdk, options) =>
+    (sdk as ElementsSdk).createContactDetailsElement(
+      options as stripeJs.StripeCheckoutContactDetailsElementOptions,
+    ),
   linkSignup: (sdk, options) => {
     if (!('createLinkSignupElement' in sdk)) {
       throw new Error(

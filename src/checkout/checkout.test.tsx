@@ -13,6 +13,7 @@ import { CardElement, Elements, useStripe } from '../index'
 import {
   BillingAddressElement,
   CheckoutElementsProvider,
+  ContactDetailsElement,
   CheckoutForm,
   CheckoutFormProvider,
   LinkSignupElement,
@@ -247,6 +248,16 @@ describe('checkout element components', () => {
       expect(sdk[method]).toHaveBeenCalledWith({ display: { name: 'split' } })
     },
   )
+
+  it('passes options to the Contact Details Element', () => {
+    const sdk = mockCheckoutSdk()
+    renderInElementsProvider(mockStripe(sdk), () => (
+      <ContactDetailsElement options={{ defaultValues: { email: 'jenny@example.com' } }} />
+    ))
+    expect(sdk.createContactDetailsElement).toHaveBeenCalledWith({
+      defaultValues: { email: 'jenny@example.com' },
+    })
+  })
 
   it('creates CheckoutForm from the form SDK', () => {
     const stripe = mockStripe()
