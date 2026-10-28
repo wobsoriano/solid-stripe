@@ -1,31 +1,27 @@
-import type { PaymentIntent } from '@stripe/stripe-js'
-import { Show } from 'solid-js'
-import { cache, createAsync, useLocation } from '@solidjs/router'
+import { createAsync, useLocation } from '@solidjs/router'
 import { clientOnly } from '@solidjs/start'
+import { Show } from 'solid-js'
+import { getPaymentResult } from '~/lib/payments'
 
 const JSONViewer = clientOnly(() => import('~/components/JSONViewer'))
 
-const getPaymentInfo = cache(async (paymentIntentId: string) => {
-  const resp = await fetch('/api/retrieve-payment', {
-    method: 'POST',
-    body: JSON.stringify({
-      paymentIntentId,
-    }),
-  })
-  const result = await resp.json()
-  return result as PaymentIntent
-}, 'paymentInfo')
+const param = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
 
 export default function Success() {
   const location = useLocation()
-  const paymentIntent = createAsync(() => getPaymentInfo(location.query.payment_intent))
+  const result = createAsync(() =>
+    getPaymentResult({
+      paymentIntentId: param(location.query.payment_intent),
+      sessionId: param(location.query.session_id),
+    }),
+  )
 
   return (
     <main>
       <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Success!</h1>
       <p>Payment was successfully processed.</p>
-      <Show when={paymentIntent()} fallback={<div>Loading...</div>}>
-        <JSONViewer data={{ paymentIntent: paymentIntent() }} />
+      <Show when={result()} fallback={<div>Loading...</div>}>
+        {payment => <JSONViewer data={{ payment: payment() }} />}
       </Show>
     </main>
   )
