@@ -1,12 +1,13 @@
-export type ExampleGroup = 'Elements' | 'Checkout Sessions'
+export type ExampleGroup = 'Payments' | 'Checkout Sessions' | 'Legacy Elements'
 
 export type ExampleSlug =
   | 'payment-element'
   | 'express-checkout'
-  | 'credit-card'
-  | 'sepa'
+  | 'payment-method-messaging'
   | 'checkout'
   | 'embedded-checkout'
+  | 'credit-card'
+  | 'sepa'
 
 export interface Example {
   slug: ExampleSlug
@@ -21,51 +22,64 @@ export const examples: Example[] = [
     slug: 'payment-element',
     title: 'Payment Element',
     summary:
-      'One element for cards, wallets, and local payment methods. Change the appearance and layout below and the mounted element updates in place.',
-    group: 'Elements',
+      'One element for cards, wallets, and local payment methods, with the PaymentIntent created only at submit. Change the quantity, theme, or layout and the mounted elements update in place. Link autofill comes from LinkAuthenticationElement and address autocomplete from AddressElement.',
+    group: 'Payments',
     components: ['Elements', 'PaymentElement', 'LinkAuthenticationElement', 'AddressElement'],
   },
   {
     slug: 'express-checkout',
     title: 'Express Checkout Element',
     summary:
-      'One-click wallet buttons such as Apple Pay, Google Pay, and Link. Only the wallets your browser and Stripe account support appear.',
-    group: 'Elements',
+      'One-click wallet buttons such as Apple Pay, Google Pay, and Link. Buttons appear only for wallets that both your browser and the Stripe account support, and Apple Pay also needs a verified domain.',
+    group: 'Payments',
     components: ['Elements', 'ExpressCheckoutElement'],
   },
   {
-    slug: 'credit-card',
-    title: 'Card Element',
+    slug: 'payment-method-messaging',
+    title: 'Payment Method Messaging',
     summary:
-      'Separate card number, expiry, and CVC fields you can lay out like the rest of your form, confirmed with confirmCardPayment.',
-    group: 'Elements',
-    components: ['Elements', 'CardNumberElement', 'CardExpiryElement', 'CardCvcElement'],
-  },
-  {
-    slug: 'sepa',
-    title: 'SEPA Direct Debit',
-    summary: 'Collect an IBAN and confirm a euro PaymentIntent with confirmSepaDebitPayment.',
-    group: 'Elements',
-    components: ['Elements', 'IbanElement'],
+      'Buy now, pay later messaging from Klarna, Afterpay, and Affirm next to a price. Pick a price and the message updates for the new amount.',
+    group: 'Payments',
+    components: ['Elements', 'PaymentMethodMessagingElement'],
   },
   {
     slug: 'checkout',
     title: 'Checkout Elements',
     summary:
-      'A custom payment form on top of a Checkout Session. The session owns the line items and totals, and the form reads them through useCheckoutElements.',
+      'A custom checkout page on a Checkout Session. The order summary, quantity, and promotion code all read from and write to the session through useCheckoutElements.',
     group: 'Checkout Sessions',
-    components: ['CheckoutElementsProvider', 'PaymentElement', 'useCheckoutElements'],
+    components: [
+      'CheckoutElementsProvider',
+      'useCheckoutElements',
+      'PaymentElement',
+      'BillingAddressElement',
+    ],
   },
   {
     slug: 'embedded-checkout',
     title: 'Embedded Checkout',
-    summary: "Stripe's prebuilt checkout page, embedded in your app from a Checkout Session.",
+    summary: 'The prebuilt Stripe Checkout page, embedded in your app from a Checkout Session.',
     group: 'Checkout Sessions',
     components: ['EmbeddedCheckoutProvider', 'EmbeddedCheckout'],
   },
+  {
+    slug: 'credit-card',
+    title: 'Card Element',
+    summary:
+      'Separate card number, expiry, and CVC fields you lay out like the rest of your form, confirmed with confirmCardPayment.',
+    group: 'Legacy Elements',
+    components: ['Elements', 'CardNumberElement', 'CardExpiryElement', 'CardCvcElement'],
+  },
+  {
+    slug: 'sepa',
+    title: 'IBAN Element',
+    summary: 'Collect an IBAN and confirm a euro SEPA Direct Debit with confirmSepaDebitPayment.',
+    group: 'Legacy Elements',
+    components: ['Elements', 'IbanElement'],
+  },
 ]
 
-const groups: ExampleGroup[] = ['Elements', 'Checkout Sessions']
+const groups: ExampleGroup[] = ['Payments', 'Checkout Sessions', 'Legacy Elements']
 
 export const examplesByGroup = groups.map(group => ({
   group,

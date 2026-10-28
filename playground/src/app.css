@@ -932,3 +932,104 @@ kbd {
     margin-bottom: var(--space-2);
   }
 }
+
+/* Steppers and order summary */
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.stepper button {
+  width: 32px;
+  height: 100%;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.stepper button:disabled {
+  color: var(--text-subtle);
+  cursor: not-allowed;
+}
+
+.stepper output {
+  min-width: 28px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.product-name {
+  font-weight: 600;
+}
+
+.product-price {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  font-size: 14px;
+}
+
+.summary dt {
+  color: var(--text-muted);
+}
+
+.summary dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.summary .summary-total {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.inline-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.inline-form .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.inline-form .button {
+  flex: none;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.messaging-price {
+  font-size: 28px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
