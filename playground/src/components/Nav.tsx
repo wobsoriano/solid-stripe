@@ -39,21 +39,23 @@ const Nav: Component<{ children?: JSX.Element }> = props => {
       <div class="drawer-side">
         <label for="my-drawer-3" class="drawer-overlay" />
         <ul class="menu p-4 w-80 h-full bg-base-200">
-          {/* <li><A href="/">Home</A></li> */}
-          <li>
-            <a href="/credit-card">Credit cards</a>
-          </li>
           <li>
             <a href="/payment-element">Payment Element</a>
           </li>
           <li>
-            <a href="/payment-request">Payment Request</a>
+            <a href="/express-checkout">Express Checkout</a>
+          </li>
+          <li>
+            <a href="/checkout">Checkout Elements</a>
+          </li>
+          <li>
+            <a href="/embedded-checkout">Embedded Checkout</a>
+          </li>
+          <li>
+            <a href="/credit-card">Credit cards</a>
           </li>
           <li>
             <a href="/sepa">SEPA</a>
-          </li>
-          <li>
-            <a href="/ideal">iDEAL</a>
           </li>
         </ul>
       </div>
