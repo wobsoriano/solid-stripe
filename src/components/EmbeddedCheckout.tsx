@@ -1,4 +1,3 @@
-import { isServer } from '@solidjs/web'
 import { createEffect, type Component } from 'solid-js'
 import { useEmbeddedCheckoutContext } from './EmbeddedCheckoutProvider'
 
@@ -14,7 +13,8 @@ interface EmbeddedCheckoutProps {
   class?: string
 }
 
-const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = props => {
+// The server renders this same component, so its hydration keys match the client's.
+export const EmbeddedCheckout: Component<EmbeddedCheckoutProps> = props => {
   const ctx = useEmbeddedCheckoutContext()
   let domNode!: HTMLDivElement
 
@@ -34,14 +34,3 @@ const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = props =>
 
   return <div ref={domNode} id={props.id} class={props.class} />
 }
-
-// Only render the wrapper in a server environment.
-const EmbeddedCheckoutServerElement: Component<EmbeddedCheckoutProps> = props => {
-  // Validate that we are in the right context by calling useEmbeddedCheckoutContext.
-  useEmbeddedCheckoutContext()
-  return <div id={props.id} class={props.class} />
-}
-
-export const EmbeddedCheckout: Component<EmbeddedCheckoutProps> = isServer
-  ? EmbeddedCheckoutServerElement
-  : EmbeddedCheckoutClientElement

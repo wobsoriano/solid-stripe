@@ -1,5 +1,4 @@
 import type * as stripeJs from '@stripe/stripe-js'
-import { isServer } from '@solidjs/web'
 import { createEffect, createMemo, createSignal, untrack, type Component } from 'solid-js'
 import type { ElementProps } from '../types'
 import {
@@ -59,7 +58,9 @@ const createElementComponent = (
   const displayName = customDisplayName ?? `${capitalized(type)}Element`
   const useCase = `mounts <${displayName}>`
 
-  const ClientElement: Component<PrivateElementProps> = props => {
+  // The server renders this same component. Effects never run there, and a separate server
+  // variant would create fewer owners, so the client's hydration keys would not match.
+  const Element: Component<PrivateElementProps> = props => {
     const ctx = useElementsOrCheckoutContextWithUseCase(useCase)
     let domNode!: HTMLDivElement
 
@@ -135,13 +136,6 @@ const createElementComponent = (
     return <div id={props.id} class={props.class} ref={domNode} />
   }
 
-  // Only render the Element wrapper in a server environment.
-  const ServerElement: Component<PrivateElementProps> = props => {
-    useElementsOrCheckoutContextWithUseCase(useCase)
-    return <div id={props.id} class={props.class} />
-  }
-
-  const Element = isServer ? ServerElement : ClientElement
   Object.assign(Element, { __elementType: type })
 
   return Element as Component<ElementProps>
