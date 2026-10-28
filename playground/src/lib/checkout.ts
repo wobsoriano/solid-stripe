@@ -1,5 +1,5 @@
 'use server'
-import { getRequestEvent } from 'solid-js/web'
+import { getRequestEvent } from '@solidjs/web'
 import { MAX_QUANTITY, UNIT_AMOUNT } from './pricing'
 import { getStripe } from './stripe'
 

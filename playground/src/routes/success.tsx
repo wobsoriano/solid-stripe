@@ -1,6 +1,6 @@
 import { Title } from '@solidjs/meta'
-import { A, createAsync, useLocation } from '@solidjs/router'
-import { ErrorBoundary, Show } from 'solid-js'
+import { useLocation } from '@solidjs/router'
+import { createMemo, Errored, Show } from 'solid-js'
 import { getPaymentResult, type PaymentResult } from '~/lib/payments'
 import { formatAmount } from '~/lib/pricing'
 
@@ -20,7 +20,7 @@ const statusTone: Record<string, 'success' | 'warning' | 'danger'> = {
 
 export default function Success() {
   const location = useLocation()
-  const result = createAsync(() =>
+  const result = createMemo(() =>
     getPaymentResult({
       paymentIntentId: param(location.query.payment_intent),
       sessionId: param(location.query.session_id),
@@ -30,14 +30,14 @@ export default function Success() {
   return (
     <div class="result">
       <Title>Payment result · solid-stripe</Title>
-      <ErrorBoundary
+      <Errored
         fallback={error => (
           <div class="stack">
             <h1 class="page-title">Payment result</h1>
             <p class="callout callout-danger" role="alert">
-              Could not load the payment: {error.message}
+              Could not load the payment: {(error() as Error).message}
             </p>
-            <A href="/">Back to examples</A>
+            <a href="/">Back to examples</a>
           </div>
         )}
       >
@@ -49,13 +49,13 @@ export default function Success() {
               <p class="muted">
                 There is no payment to show. Complete an example and Stripe sends you back here.
               </p>
-              <A href="/">Back to examples</A>
+              <a href="/">Back to examples</a>
             </div>
           }
         >
           {payment => <PaymentSummary payment={payment()} />}
         </Show>
-      </ErrorBoundary>
+      </Errored>
     </div>
   )
 }
@@ -67,7 +67,7 @@ function PaymentSummary(props: { payment: PaymentResult }) {
     <>
       <header class="result-header">
         <h1 class="page-title">Payment result</h1>
-        <span class="badge" classList={{ [`badge-${tone()}`]: !!tone() }}>
+        <span class={['badge', { [`badge-${tone()}`]: !!tone() }]}>
           {props.payment.status.replaceAll('_', ' ')}
         </span>
       </header>
@@ -94,7 +94,7 @@ function PaymentSummary(props: { payment: PaymentResult }) {
               </a>
             )}
           </Show>
-          <A href="/">Back to examples</A>
+          <a href="/">Back to examples</a>
         </div>
         <details class="raw">
           <summary>Raw {props.payment.kind} object</summary>
