@@ -1,6 +1,6 @@
-import { Component, createComputed, createSignal, onCleanup } from 'solid-js'
-import { useEmbeddedCheckoutContext } from './EmbeddedCheckoutProvider'
+import { createEffect, onCleanup, type Component } from 'solid-js'
 import { isServer } from 'solid-js/web'
+import { useEmbeddedCheckoutContext } from './EmbeddedCheckoutProvider'
 
 interface EmbeddedCheckoutProps {
   /**
@@ -14,45 +14,35 @@ interface EmbeddedCheckoutProps {
   class?: string
 }
 
-export const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = props => {
+const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = props => {
   const ctx = useEmbeddedCheckoutContext()
-  const [domNode, setDomNode] = createSignal<HTMLDivElement | null>(null)
-  const [isMounted, setIsMounted] = createSignal(false)
+  let domNode!: HTMLDivElement
 
-  createComputed(() => {
-    if (!isMounted() && ctx().embeddedCheckout && domNode() !== null) {
-      ctx().embeddedCheckout!.mount(domNode()!)
-      setIsMounted(true)
-    }
+  createEffect(() => {
+    const embeddedCheckout = ctx.embeddedCheckout()
+    if (!embeddedCheckout) return
 
+    embeddedCheckout.mount(domNode)
     onCleanup(() => {
-      const { embeddedCheckout } = ctx()
-      if (isMounted() && embeddedCheckout) {
-        try {
-          embeddedCheckout.unmount()
-          setIsMounted(false)
-        } catch {
-          // Do nothing.
-          // Parent effects are destroyed before child effects, so
-          // in cases where both the EmbeddedCheckoutProvider and
-          // the EmbeddedCheckout component are removed at the same
-          // time, the embeddedCheckout instance will be destroyed,
-          // which causes an error when calling unmount.
-        }
+      try {
+        embeddedCheckout.unmount()
+      } catch {
+        // When the provider and this component unmount together, the provider
+        // destroys the embedded checkout first and `unmount()` throws.
       }
     })
   })
 
-  return <div ref={setDomNode} id={props.id} class={props.class}></div>
+  return <div ref={domNode} id={props.id} class={props.class} />
 }
 
 // Only render the wrapper in a server environment.
-const EmbeddedCheckoutServerElement = (props: EmbeddedCheckoutProps) => {
+const EmbeddedCheckoutServerElement: Component<EmbeddedCheckoutProps> = props => {
   // Validate that we are in the right context by calling useEmbeddedCheckoutContext.
   useEmbeddedCheckoutContext()
   return <div id={props.id} class={props.class} />
 }
 
-export const EmbeddedCheckout = isServer
+export const EmbeddedCheckout: Component<EmbeddedCheckoutProps> = isServer
   ? EmbeddedCheckoutServerElement
   : EmbeddedCheckoutClientElement

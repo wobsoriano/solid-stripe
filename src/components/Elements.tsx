@@ -1,16 +1,17 @@
-import * as stripeJs from '@stripe/stripe-js'
-import type { Accessor, Component, JSX } from 'solid-js'
+import type * as stripeJs from '@stripe/stripe-js'
 import {
-  createComputed,
   createContext,
-  createEffect,
-  createSignal,
-  useContext,
-  on,
   createMemo,
+  untrack,
+  useContext,
+  type Accessor,
+  type Component,
+  type JSX,
+  type ParentComponent,
 } from 'solid-js'
-import { UnknownOptions } from '../types'
-import { parseStripeProp } from '../utils/parseStripeProp'
+import { createStripeLoader } from '../utils/createStripeLoader'
+import { watch } from '../utils/watch'
+import { extractAllowedOptionsUpdates } from '../utils/extractAllowedOptionsUpdates'
 
 export interface ElementsContextValue {
   elements: Accessor<stripeJs.StripeElements | null>
@@ -32,7 +33,7 @@ export const parseElementsContext = (
   return ctx
 }
 
-interface ElementsProps {
+export interface ElementsProps {
   /**
    * A [Stripe object](https://stripe.com/docs/js/initializing) or a `Promise` resolving to a `Stripe` object.
    * The easiest way to initialize a `Stripe` object is with the the [Stripe.js wrapper module](https://github.com/stripe/stripe-js/blob/master/README.md#readme).
@@ -41,76 +42,70 @@ interface ElementsProps {
    * You can also pass in `null` or a `Promise` resolving to `null` if you are performing an initial server-side render or when generating a static site.
    */
   stripe: PromiseLike<stripeJs.Stripe | null> | stripeJs.Stripe | null
+
   /**
    * Optional [Elements configuration options](https://stripe.com/docs/js/elements_object/create).
-   * Once the stripe prop has been set, these options cannot be changed.
+   * `clientSecret` and `fonts` are read once, when the Elements instance is created.
+   * Changes to other options are applied with `elements.update()`.
    */
   options?: stripeJs.StripeElementsOptions
-  children?: JSX.Element
 }
 
-export const Elements: Component<ElementsProps> = props => {
-  const parsed = createMemo(() => parseStripeProp(props.stripe))
+/**
+ * The `Elements` provider allows you to use [Element components](https://stripe.com/docs/stripe-js/react#element-components) and access the [Stripe object](https://stripe.com/docs/js/initializing) in any nested component.
+ * Render an `Elements` provider at the root of your app so that it is available everywhere you need it.
+ *
+ * To use the `Elements` provider, call `loadStripe` from `@stripe/stripe-js` with your publishable key.
+ * The `loadStripe` function will asynchronously load the Stripe.js script and initialize a `Stripe` object.
+ * Pass the returned `Promise` to `Elements`.
+ */
+export const Elements: ParentComponent<ElementsProps> = props => {
+  const stripe = createStripeLoader(() => props.stripe, { name: 'Elements' })
 
-  const [stripe, setStripe] = createSignal(
-    parsed().tag === 'sync' ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe : null,
-  )
-  const [elements, setElements] = createSignal<stripeJs.StripeElements | null>(
-    parsed().tag === 'sync'
-      ? (parsed() as { tag: 'sync'; stripe: stripeJs.Stripe }).stripe.elements(
-          props.options as UnknownOptions,
-        )
-      : null,
-  )
-
-  createComputed(() => {
-    const parsedStripe = parsed()
-
-    // For an async stripePromise, store it in context once resolved
-    if (parsedStripe.tag === 'async' && !stripe()) {
-      parsedStripe.stripePromise.then(loadedStripe => {
-        if (loadedStripe) {
-          setStripe(loadedStripe)
-          setElements(loadedStripe.elements(props.options as UnknownOptions))
-        }
-      })
-    } else if (parsedStripe.tag === 'sync' && !stripe()) {
-      // Or, handle a sync stripe instance going from null -> populated
-      setStripe(parsedStripe.stripe)
-      setElements(parsedStripe.stripe.elements(props.options as UnknownOptions))
-    }
+  const elements = createMemo(() => {
+    const instance = stripe()
+    // `stripe.elements()` options are only read at creation; later changes go through `update()`.
+    return instance ? untrack(() => instance.elements(props.options as any)) : null
   })
 
-  createEffect(
-    on(
-      () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { clientSecret, fonts, ...rest } = props.options ?? {}
-        return rest
-      },
-      stripeElementUpdateOptions => {
-        elements()?.update(stripeElementUpdateOptions)
-      },
-      {
-        defer: true,
-      },
-    ),
+  watch(
+    () => props.options,
+    (options, prevOptions) => {
+      const instance = untrack(elements)
+      if (!instance) return
+
+      const updates = extractAllowedOptionsUpdates(options, prevOptions, ['clientSecret', 'fonts'])
+      if (updates) void instance.update(updates)
+    },
   )
 
-  const value = {
-    stripe,
-    elements,
-  }
-
-  return <ElementsContext.Provider value={value}>{props.children}</ElementsContext.Provider>
+  return (
+    <ElementsContext.Provider value={{ stripe, elements }}>
+      {props.children}
+    </ElementsContext.Provider>
+  )
 }
 
 export const useElementsContextWithUseCase = (useCaseMessage: string): ElementsContextValue => {
-  const ctx = useContext(ElementsContext)
-  return parseElementsContext(ctx, useCaseMessage)
+  return parseElementsContext(useContext(ElementsContext), useCaseMessage)
 }
 
-export function useElements() {
-  const { elements } = useElementsContextWithUseCase('calls useElements()')
-  return elements
+/**
+ * Returns an accessor for the [Elements](https://stripe.com/docs/js/elements_object) instance
+ * created by the nearest `<Elements>` provider. It is `null` until Stripe has loaded.
+ */
+export const useElements = (): Accessor<stripeJs.StripeElements | null> => {
+  return useElementsContextWithUseCase('calls useElements()').elements
+}
+
+interface ElementsConsumerProps {
+  children: (ctx: ElementsContextValue) => JSX.Element
+}
+
+/**
+ * Render-prop access to the `<Elements>` context, for code that cannot call `useElements()`.
+ */
+export const ElementsConsumer: Component<ElementsConsumerProps> = props => {
+  const ctx = useElementsContextWithUseCase('mounts <ElementsConsumer>')
+  return untrack(() => props.children(ctx))
 }
