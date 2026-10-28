@@ -2,7 +2,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { createSignal, Show } from 'solid-js'
 import { Elements, ExpressCheckoutElement, useElements, useStripe } from 'solid-stripe'
 import Alert from '~/components/Alert'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import { createPaymentIntent } from '~/lib/paymentIntent'
 
 export default function Page() {
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
@@ -30,10 +30,10 @@ function CheckoutForm() {
     const { error: submitError } = await elements()!.submit()
     if (submitError) return setError(submitError.message)
 
-    const paymentIntent = await createPaymentIntent({ amount: 1099, currency: 'usd' })
+    const { clientSecret } = await createPaymentIntent('automatic')
     const { error: confirmError } = await stripe()!.confirmPayment({
       elements: elements()!,
-      clientSecret: paymentIntent.client_secret!,
+      clientSecret,
       confirmParams: { return_url: `${window.location.origin}/success` },
     })
     if (confirmError) setError(confirmError.message)

@@ -9,7 +9,7 @@ import {
   useStripe,
 } from 'solid-stripe'
 import { action, redirect, useSubmission } from '@solidjs/router'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import { createPaymentIntent } from '~/lib/paymentIntent'
 import Alert from '~/components/Alert'
 
 export default function Page() {
@@ -30,12 +30,8 @@ function CheckoutForm() {
   const elements = useElements()
 
   const paymentAction = action(async (form: FormData) => {
-    const paymentIntent = await createPaymentIntent({
-      amount: 2000,
-      currency: 'usd',
-      payment_method_types: ['card'],
-    })
-    const result = await stripe()!.confirmCardPayment(paymentIntent.client_secret as string, {
+    const { clientSecret } = await createPaymentIntent('card')
+    const result = await stripe()!.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements()!.getElement(CardNumberElement)!,
         billing_details: {
@@ -49,7 +45,7 @@ function CheckoutForm() {
       throw new Error(result.error.message)
     } else {
       // payment succeeded
-      return redirect(`/success?payment_intent=${paymentIntent.id}`)
+      return redirect(`/success?payment_intent=${result.paymentIntent.id}`)
     }
   }, 'credit-card-payment')
 

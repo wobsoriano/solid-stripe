@@ -11,7 +11,7 @@ import {
 } from 'solid-stripe'
 
 import Alert from '~/components/Alert'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import { createPaymentIntent } from '~/lib/paymentIntent'
 import { action, redirect, useSubmission } from '@solidjs/router'
 
 export default function Page() {
@@ -59,14 +59,11 @@ function CheckoutForm() {
       throw new Error(submitError.message)
     }
 
-    const paymentIntentData = await createPaymentIntent({
-      amount: 1099,
-      currency: 'usd',
-    })
+    const { clientSecret } = await createPaymentIntent('automatic')
 
     const { error: paymentError, paymentIntent } = await stripe()!.confirmPayment({
       elements: elements()!,
-      clientSecret: paymentIntentData.client_secret!,
+      clientSecret,
       redirect: 'if_required',
       confirmParams: {
         return_url: `${window.location.origin}/success`,

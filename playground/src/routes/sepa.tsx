@@ -3,7 +3,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Show, createSignal, onMount } from 'solid-js'
 import { Elements, IbanElement, useElements, useStripe } from 'solid-stripe'
 import { action, redirect, useSubmission } from '@solidjs/router'
-import { createPaymentIntent } from '~/lib/createPaymentIntent'
+import { createPaymentIntent } from '~/lib/paymentIntent'
 import Alert from '~/components/Alert'
 
 export default function Page() {
@@ -31,13 +31,9 @@ function CheckoutForm() {
   const elements = useElements()
 
   const paymentAction = action(async (form: FormData) => {
-    const paymentIntent = await createPaymentIntent({
-      amount: 2000,
-      currency: 'eur',
-      payment_method_types: ['sepa_debit'],
-    })
+    const { clientSecret } = await createPaymentIntent('sepa_debit')
 
-    const result = await stripe()!.confirmSepaDebitPayment(paymentIntent.client_secret!, {
+    const result = await stripe()!.confirmSepaDebitPayment(clientSecret, {
       payment_method: {
         sepa_debit: elements()!.getElement(IbanElement)!,
         billing_details: {
