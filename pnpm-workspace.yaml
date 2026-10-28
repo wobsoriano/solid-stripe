@@ -9,8 +9,9 @@ onlyBuiltDependencies:
   - esbuild
   - '@parcel/watcher'
 catalog:
-  # One solid-js for the library and the playground. Two copies break reactivity.
-  solid-js: ^1.9.17
+  # One solid-js and @solidjs/web for the library and the playground. Two copies break reactivity.
+  '@solidjs/web': 2.0.0-rc.19
+  solid-js: 2.0.0-rc.19
   vite: npm:@voidzero-dev/vite-plus-core@1.4.0
   vite-plus: 1.4.0
 peerDependencyRules:

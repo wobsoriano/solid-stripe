@@ -1,12 +1,13 @@
 import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe } from '@stripe/stripe-js'
-import { createSignal, type JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
+import { createSignal, Errored, flush, type Accessor } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
-  flush,
   mockCheckoutSdk,
   mockCheckoutSession,
   mockStripe,
+  tick,
   type MockStripe,
 } from '../../test/mocks'
 import { CardElement, Elements, useStripe } from '../index'
@@ -39,6 +40,11 @@ const renderInElementsProvider = (stripe: MockStripe, children: () => JSX.Elemen
     </CheckoutElementsProvider>
   ))
 
+/** Renders `ui` under an error boundary and returns the message of the error it caught. */
+const caughtError = (ui: () => JSX.Element) =>
+  render(() => <Errored fallback={error => <>{(error() as Error).message}</>}>{ui()}</Errored>)
+    .container.textContent
+
 describe('CheckoutElementsProvider', () => {
   it('goes from loading to success and exposes session values and actions', async () => {
     const stripe = mockStripe()
@@ -53,7 +59,7 @@ describe('CheckoutElementsProvider', () => {
     expect(stripe.initCheckoutElementsSdk).toHaveBeenCalledWith({ clientSecret })
     expect(results.at(-1)).toEqual({ type: 'loading' })
 
-    await flush()
+    await tick()
     const last = results.at(-1)
     expect(last?.type).toBe('success')
     if (last?.type !== 'success') return
@@ -74,9 +80,10 @@ describe('CheckoutElementsProvider', () => {
     }
 
     renderInElementsProvider(stripe, () => <Probe />)
-    await flush()
+    await tick()
 
     sdk.emit('change', { ...mockCheckoutSession(), currency: 'eur' })
+    flush()
     const result = read!()
     expect(result.type === 'success' && result.checkout.currency).toBe('eur')
   })
@@ -94,7 +101,7 @@ describe('CheckoutElementsProvider', () => {
     }
 
     renderInElementsProvider(mockStripe(sdk), () => <Probe />)
-    await flush()
+    await tick()
     expect(read!()).toEqual({ type: 'error', error: { message: 'Session expired' } })
   })
 
@@ -112,7 +119,7 @@ describe('CheckoutElementsProvider', () => {
         <Probe />
       </CheckoutElementsProvider>
     ))
-    await flush()
+    await tick()
     expect(read!()).toEqual({ type: 'error', error: failure })
   })
 
@@ -136,13 +143,15 @@ describe('CheckoutElementsProvider', () => {
         {null}
       </CheckoutElementsProvider>
     ))
-    await flush()
+    await tick()
 
     setTheme('night')
+    flush()
     expect(sdk.changeAppearance).toHaveBeenCalledWith({ theme: 'night' })
     expect(sdk.loadFonts).not.toHaveBeenCalled()
 
     setFamily('Lora')
+    flush()
     expect(sdk.loadFonts).toHaveBeenCalledWith([{ cssSrc: 'https://fonts.example/Lora.css' }])
     expect(sdk.changeAppearance).toHaveBeenCalledTimes(1)
     expect(stripe.initCheckoutElementsSdk).toHaveBeenCalledTimes(1)
@@ -150,13 +159,13 @@ describe('CheckoutElementsProvider', () => {
 
   it('provides the stripe instance to useStripe()', () => {
     const stripe = mockStripe()
-    let read: unknown
+    let read: Accessor<unknown> | undefined
     const Probe = () => {
-      read = useStripe()()
+      read = useStripe()
       return null
     }
     renderInElementsProvider(stripe, () => <Probe />)
-    expect(read).toBe(stripe)
+    expect(read!()).toBe(stripe)
   })
 })
 
@@ -185,9 +194,10 @@ describe('CheckoutFormProvider', () => {
       appearance: { theme: 'stripe' },
     })
 
-    await flush()
+    await tick()
     expect(read!().type).toBe('success')
     setTheme('night')
+    flush()
     expect(formSdk.changeAppearance).toHaveBeenCalledWith({ theme: 'night' })
   })
 })
@@ -198,7 +208,13 @@ describe('checkout hooks', () => {
       useCheckoutForm()
       return null
     }
-    expect(() => renderInElementsProvider(mockStripe(), () => <Probe />)).toThrow(
+    expect(
+      caughtError(() => (
+        <CheckoutElementsProvider stripe={asStripe(mockStripe())} options={{ clientSecret }}>
+          <Probe />
+        </CheckoutElementsProvider>
+      )),
+    ).toBe(
       'useCheckoutForm() must be used inside <CheckoutFormProvider>. Inside <CheckoutElementsProvider>, use useCheckoutElements() instead.',
     )
   })
@@ -214,7 +230,7 @@ describe('checkout hooks', () => {
         <Probe />
       </CheckoutFormProvider>
     ))
-    await flush()
+    await tick()
     expect(read!().type).toBe('success')
   })
 
@@ -271,31 +287,39 @@ describe('checkout element components', () => {
   })
 
   it('rejects LinkSignupElement inside CheckoutFormProvider', () => {
-    expect(() =>
-      render(() => (
+    expect(
+      caughtError(() => (
         <CheckoutFormProvider stripe={asStripe(mockStripe())} options={{ clientSecret }}>
           <LinkSignupElement />
         </CheckoutFormProvider>
       )),
-    ).toThrow(
+    ).toBe(
       '<LinkSignupElement> requires <CheckoutElementsProvider> and is not supported inside <CheckoutFormProvider>.',
     )
   })
 
   it('rejects element types that need <Elements>', () => {
-    expect(() => renderInElementsProvider(mockStripe(), () => <CardElement />)).toThrow(
+    expect(
+      caughtError(() => (
+        <CheckoutElementsProvider stripe={asStripe(mockStripe())} options={{ clientSecret }}>
+          <CardElement />
+        </CheckoutElementsProvider>
+      )),
+    ).toBe(
       '<CardElement> is not supported inside a checkout provider. Use an <Elements> provider instead.',
     )
   })
 
   it('rejects being inside both a checkout provider and <Elements>', () => {
     const stripe = mockStripe()
-    expect(() =>
-      renderInElementsProvider(stripe, () => (
-        <Elements stripe={asStripe(stripe)}>
-          <PaymentElement />
-        </Elements>
+    expect(
+      caughtError(() => (
+        <CheckoutElementsProvider stripe={asStripe(stripe)} options={{ clientSecret }}>
+          <Elements stripe={asStripe(stripe)}>
+            <PaymentElement />
+          </Elements>
+        </CheckoutElementsProvider>
       )),
-    ).toThrow(/in both a checkout provider and <Elements> provider/)
+    ).toMatch(/in both a checkout provider and <Elements> provider/)
   })
 })

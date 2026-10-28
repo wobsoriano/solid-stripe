@@ -5,7 +5,11 @@ import { defineConfig } from 'vite-plus'
 const entry = { index: 'src/index.ts', checkout: 'src/checkout/index.tsx' }
 
 export default defineConfig({
-  plugins: [solid({ hot: false })],
+  // unplugin-solid 3.0.0 passes `componentNames` to the compiler in dev mode, which
+  // @solidjs/compiler 2.0.0-rc.19 rejects. Its own `dev` stays off and the compiler's is set directly.
+  plugins: [solid({ hot: false, dev: false, solid: { dev: true } })],
+  // Tests run on the development browser builds of solid-js and @solidjs/web.
+  resolve: { conditions: ['browser', 'development'] },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],

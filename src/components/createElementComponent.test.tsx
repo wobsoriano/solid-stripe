@@ -1,8 +1,15 @@
 import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe } from '@stripe/stripe-js'
-import { createSignal, Show } from 'solid-js'
+import { createSignal, flush, Show } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { elementOf, elementsOf, handlerFor, mockStripe, type MockStripe } from '../../test/mocks'
+import {
+  elementOf,
+  elementsOf,
+  handlerFor,
+  mockStripe,
+  tick,
+  type MockStripe,
+} from '../../test/mocks'
 import {
   CardElement,
   Elements,
@@ -53,7 +60,7 @@ describe('element components', () => {
     ))
 
     expect(stripe.elements).not.toHaveBeenCalled()
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await tick()
     expect(elementOf(stripe).mount).toHaveBeenCalledTimes(1)
   })
 
@@ -94,7 +101,8 @@ describe('element components', () => {
     const stripe = mockStripe()
     const first = vi.fn()
     const second = vi.fn()
-    const [onChange, setOnChange] = createSignal(first)
+    // A function argument makes a derived signal; this one derives the callback itself.
+    const [onChange, setOnChange] = createSignal(() => first)
     render(() => (
       <Elements stripe={asStripe(stripe)}>
         <PaymentElement onChange={onChange()} />
@@ -102,6 +110,7 @@ describe('element components', () => {
     ))
 
     setOnChange(() => second)
+    flush()
     handlerFor(elementOf(stripe), 'change')!({})
     expect(first).not.toHaveBeenCalled()
     expect(second).toHaveBeenCalledTimes(1)
@@ -111,7 +120,7 @@ describe('element components', () => {
 
   it('removes the listener when the callback is unset', () => {
     const stripe = mockStripe()
-    const [onChange, setOnChange] = createSignal<(() => void) | undefined>(() => {})
+    const [onChange, setOnChange] = createSignal<(() => void) | undefined>(() => () => {})
     render(() => (
       <Elements stripe={asStripe(stripe)}>
         <PaymentElement onChange={onChange()} />
@@ -120,6 +129,7 @@ describe('element components', () => {
 
     const handler = handlerFor(elementOf(stripe), 'change')
     setOnChange(undefined)
+    flush()
     expect(elementOf(stripe).off).toHaveBeenCalledWith('change', handler)
   })
 
@@ -161,6 +171,7 @@ describe('element components', () => {
 
     expect(elementOf(stripe).update).not.toHaveBeenCalled()
     setLayout('accordion')
+    flush()
     expect(elementOf(stripe).update).toHaveBeenCalledWith({ layout: 'accordion' })
   })
 
@@ -176,6 +187,7 @@ describe('element components', () => {
     ))
 
     setShown(false)
+    flush()
     expect(elementOf(stripe).destroy).toHaveBeenCalledTimes(1)
   })
 

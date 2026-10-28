@@ -1,5 +1,5 @@
 import type * as stripeJs from '@stripe/stripe-js'
-import { createEffect, createSignal, onCleanup, type Accessor } from 'solid-js'
+import { createEffect, createSignal, getOwner, isDisposed, untrack, type Accessor } from 'solid-js'
 import { parseStripeProp } from './parseStripeProp'
 import { registerWithStripeJs } from './registerWithStripeJs'
 import { watch } from './watch'
@@ -20,37 +20,44 @@ export const createStripeLoader = (
   { name, onError }: StripeLoaderOptions,
 ): Accessor<stripeJs.Stripe | null> => {
   const errorMessage = `Invalid prop \`stripe\` supplied to \`${name}\`. We recommend using the \`loadStripe\` utility from \`@stripe/stripe-js\`. See https://stripe.com/docs/stripe-js/react#elements-props-stripe for details.`
-  const [stripe, setStripe] = createSignal<stripeJs.Stripe | null>(null)
-  let disposed = false
-  onCleanup(() => (disposed = true))
+  const initial = parseStripeProp(untrack(getStripe), errorMessage)
+  const [stripe, setStripe] = createSignal<stripeJs.Stripe | null>(
+    initial.tag === 'sync' ? initial.stripe : null,
+  )
+  const owner = getOwner()
 
+  // The updater keeps the first instance even when two loads land in the same flush.
   const accept = (value: stripeJs.Stripe | null) => {
-    if (value && !disposed && !stripe()) setStripe(value)
+    if (value) setStripe(current => current ?? value)
   }
 
-  const load = (raw: unknown) => {
-    if (stripe()) return
-    const parsed = parseStripeProp(raw, errorMessage)
-    if (parsed.tag === 'sync') {
-      accept(parsed.stripe)
-    } else if (parsed.tag === 'async') {
-      const pending = parsed.stripePromise.then(accept)
-      if (onError) pending.catch(onError)
-    }
+  const loadAsync = (stripePromise: Promise<stripeJs.Stripe | null>) => {
+    const pending = stripePromise.then(value => {
+      if (!owner || !isDisposed(owner)) accept(value)
+    })
+    if (onError) pending.catch(onError)
   }
 
-  load(getStripe())
+  if (initial.tag === 'async') loadAsync(initial.stripePromise)
 
-  watch(getStripe, (raw, prev) => {
-    if (prev !== null && prev !== raw) {
-      console.warn(
-        `Unsupported prop change on ${name}: You cannot change the \`stripe\` prop after setting it.`,
-      )
-    }
-    load(raw)
-  })
+  // Boxed because an effect awaits a promise its compute returns, and `stripe` may be one.
+  watch(
+    () => ({ raw: getStripe() }),
+    ({ raw }, { raw: prev }) => {
+      if (prev !== null && prev !== raw) {
+        console.warn(
+          `Unsupported prop change on ${name}: You cannot change the \`stripe\` prop after setting it.`,
+        )
+      }
+      if (untrack(stripe)) return
 
-  createEffect(() => registerWithStripeJs(stripe()))
+      const parsed = parseStripeProp(raw, errorMessage)
+      if (parsed.tag === 'sync') accept(parsed.stripe)
+      else if (parsed.tag === 'async') loadAsync(parsed.stripePromise)
+    },
+  )
+
+  createEffect(stripe, registerWithStripeJs)
 
   return stripe
 }

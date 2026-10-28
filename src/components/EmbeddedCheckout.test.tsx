@@ -1,8 +1,8 @@
 import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe } from '@stripe/stripe-js'
-import { createSignal, Show } from 'solid-js'
+import { createSignal, flush, Show } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { flush, mockEmbeddedCheckout, mockStripe, type MockStripe } from '../../test/mocks'
+import { mockEmbeddedCheckout, mockStripe, tick, type MockStripe } from '../../test/mocks'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '../index'
 
 const asStripe = (mock: MockStripe) => mock as unknown as Stripe
@@ -27,7 +27,7 @@ describe('EmbeddedCheckoutProvider', () => {
 
     expect(stripe.createEmbeddedCheckoutPage).toHaveBeenCalledTimes(1)
     expect(stripe.createEmbeddedCheckoutPage).toHaveBeenCalledWith({ clientSecret: 'cs_1' })
-    await flush()
+    await tick()
     const embeddedCheckout = await embeddedCheckoutOf(stripe)
     expect(embeddedCheckout.mount).toHaveBeenCalledWith(container.querySelector('#checkout'))
   })
@@ -43,6 +43,7 @@ describe('EmbeddedCheckoutProvider', () => {
 
     expect(stripe.createEmbeddedCheckoutPage).not.toHaveBeenCalled()
     setSecret('cs_1')
+    flush()
     expect(stripe.createEmbeddedCheckoutPage).toHaveBeenCalledTimes(1)
   })
 
@@ -58,7 +59,7 @@ describe('EmbeddedCheckoutProvider', () => {
       </EmbeddedCheckoutProvider>
     ))
 
-    await flush()
+    await tick()
     expect(stripe.createEmbeddedCheckoutPage).toHaveBeenCalledWith({ fetchClientSecret })
   })
 
@@ -73,9 +74,10 @@ describe('EmbeddedCheckoutProvider', () => {
       </Show>
     ))
 
-    await flush()
+    await tick()
     const embeddedCheckout = await embeddedCheckoutOf(stripe)
     setShown(false)
+    flush()
     expect(embeddedCheckout.destroy).toHaveBeenCalledTimes(1)
   })
 
@@ -89,7 +91,7 @@ describe('EmbeddedCheckoutProvider', () => {
 
     unmount()
     const embeddedCheckout = await embeddedCheckoutOf(stripe)
-    await flush()
+    await tick()
     expect(embeddedCheckout.destroy).toHaveBeenCalledTimes(1)
     expect(embeddedCheckout.mount).not.toHaveBeenCalled()
   })
@@ -105,6 +107,7 @@ describe('EmbeddedCheckoutProvider', () => {
     ))
 
     setSecret('cs_2')
+    flush()
     expect(warn).toHaveBeenCalledWith(
       'Unsupported prop change on EmbeddedCheckoutProvider: You cannot change the client secret after setting it. Unmount and create a new instance of EmbeddedCheckoutProvider instead.',
     )

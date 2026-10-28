@@ -1,8 +1,8 @@
 import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe, StripeElementsOptions } from '@stripe/stripe-js'
-import { createSignal } from 'solid-js'
+import { createSignal, flush } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { elementsOf, flush, mockStripe, type MockStripe } from '../../test/mocks'
+import { elementsOf, mockStripe, tick, type MockStripe } from '../../test/mocks'
 import { Elements, ElementsConsumer, useElements, useStripe } from '../index'
 
 const asStripe = (mock: MockStripe) => mock as unknown as Stripe
@@ -45,7 +45,7 @@ describe('Elements', () => {
     ))
 
     expect(seen).toHaveBeenLastCalledWith({ stripe: null, elements: null })
-    await flush()
+    await tick()
     expect(seen).toHaveBeenLastCalledWith({ stripe, elements: elementsOf(stripe) })
     expect(stripe.elements).toHaveBeenCalledTimes(1)
   })
@@ -64,6 +64,7 @@ describe('Elements', () => {
     const warn = vi.spyOn(console, 'warn')
     expect(seen).toHaveBeenLastCalledWith({ stripe: null, elements: null })
     setCurrent(asStripe(stripe))
+    flush()
     expect(warn).not.toHaveBeenCalled()
     expect(seen).toHaveBeenLastCalledWith({ stripe, elements: elementsOf(stripe) })
   })
@@ -75,7 +76,7 @@ describe('Elements', () => {
         <Probe onRender={seen} />
       </Elements>
     ))
-    await flush()
+    await tick()
     expect(seen).toHaveBeenLastCalledWith({ stripe: null, elements: null })
   })
 
@@ -99,6 +100,7 @@ describe('Elements', () => {
     ))
 
     setCurrent(asStripe(second))
+    flush()
     expect(warn).toHaveBeenCalledWith(
       'Unsupported prop change on Elements: You cannot change the `stripe` prop after setting it.',
     )
@@ -120,6 +122,7 @@ describe('Elements', () => {
     ))
 
     setOptions({ locale: 'en', appearance: { theme: 'night' } })
+    flush()
     expect(elementsOf(stripe).update).toHaveBeenCalledTimes(1)
     expect(elementsOf(stripe).update).toHaveBeenCalledWith({ appearance: { theme: 'night' } })
   })
@@ -136,6 +139,7 @@ describe('Elements', () => {
     ))
 
     setSecret('pi_1_secret_b')
+    flush()
     expect(elementsOf(stripe).update).not.toHaveBeenCalled()
     expect(warn).toHaveBeenCalledWith(
       'Unsupported prop change: options.clientSecret is not a mutable property.',

@@ -1,5 +1,5 @@
 import type * as stripeJs from '@stripe/stripe-js'
-import { createEffect, onCleanup, type Component } from 'solid-js'
+import { createEffect, type Component } from 'solid-js'
 import { createStripeLoader } from '../utils/createStripeLoader'
 
 export interface DisclosureProps<Options> {
@@ -43,27 +43,32 @@ const createDisclosureComponent = <Options extends object>(
     const stripe = createStripeLoader(() => props.stripe, { name })
     let container!: HTMLDivElement
 
-    createEffect(() => {
-      const instance = stripe() as unknown as DisclosureApi | null
+    createEffect(
       // Spreading tracks each option, so changing one re-creates the disclosure.
-      const options = { ...props.options }
-      if (!instance) return
+      () => ({
+        instance: stripe() as unknown as DisclosureApi | null,
+        options: { ...props.options },
+      }),
+      ({ instance, options }) => {
+        if (!instance) return
 
-      let stale = false
-      onCleanup(() => (stale = true))
-
-      void instance[method](options).then(({ htmlElement, error }) => {
-        if (stale) return
-        if (error) {
-          // A disclosure for the previous options no longer applies.
-          container.replaceChildren()
-          props.onError?.(error)
-        } else if (htmlElement) {
-          container.replaceChildren(htmlElement)
-          props.onLoad?.()
+        let stale = false
+        void instance[method](options).then(({ htmlElement, error }) => {
+          if (stale) return
+          if (error) {
+            // A disclosure for the previous options no longer applies.
+            container.replaceChildren()
+            props.onError?.(error)
+          } else if (htmlElement) {
+            container.replaceChildren(htmlElement)
+            props.onLoad?.()
+          }
+        })
+        return () => {
+          stale = true
         }
-      })
-    })
+      },
+    )
 
     return <div ref={container} />
   }

@@ -1,20 +1,14 @@
-import { createEffect, on, untrack } from 'solid-js'
+import { createEffect } from 'solid-js'
 
 /**
  * Calls `fn` with the new and previous value each time `source` changes, skipping the initial value.
- * Unlike `on(source, fn, { defer: true })`, the first call receives the real previous value.
+ * The effect's `prev` is `undefined` on its first run, including the first one under
+ * `{ defer: true }`, so the initial run is skipped here instead of deferred.
  */
 export const watch = <T>(source: () => T, fn: (value: T, prev: T) => void) => {
-  let prev = untrack(source)
-  createEffect(
-    on(
-      source,
-      value => {
-        const last = prev
-        prev = value
-        fn(value, last)
-      },
-      { defer: true },
-    ),
-  )
+  let started = false
+  createEffect(source, (value, prev) => {
+    if (started) fn(value, prev as T)
+    started = true
+  })
 }

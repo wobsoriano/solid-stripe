@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, type Component } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { isServer } from '@solidjs/web'
+import { createEffect, type Component } from 'solid-js'
 import { useEmbeddedCheckoutContext } from './EmbeddedCheckoutProvider'
 
 interface EmbeddedCheckoutProps {
@@ -18,19 +18,18 @@ const EmbeddedCheckoutClientElement: Component<EmbeddedCheckoutProps> = props =>
   const ctx = useEmbeddedCheckoutContext()
   let domNode!: HTMLDivElement
 
-  createEffect(() => {
-    const embeddedCheckout = ctx.embeddedCheckout()
+  createEffect(ctx.embeddedCheckout, embeddedCheckout => {
     if (!embeddedCheckout) return
 
     embeddedCheckout.mount(domNode)
-    onCleanup(() => {
+    return () => {
       try {
         embeddedCheckout.unmount()
       } catch {
         // When the provider and this component unmount together, the provider
         // destroys the embedded checkout first and `unmount()` throws.
       }
-    })
+    }
   })
 
   return <div ref={domNode} id={props.id} class={props.class} />
