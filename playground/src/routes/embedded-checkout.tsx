@@ -1,18 +1,50 @@
-import { loadStripe } from '@stripe/stripe-js'
+import { createSignal, Show } from 'solid-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from 'solid-stripe'
+import ExampleLayout from '~/components/ExampleLayout'
 import { createCheckoutSession } from '~/lib/checkout'
+import { useEventLog } from '~/lib/eventLog'
+import { getStripeJs } from '~/lib/stripeJs'
+import { testCards } from '~/testData'
 
 export default function Page() {
-  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  return (
+    <ExampleLayout
+      slug="embedded-checkout"
+      testData={testCards}
+      testNotes="The embedded page renders its own fields, so it reports no element events. The log shows the session request instead."
+    >
+      <EmbeddedCheckoutDemo />
+    </ExampleLayout>
+  )
+}
+
+function EmbeddedCheckoutDemo() {
+  const log = useEventLog()
+  const [error, setError] = createSignal<string>()
+
+  const fetchClientSecret = async () => {
+    log('EmbeddedCheckoutProvider', 'fetchClientSecret')()
+    try {
+      const secret = await createCheckoutSession('embedded_page')
+      log('server', 'createCheckoutSession')('client secret received')
+      return secret
+    } catch (err) {
+      setError((err as Error).message)
+      throw err
+    }
+  }
 
   return (
     <>
-      <h1 class="text-4xl font-normal leading-normal mt-0 mb-2">Embedded Checkout Example</h1>
-      <EmbeddedCheckoutProvider
-        stripe={stripePromise}
-        options={{ fetchClientSecret: () => createCheckoutSession('embedded_page') }}
-      >
-        <EmbeddedCheckout class="my-8" />
+      <Show when={error()}>
+        {message => (
+          <p class="callout callout-danger" role="alert">
+            {message()}
+          </p>
+        )}
+      </Show>
+      <EmbeddedCheckoutProvider stripe={getStripeJs()} options={{ fetchClientSecret }}>
+        <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
     </>
   )
