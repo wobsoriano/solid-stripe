@@ -214,7 +214,7 @@ kbd {
   color: var(--text);
 }
 
-.nav-link.is-active {
+.nav-link[aria-current='page'] {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 500;

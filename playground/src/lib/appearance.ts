@@ -1,5 +1,5 @@
 import type { Appearance, StripeElementStyle } from '@stripe/stripe-js'
-import { createSignal, onCleanup, onMount, type Accessor } from 'solid-js'
+import { createSignal, onSettled, type Accessor } from 'solid-js'
 
 export type ColorScheme = 'light' | 'dark'
 export type StripeTheme = 'stripe' | 'night' | 'flat'
@@ -26,12 +26,12 @@ const palette = {
 
 export function useColorScheme(): Accessor<ColorScheme> {
   const [scheme, setScheme] = createSignal<ColorScheme>('light')
-  onMount(() => {
+  onSettled(() => {
     const query = window.matchMedia('(prefers-color-scheme: dark)')
     const update = () => setScheme(query.matches ? 'dark' : 'light')
     update()
     query.addEventListener('change', update)
-    onCleanup(() => query.removeEventListener('change', update))
+    return () => query.removeEventListener('change', update)
   })
   return scheme
 }
