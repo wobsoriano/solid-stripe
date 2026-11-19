@@ -6,7 +6,7 @@ const entry = { index: 'src/index.ts', checkout: 'src/checkout/index.tsx' }
 
 export default defineConfig({
   // unplugin-solid 3.0.0 passes `componentNames` to the compiler in dev mode, which
-  // @solidjs/compiler 2.0.0-rc.19 rejects. Its own `dev` stays off and the compiler's is set directly.
+  // @solidjs/compiler 2.0.1 still rejects. Its own `dev` stays off and the compiler's is set directly.
   plugins: [solid({ hot: false, dev: false, solid: { dev: true } })],
   // Tests run on the development browser builds of solid-js and @solidjs/web.
   resolve: { conditions: ['browser', 'development'] },
