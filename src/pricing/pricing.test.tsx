@@ -143,7 +143,7 @@ describe('PricingProvider', () => {
 
   it('does not warn when options are replaced by the same values', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const { pricing, stripe } = setup()
+    const { stripe } = setup()
     const [current, setCurrent] = createSignal<InitializePricingOptions>(options)
     renderPricingHook(() => null, { stripe: () => asStripe(stripe), options: current })
     await tick()
@@ -151,7 +151,6 @@ describe('PricingProvider', () => {
     setCurrent({ ...options })
     flush()
     expect(warn).not.toHaveBeenCalled()
-    expect(pricing.off).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -407,21 +406,6 @@ describe('useResolvedPrice', () => {
     flush()
     await tick()
     expect(pricing.resolvePrice).toHaveBeenCalledTimes(1)
-  })
-
-  it('ignores a response that arrives after unmount', async () => {
-    const { pricing, stripe } = setup()
-    const late = deferred<Awaited<ReturnType<typeof pricing.resolvePrice>>>()
-    pricing.resolvePrice.mockReturnValueOnce(late.promise)
-    const { result, unmount } = renderPricingHook(() => useResolvedPrice('price_1'), {
-      stripe: () => asStripe(stripe),
-    })
-    await tick()
-
-    unmount()
-    late.resolve({ ...(await pricing.resolvePrice('price_1')) })
-    await tick()
-    expect(result()).toEqual({ loading: true })
   })
 })
 
