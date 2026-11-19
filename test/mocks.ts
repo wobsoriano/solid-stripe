@@ -1,13 +1,23 @@
 import type { ResolvedPrice } from '@stripe/stripe-js'
 import { vi } from 'vite-plus/test'
 
-export const mockElement = () => ({
-  mount: vi.fn(),
-  destroy: vi.fn(),
-  on: vi.fn(),
-  off: vi.fn(),
-  update: vi.fn(),
-})
+type Listener = (...args: unknown[]) => unknown
+
+export const mockElement = () => {
+  const listeners = new Map<string, Set<Listener>>()
+  return {
+    mount: vi.fn(),
+    destroy: vi.fn(),
+    on: vi.fn((event: string, handler: Listener) => {
+      listeners.set(event, (listeners.get(event) ?? new Set()).add(handler))
+    }),
+    off: vi.fn((event: string, handler: Listener) => listeners.get(event)?.delete(handler)),
+    update: vi.fn(),
+    /** Calls the handlers registered for `event` right now, as Stripe.js does. */
+    emit: (event: string, ...args: unknown[]) => listeners.get(event)?.forEach(h => h(...args)),
+    listenerCount: (event: string) => listeners.get(event)?.size ?? 0,
+  }
+}
 
 export type MockElement = ReturnType<typeof mockElement>
 
@@ -152,12 +162,6 @@ export const elementsOf = (stripe: MockStripe, call = 0): MockElements =>
 /** The element created by `elements.create()`. */
 export const elementOf = (stripe: MockStripe, call = 0): MockElement =>
   elementsOf(stripe).create.mock.results[call]!.value
-
-/** The handler an element registered for `event`, or `undefined`. */
-export const handlerFor = (element: MockElement, event: string) =>
-  element.on.mock.calls.find(([name]) => name === event)?.[1] as
-    | ((...args: unknown[]) => unknown)
-    | undefined
 
 /** A promise with its settle functions, for controlling when a mocked call resolves. */
 export const deferred = <T>() => {

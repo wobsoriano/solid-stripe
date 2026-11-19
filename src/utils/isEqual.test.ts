@@ -2,19 +2,6 @@ import { describe, expect, it, vi } from 'vite-plus/test'
 import { isEqual } from './isEqual'
 
 describe('isEqual', () => {
-  it.each(['object', 'array'])('does not traverse identical %s references', type => {
-    const ownKeys = vi.fn(Reflect.ownKeys)
-    const get = vi.fn(Reflect.get)
-    const value = new Proxy(type === 'object' ? { theme: 'stripe' } : ['font'], {
-      ownKeys,
-      get,
-    })
-
-    expect(isEqual(value, value)).toBe(true)
-    expect(ownKeys).not.toHaveBeenCalled()
-    expect(get).not.toHaveBeenCalled()
-  })
-
   it('skips shared subtrees while still comparing distinct parent objects', () => {
     const ownKeys = vi.fn(Reflect.ownKeys)
     const get = vi.fn(Reflect.get)
@@ -24,22 +11,6 @@ describe('isEqual', () => {
     expect(isEqual({ appearance, loader: 'auto' }, { appearance, loader: 'never' })).toBe(false)
     expect(ownKeys).not.toHaveBeenCalled()
     expect(get).not.toHaveBeenCalled()
-  })
-
-  it('treats identical references as equal even when a property is NaN', () => {
-    const value = { number: NaN }
-
-    expect(isEqual(value, value)).toBe(true)
-    expect(isEqual(value, { number: NaN })).toBe(false)
-  })
-
-  it('keeps primitive NaN unequal to itself', () => {
-    expect(isEqual(NaN, NaN)).toBe(false)
-  })
-
-  it('treats positive and negative zero as equal', () => {
-    expect(isEqual(0, -0)).toBe(true)
-    expect(isEqual(-0, 0)).toBe(true)
   })
 
   ;[

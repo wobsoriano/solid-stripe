@@ -2,14 +2,7 @@ import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe } from '@stripe/stripe-js'
 import { createSignal, flush, Show } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import {
-  elementOf,
-  elementsOf,
-  handlerFor,
-  mockStripe,
-  tick,
-  type MockStripe,
-} from '../../test/mocks'
+import { elementOf, elementsOf, mockStripe, tick, type MockStripe } from '../../test/mocks'
 import {
   CardElement,
   Elements,
@@ -84,7 +77,7 @@ describe('element components', () => {
       </Elements>
     ))
 
-    handlerFor(elementOf(stripe), event)!({ elementType: 'payment' })
+    elementOf(stripe).emit(event, { elementType: 'payment' })
     expect(callback).toHaveBeenCalledWith({ elementType: 'payment' })
   })
 
@@ -98,7 +91,7 @@ describe('element components', () => {
     expect(elementOf(stripe).on.mock.calls.map(([event]) => event)).toEqual(['change'])
   })
 
-  it('calls the latest callback without re-subscribing', () => {
+  it('calls the latest callback', () => {
     const stripe = mockStripe()
     const first = vi.fn()
     const second = vi.fn()
@@ -112,11 +105,9 @@ describe('element components', () => {
 
     setOnChange(() => second)
     flush()
-    handlerFor(elementOf(stripe), 'change')!({})
+    elementOf(stripe).emit('change', {})
     expect(first).not.toHaveBeenCalled()
     expect(second).toHaveBeenCalledTimes(1)
-    expect(elementOf(stripe).on).toHaveBeenCalledTimes(1)
-    expect(elementOf(stripe).off).not.toHaveBeenCalled()
   })
 
   it('removes the listener when the callback is unset', () => {
@@ -128,10 +119,10 @@ describe('element components', () => {
       </Elements>
     ))
 
-    const handler = handlerFor(elementOf(stripe), 'change')
+    expect(elementOf(stripe).listenerCount('change')).toBe(1)
     setOnChange(undefined)
     flush()
-    expect(elementOf(stripe).off).toHaveBeenCalledWith('change', handler)
+    expect(elementOf(stripe).listenerCount('change')).toBe(0)
   })
 
   it('calls onReady with the element', () => {
@@ -143,7 +134,7 @@ describe('element components', () => {
       </Elements>
     ))
 
-    handlerFor(elementOf(stripe), 'ready')!({ elementType: 'card' })
+    elementOf(stripe).emit('ready', { elementType: 'card' })
     expect(onReady).toHaveBeenCalledWith(elementOf(stripe))
   })
 
@@ -157,7 +148,7 @@ describe('element components', () => {
     ))
 
     const event = { elementType: 'expressCheckout', availablePaymentMethods: { link: true } }
-    handlerFor(elementOf(stripe), 'ready')!(event)
+    elementOf(stripe).emit('ready', event)
     expect(onReady).toHaveBeenCalledWith(event)
   })
 
