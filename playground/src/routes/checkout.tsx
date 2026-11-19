@@ -3,10 +3,8 @@ import {
   createMemo,
   createSignal,
   For,
-  Index,
   Match,
-  on,
-  onMount,
+  onSettled,
   Show,
   Switch,
 } from 'solid-js'
@@ -42,21 +40,22 @@ function CheckoutDemo() {
   const scheme = useColorScheme()
   const [clientSecret, setClientSecret] = createSignal<Promise<string>>()
   // Created after mount so server rendering never opens a session.
-  onMount(() => setClientSecret(createCheckoutSession('elements')))
+  onSettled(() => {
+    setClientSecret(createCheckoutSession('elements'))
+  })
 
   return (
-    <Show when={clientSecret()} fallback={<p class="muted">Creating a Checkout Session…</p>}>
-      {secret => (
-        <CheckoutElementsProvider
-          stripe={getStripeJs()}
-          options={{
-            clientSecret: secret(),
-            elementsOptions: { appearance: appearance(defaultTheme(scheme())) },
-          }}
-        >
-          <CheckoutPage />
-        </CheckoutElementsProvider>
-      )}
+    // A Promise passed to `when` would be awaited, so test for presence instead.
+    <Show when={!!clientSecret()} fallback={<p class="muted">Creating a Checkout Session…</p>}>
+      <CheckoutElementsProvider
+        stripe={getStripeJs()}
+        options={{
+          clientSecret: clientSecret()!,
+          elementsOptions: { appearance: appearance(defaultTheme(scheme())) },
+        }}
+      >
+        <CheckoutPage />
+      </CheckoutElementsProvider>
     </Show>
   )
 }
@@ -73,12 +72,17 @@ function CheckoutPage() {
     return state.type === 'error' ? state.error.message : undefined
   })
 
-  createEffect(on(() => checkout().type, log('CheckoutElementsProvider', 'state')))
   createEffect(
-    on(
-      () => session()?.total.total.amount,
-      total => total && log('session', 'total updated')(total),
-    ),
+    () => checkout().type,
+    type => {
+      log('CheckoutElementsProvider', 'state')(type)
+    },
+  )
+  createEffect(
+    () => session()?.total.total.amount,
+    total => {
+      if (total) log('session', 'total updated')(total)
+    },
   )
 
   return (
@@ -143,8 +147,8 @@ function OrderSummary(props: { checkout: StripeCheckoutElementsValue }) {
 
   return (
     <section class="stack" aria-label="Order summary">
-      {/* Index keeps each row mounted while session updates replace the item objects. */}
-      <Index each={props.checkout.lineItems}>
+      {/* keyed={false} keeps each row mounted while session updates replace the item objects. */}
+      <For each={props.checkout.lineItems} keyed={false}>
         {item => (
           <div class="product">
             <div>
@@ -161,7 +165,7 @@ function OrderSummary(props: { checkout: StripeCheckoutElementsValue }) {
             />
           </div>
         )}
-      </Index>
+      </For>
       <Show when={quantityError()}>{message => <p class="field-error">{message()}</p>}</Show>
 
       <Show
@@ -177,7 +181,7 @@ function OrderSummary(props: { checkout: StripeCheckoutElementsValue }) {
                 class="input"
                 name="code"
                 autocomplete="off"
-                aria-invalid={!!promoError()}
+                aria-invalid={promoError() ? 'true' : 'false'}
                 aria-describedby="promo-error"
               />
               <button class="button" disabled={updating()}>

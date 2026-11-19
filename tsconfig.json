@@ -14,8 +14,8 @@
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true,
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "types": []
   },
-  "include": ["src", "env.d.ts", "vite.config.ts"]
+  "include": ["src", "test", "env.d.ts", "vite.config.ts"]
 }

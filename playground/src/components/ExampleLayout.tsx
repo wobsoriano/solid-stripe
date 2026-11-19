@@ -1,5 +1,6 @@
 import { Title } from '@solidjs/meta'
-import { createResource, createSignal, For, Show, Suspense, type JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
+import { createMemo, createSignal, For, Loading, Show } from 'solid-js'
 import { getExample, type ExampleSlug } from '~/examples'
 import { createEventLog, EventLogContext, type LoggedEvent } from '~/lib/eventLog'
 import type { TestValue } from '~/testData'
@@ -24,13 +25,12 @@ export default function ExampleLayout(props: Props) {
   const example = () => getExample(props.slug)
   const eventLog = createEventLog()
   const [tab, setTab] = createSignal<Tab>('events')
-  const [source] = createResource(
-    () => tab() === 'code' && props.slug,
-    slug => routeSources[`../routes/${slug}.tsx`]!(),
+  const source = createMemo(() =>
+    tab() === 'code' ? routeSources[`../routes/${props.slug}.tsx`]!() : undefined,
   )
 
   return (
-    <EventLogContext.Provider value={eventLog}>
+    <EventLogContext value={eventLog}>
       <Title>{`${example().title} · solid-stripe`}</Title>
       <header class="page-header">
         <p class="eyebrow">{example().group}</p>
@@ -69,7 +69,7 @@ export default function ExampleLayout(props: Props) {
                 type="button"
                 role="tab"
                 class="tab"
-                aria-selected={tab() === 'events'}
+                aria-selected={tab() === 'events' ? 'true' : 'false'}
                 aria-controls="panel-events"
                 onClick={() => setTab('events')}
               >
@@ -82,7 +82,7 @@ export default function ExampleLayout(props: Props) {
                 type="button"
                 role="tab"
                 class="tab"
-                aria-selected={tab() === 'code'}
+                aria-selected={tab() === 'code' ? 'true' : 'false'}
                 aria-controls="panel-code"
                 onClick={() => setTab('code')}
               >
@@ -97,9 +97,11 @@ export default function ExampleLayout(props: Props) {
                 </button>
               }
             >
-              <Show when={source()}>
-                {text => <CopyButton text={text()} label="Copy source" />}
-              </Show>
+              <Loading>
+                <Show when={source()}>
+                  {text => <CopyButton text={text()} label="Copy source" />}
+                </Show>
+              </Loading>
             </Show>
           </div>
           <Show
@@ -107,16 +109,16 @@ export default function ExampleLayout(props: Props) {
             fallback={<EventList id="panel-events" events={eventLog.events()} />}
           >
             <div id="panel-code" role="tabpanel" class="panel-body">
-              <Suspense fallback={<p class="panel-empty">Loading source…</p>}>
+              <Loading fallback={<p class="panel-empty">Loading source…</p>}>
                 <pre class="code">
                   <code>{source()}</code>
                 </pre>
-              </Suspense>
+              </Loading>
             </div>
           </Show>
         </section>
       </div>
-    </EventLogContext.Provider>
+    </EventLogContext>
   )
 }
 
@@ -183,7 +185,7 @@ function EventList(props: { id: string; events: LoggedEvent[] }) {
           <For each={props.events}>
             {event => (
               <li class="event">
-                <time class="event-time" dateTime={event.at.toISOString()}>
+                <time class="event-time" datetime={event.at.toISOString()}>
                   {timeFormat.format(event.at)}
                 </time>
                 <span class="event-name">

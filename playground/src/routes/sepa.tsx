@@ -1,4 +1,5 @@
-import { action, redirect, useSubmission } from '@solidjs/router'
+import { formAction } from '@solidjs/router'
+import { redirect } from '@solidjs/web'
 import type { StripeElementStyle } from '@stripe/stripe-js'
 import { Show } from 'solid-js'
 import { Elements, IbanElement, useElements, useStripe } from 'solid-stripe'
@@ -8,6 +9,7 @@ import { useEventLog } from '~/lib/eventLog'
 import { createPaymentIntent } from '~/lib/paymentIntent'
 import { formatAmount, UNIT_AMOUNT } from '~/lib/pricing'
 import { getStripeJs } from '~/lib/stripeJs'
+import { useSubmission } from '~/lib/submission'
 import { testIban } from '~/testData'
 
 export default function Page() {
@@ -43,7 +45,7 @@ function SepaForm(props: { style: StripeElementStyle }) {
   const elements = useElements()
   const log = useEventLog()
 
-  const pay = action(async (form: FormData) => {
+  const pay = formAction(async (form: FormData) => {
     const { clientSecret } = await createPaymentIntent('sepa_debit')
     log('server', 'createPaymentIntent')('sepa_debit')
 
@@ -65,7 +67,7 @@ function SepaForm(props: { style: StripeElementStyle }) {
 
   return (
     <form action={pay} method="post" class="demo-form">
-      <Show when={submission.error}>
+      <Show when={submission.error()}>
         {error => (
           <p class="callout callout-danger" role="alert">
             {error().message}
@@ -80,7 +82,7 @@ function SepaForm(props: { style: StripeElementStyle }) {
             name="name"
             autocomplete="name"
             required
-            disabled={submission.pending}
+            disabled={submission.pending()}
           />
         </label>
         <label class="field">
@@ -91,7 +93,7 @@ function SepaForm(props: { style: StripeElementStyle }) {
             name="email"
             autocomplete="email"
             required
-            disabled={submission.pending}
+            disabled={submission.pending()}
           />
         </label>
       </div>
@@ -115,8 +117,8 @@ function SepaForm(props: { style: StripeElementStyle }) {
         our payment service provider, to send instructions to your bank to debit your account in
         accordance with those instructions.
       </p>
-      <button class="button button-block" disabled={submission.pending}>
-        {submission.pending ? 'Processing…' : `Pay ${formatAmount(UNIT_AMOUNT, 'eur')}`}
+      <button class="button button-block" disabled={submission.pending()}>
+        {submission.pending() ? 'Processing…' : `Pay ${formatAmount(UNIT_AMOUNT, 'eur')}`}
       </button>
     </form>
   )

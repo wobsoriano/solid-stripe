@@ -1,8 +1,8 @@
 import { cleanup, render } from '@solidjs/testing-library'
 import type { Stripe } from '@stripe/stripe-js'
-import { createSignal } from 'solid-js'
+import { createSignal, flush } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { flush, mockStripe, type MockStripe } from '../../test/mocks'
+import { mockStripe, tick, type MockStripe } from '../../test/mocks'
 import { FinancialAccountDisclosure, IssuingDisclosure, TreasuryDisclosure } from '../index'
 
 const asStripe = (mock: MockStripe) => mock as unknown as Stripe
@@ -27,7 +27,7 @@ describe.each([
     ))
 
     expect(stripe[method]).toHaveBeenCalledWith(options)
-    await flush()
+    await tick()
     expect(container.textContent).toBe('disclosure')
     expect(onLoad).toHaveBeenCalledTimes(1)
   })
@@ -42,7 +42,7 @@ describe.each([
       <Disclosure stripe={asStripe(stripe)} onError={onError} onLoad={onLoad} />
     ))
 
-    await flush()
+    await tick()
     expect(onError).toHaveBeenCalledWith(error)
     expect(onLoad).not.toHaveBeenCalled()
     expect(container.textContent).toBe('')
@@ -69,12 +69,13 @@ describe('disclosure options', () => {
     ))
 
     setBusinessName('Globex')
+    flush()
     expect(stripe.createTreasuryDisclosure).toHaveBeenLastCalledWith({ businessName: 'Globex' })
 
     resolvers[1]!('Globex')
-    await flush()
+    await tick()
     resolvers[0]!('Acme')
-    await flush()
+    await tick()
     expect(container.textContent).toBe('Globex')
   })
 
@@ -91,12 +92,13 @@ describe('disclosure options', () => {
       />
     ))
 
-    await flush()
+    await tick()
     expect(container.textContent).toBe('disclosure')
 
     stripe.createIssuingDisclosure.mockResolvedValueOnce({ error } as never)
     setProgramId('ip_2')
-    await flush()
+    flush()
+    await tick()
     expect(onError).toHaveBeenCalledWith(error)
     expect(container.textContent).toBe('')
   })
@@ -105,7 +107,7 @@ describe('disclosure options', () => {
     const stripe = mockStripe()
     render(() => <IssuingDisclosure stripe={Promise.resolve(asStripe(stripe))} />)
     expect(stripe.createIssuingDisclosure).not.toHaveBeenCalled()
-    await flush()
+    await tick()
     expect(stripe.createIssuingDisclosure).toHaveBeenCalledTimes(1)
   })
 })

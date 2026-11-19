@@ -1,24 +1,24 @@
-import { A, useLocation } from '@solidjs/router'
-import { createSignal, For, on, createEffect, type ParentProps } from 'solid-js'
+import { useLocation } from '@solidjs/router'
+import { createEffect, createSignal, For, type ParentProps } from 'solid-js'
 import { examplesByGroup } from '~/examples'
 
 export default function AppShell(props: ParentProps) {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = createSignal(false)
   createEffect(
-    on(
-      () => location.pathname,
-      () => setMenuOpen(false),
-      { defer: true },
-    ),
+    () => location.pathname,
+    () => {
+      setMenuOpen(false)
+    },
+    { defer: true },
   )
 
   return (
     <div class="app">
       <header class="app-header">
-        <A href="/" class="brand" end>
+        <a href="/" class="brand">
           solid-stripe <span class="brand-tag">playground</span>
-        </A>
+        </a>
         <nav class="header-links" aria-label="Project links">
           <a href="https://github.com/wobsoriano/solid-stripe" target="_blank" rel="noreferrer">
             GitHub
@@ -30,7 +30,7 @@ export default function AppShell(props: ParentProps) {
         <button
           type="button"
           class="menu-button"
-          aria-expanded={menuOpen()}
+          aria-expanded={menuOpen() ? 'true' : 'false'}
           aria-controls="example-nav"
           onClick={() => setMenuOpen(open => !open)}
         >
@@ -38,26 +38,20 @@ export default function AppShell(props: ParentProps) {
         </button>
       </header>
       <div class="app-body">
-        <aside id="example-nav" class="app-sidebar" classList={{ 'is-open': menuOpen() }}>
+        <aside id="example-nav" class={['app-sidebar', { 'is-open': menuOpen() }]}>
           <nav aria-label="Examples">
-            <A href="/" class="nav-link" activeClass="is-active" inactiveClass="" end>
+            <a href="/" class="nav-link">
               Overview
-            </A>
+            </a>
             <For each={examplesByGroup}>
               {section => (
                 <div class="nav-group">
                   <h2 class="nav-group-title">{section.group}</h2>
                   <For each={section.items}>
                     {example => (
-                      <A
-                        href={`/${example.slug}`}
-                        class="nav-link"
-                        activeClass="is-active"
-                        inactiveClass=""
-                        end
-                      >
+                      <a href={`/${example.slug}`} class="nav-link">
                         {example.title}
-                      </A>
+                      </a>
                     )}
                   </For>
                 </div>
