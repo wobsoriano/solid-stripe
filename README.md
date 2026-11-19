@@ -15,7 +15,7 @@ Solid components for [Stripe.js and Elements](https://stripe.com/docs/stripe-js)
 npm install @stripe/stripe-js solid-stripe
 ```
 
-solid-stripe 2.x requires `solid-js` and `@solidjs/web` 2.0.0-rc.19 or later, and `@stripe/stripe-js` 10. Apps on Solid 1 use solid-stripe 1.x.
+solid-stripe 2.x requires `solid-js` and `@solidjs/web` 2.0 or later, and `@stripe/stripe-js` 10.3 or later. Apps on Solid 1 use solid-stripe 1.x.
 
 ## Minimal example
 
@@ -157,6 +157,44 @@ const App = () => {
     </CheckoutElementsProvider>
   )
 }
+```
+
+## Localize prices with the Pricing SDK
+
+The Pricing SDK requires beta access. Import it from `solid-stripe/pricing`. Each data hook returns an accessor for `{ loading, data, error }`.
+
+```tsx
+import { loadStripe } from '@stripe/stripe-js'
+import { For, Show } from 'solid-js'
+import { PricingProvider, useCurrencySelection, useResolvedPrice } from 'solid-stripe/pricing'
+
+const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh')
+
+const Price = (props: { price: string }) => {
+  const resolved = useResolvedPrice(() => props.price)
+  return <Show when={resolved().data?.unitAmount}>{amount => <p>{amount().amount}</p>}</Show>
+}
+
+const CurrencyPicker = () => {
+  const selection = useCurrencySelection()
+  return (
+    <select
+      value={selection().data?.selectedCurrency.currency}
+      onChange={event => selection().setSelectedCurrency(event.currentTarget.value)}
+    >
+      <For each={selection().data?.availableCurrencies}>
+        {info => <option value={info.currency}>{info.currency}</option>}
+      </For>
+    </select>
+  )
+}
+
+const App = () => (
+  <PricingProvider stripe={stripePromise} options={{ pricingPolicy: 'pp_123' }}>
+    <CurrencyPicker />
+    <Price price="price_123" />
+  </PricingProvider>
+)
 ```
 
 The [playground](./playground) also has examples for the Express Checkout Element, Embedded Checkout, card Elements, and SEPA Direct Debit.
