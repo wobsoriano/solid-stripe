@@ -2,7 +2,7 @@
 'solid-stripe': major
 ---
 
-solid-stripe now requires Solid 2. Install `solid-js` and `@solidjs/web` 2.0.0-rc.19 or later. Apps on Solid 1 should stay on solid-stripe 1.x.
+solid-stripe now requires Solid 2. Install `solid-js` and `@solidjs/web` 2.0 or later, and `@stripe/stripe-js` 10.3 or later. Apps on Solid 1 should stay on solid-stripe 1.x.
 
 The components, props, hooks, and the `solid-stripe/checkout` entry keep their names and shapes. Hooks still return accessors.
 

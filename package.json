@@ -63,9 +63,9 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
-    "@solidjs/web": "^2.0.0-rc.19",
+    "@solidjs/web": "^2.0.0",
     "@stripe/stripe-js": ">=10.3.0 <11.0.0",
-    "solid-js": "^2.0.0-rc.19"
+    "solid-js": "^2.0.0"
   },
   "engines": {
     "node": ">=20"
