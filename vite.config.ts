@@ -2,7 +2,11 @@ import solidRolldown from 'unplugin-solid/rolldown'
 import solid from 'unplugin-solid/vite'
 import { defineConfig } from 'vite-plus'
 
-const entry = { index: 'src/index.ts', checkout: 'src/checkout/index.tsx' }
+const entry = {
+  index: 'src/index.ts',
+  checkout: 'src/checkout/index.tsx',
+  pricing: 'src/pricing/index.ts',
+}
 
 export default defineConfig({
   // unplugin-solid 3.0.0 passes `componentNames` to the compiler in dev mode, which

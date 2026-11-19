@@ -33,6 +33,11 @@
       "types": "./dist/checkout.d.ts",
       "solid": "./dist/checkout.jsx",
       "default": "./dist/checkout.js"
+    },
+    "./pricing": {
+      "types": "./dist/pricing.d.ts",
+      "solid": "./dist/pricing.jsx",
+      "default": "./dist/pricing.js"
     }
   },
   "scripts": {

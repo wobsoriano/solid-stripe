@@ -10,6 +10,7 @@ if (!upstream) throw new Error('usage: check-parity.mjs <react-stripe-js dir>')
 const entries = [
   { upstream: 'src/index.ts', local: 'dist/index.js' },
   { upstream: 'src/checkout/index.ts', local: 'dist/checkout.js' },
+  { upstream: 'src/pricing/index.ts', local: 'dist/pricing.js' },
 ]
 
 /** Value exports declared in an upstream entry: `export const X`, `export {X} from`, minus type-only names. */

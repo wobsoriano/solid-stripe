@@ -1,3 +1,4 @@
+import type { ResolvedPrice } from '@stripe/stripe-js'
 import { vi } from 'vite-plus/test'
 
 export const mockElement = () => ({
@@ -102,9 +103,31 @@ export const mockCheckoutFormSdk = () => {
   return sdk
 }
 
+export const mockPricing = () => {
+  const listeners = new Set<(event: object) => void>()
+  return {
+    getAvailableCurrencies: vi.fn(async () => [{ currency: 'usd' }, { currency: 'eur' }]),
+    getSelectedCurrency: vi.fn(async () => ({ currency: 'usd' })),
+    setSelectedCurrency: vi.fn(async (_currency: string) => {}),
+    resolvePrice: vi.fn(async (price: string): Promise<ResolvedPrice> => ({
+      currency: 'usd',
+      unitAmount: { amount: `${price}:$10.00`, minorUnitsAmount: 1000 },
+      unitAmountDecimal: null,
+      minorUnitsAmountDivisor: 100,
+    })),
+    createPricingToken: vi.fn(async () => ({ id: 'pt_123' })),
+    on: vi.fn((_event: string, handler: (event: object) => void) => listeners.add(handler)),
+    off: vi.fn((_event: string, handler: (event: object) => void) => listeners.delete(handler)),
+    emitChange: () => listeners.forEach(handler => handler({})),
+  }
+}
+
+export type MockPricing = ReturnType<typeof mockPricing>
+
 export const mockStripe = (
   checkoutSdk = mockCheckoutSdk(),
   checkoutFormSdk = mockCheckoutFormSdk(),
+  pricing = mockPricing(),
 ) => ({
   elements: vi.fn(() => mockElements()),
   createToken: vi.fn(),
@@ -117,6 +140,7 @@ export const mockStripe = (
   createTreasuryDisclosure: mockDisclosure(),
   initCheckoutElementsSdk: vi.fn(() => checkoutSdk),
   initCheckoutFormSdk: vi.fn(() => checkoutFormSdk),
+  initializePricing: vi.fn(async (_options: object): Promise<MockPricing> => pricing),
 })
 
 export type MockStripe = ReturnType<typeof mockStripe>
@@ -134,6 +158,17 @@ export const handlerFor = (element: MockElement, event: string) =>
   element.on.mock.calls.find(([name]) => name === event)?.[1] as
     | ((...args: unknown[]) => unknown)
     | undefined
+
+/** A promise with its settle functions, for controlling when a mocked call resolves. */
+export const deferred = <T>() => {
+  let resolve!: (value: T) => void
+  let reject!: (reason: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
+}
 
 /** Waits a macrotask, so pending promises and Solid's queued flush have run. */
 export const tick = () => new Promise(resolve => setTimeout(resolve, 0))
