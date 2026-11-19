@@ -74,6 +74,7 @@ describe('element components', () => {
     ['onSavedPaymentMethodRemove', 'savedpaymentmethodremove'],
     ['onSavedPaymentMethodUpdate', 'savedpaymentmethodupdate'],
     ['onAvailablePaymentMethodsChange', 'availablepaymentmethodschange'],
+    ['onFieldChange', 'fieldchange'],
   ] as const)('calls %s when the element emits %s', (prop, event) => {
     const stripe = mockStripe()
     const callback = vi.fn()

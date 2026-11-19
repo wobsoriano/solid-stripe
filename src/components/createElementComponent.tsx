@@ -30,6 +30,7 @@ const elementEvents = {
   onSavedPaymentMethodRemove: 'savedpaymentmethodremove',
   onSavedPaymentMethodUpdate: 'savedpaymentmethodupdate',
   onAvailablePaymentMethodsChange: 'availablepaymentmethodschange',
+  onFieldChange: 'fieldchange',
   onChange: 'change',
 } as const
 
