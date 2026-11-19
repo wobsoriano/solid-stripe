@@ -514,6 +514,65 @@ describe('useCurrencySelection', () => {
   })
 })
 
+describe('pricing actions', () => {
+  it('runs a waiting action after its consumer unmounts while the provider stays', async () => {
+    const { pricing, stripe } = setup()
+    const loading = deferred<Stripe>()
+    const [shown, setShown] = createSignal(true)
+    let createToken!: () => Promise<unknown>
+    const Consumer = () => {
+      createToken = usePricingToken().createPricingToken
+      return null
+    }
+    render(() => (
+      <PricingProvider stripe={loading.promise} options={options}>
+        {shown() && <Consumer />}
+      </PricingProvider>
+    ))
+
+    const token = createToken()
+    setShown(false)
+    flush()
+    loading.resolve(asStripe(stripe))
+    await expect(token).resolves.toEqual({ id: 'pt_123' })
+    expect(pricing.createPricingToken).toHaveBeenCalledTimes(1)
+  })
+
+  it('forwards concurrent currency changes and settles each on its own result', async () => {
+    const { pricing, stripe } = setup()
+    const first = deferred<void>()
+    const second = deferred<void>()
+    pricing.setSelectedCurrency
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise)
+    const { result } = renderPricingHook(useCurrencySelection, { stripe: () => asStripe(stripe) })
+
+    const toEur = result().setSelectedCurrency('eur')
+    const toGbp = result().setSelectedCurrency('gbp')
+    await tick()
+    expect(pricing.setSelectedCurrency.mock.calls).toEqual([['eur'], ['gbp']])
+
+    second.resolve()
+    await expect(toGbp).resolves.toBeUndefined()
+    first.reject(new Error('eur failed'))
+    await expect(toEur).rejects.toThrow('eur failed')
+  })
+
+  it('keeps using the first Stripe instance after the stripe prop changes', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const first = setup()
+    const second = setup()
+    const [current, setCurrent] = createSignal(asStripe(first.stripe))
+    renderPricingHook(() => null, { stripe: current })
+    await tick()
+
+    setCurrent(asStripe(second.stripe))
+    await tick()
+    expect(first.stripe.initializePricing).toHaveBeenCalledTimes(1)
+    expect(second.stripe.initializePricing).not.toHaveBeenCalled()
+  })
+})
+
 describe('usePricingToken', () => {
   it('requires a PricingProvider and names the hook in the error', () => {
     const Lonely = () => {
