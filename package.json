@@ -1,6 +1,6 @@
 {
   "name": "solid-stripe",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": false,
   "description": "Solid components for Stripe.js and Stripe Elements",
   "keywords": [
